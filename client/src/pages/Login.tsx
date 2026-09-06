@@ -1,0 +1,263 @@
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../store/authContext.js';
+import { Router, Server, KeyRound, User, Sparkles, AlertCircle, ArrowRight } from 'lucide-react';
+
+export const Login: React.FC = () => {
+  const { login, loading, error } = useAuth();
+
+  const [host, setHost] = useState('192.168.88.1');
+  const [port, setPort] = useState('443');
+  const [useTls, setUseTls] = useState(true);
+  const [username, setUsername] = useState('admin');
+  const [password, setPassword] = useState('');
+  const [rejectUnauthorized, setRejectUnauthorized] = useState(false);
+  const [rememberCredentials, setRememberCredentials] = useState(true);
+
+  // Load saved credentials from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('ros_saved_credentials');
+      if (saved) {
+        const data = JSON.parse(saved);
+        if (data.host) setHost(data.host);
+        if (data.port) setPort(String(data.port));
+        if (data.useTls !== undefined) setUseTls(data.useTls);
+        if (data.username) setUsername(data.username);
+        if (data.password !== undefined) setPassword(data.password);
+        if (data.rejectUnauthorized !== undefined) setRejectUnauthorized(data.rejectUnauthorized);
+        setRememberCredentials(true);
+      }
+    } catch (e) {
+      console.error('Failed to parse saved credentials', e);
+    }
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const ok = await login({
+      host,
+      port: Number(port),
+      useTls,
+      username,
+      password,
+      rejectUnauthorized,
+      isDemo: false,
+    });
+
+    if (ok) {
+      if (rememberCredentials) {
+        try {
+          localStorage.setItem(
+            'ros_saved_credentials',
+            JSON.stringify({
+              host,
+              port: Number(port),
+              useTls,
+              username,
+              password,
+              rejectUnauthorized,
+            })
+          );
+        } catch (e) {
+          console.error('Failed to save credentials', e);
+        }
+      } else {
+        localStorage.removeItem('ros_saved_credentials');
+      }
+    }
+  };
+
+  const handleDemoLogin = async () => {
+    await login({
+      host: 'demo.mikrotik.local',
+      port: 443,
+      useTls: true,
+      username: 'admin',
+      password: '',
+      rejectUnauthorized: false,
+      isDemo: true,
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center px-4 relative overflow-hidden">
+      {/* Ambient background decoration */}
+      <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div className="w-full max-w-md relative z-10">
+        {/* Header Logo */}
+        <div className="text-center mb-8">
+          <div className="inline-flex p-3 bg-blue-600/20 border border-blue-500/30 rounded-2xl text-blue-400 mb-4 shadow-xl shadow-blue-500/10">
+            <Router className="w-8 h-8" />
+          </div>
+          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">RouterOS Web 管理平台</h1>
+          <p className="text-xs text-slate-400 mt-1">
+            基于 MikroTik RouterOS v7 REST API 的现代化网络控制台
+          </p>
+        </div>
+
+        {/* Card */}
+        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 backdrop-blur-xl shadow-2xl">
+          {error && (
+            <div className="mb-5 p-3 rounded-xl bg-red-500/10 border border-red-500/20 flex items-start gap-2.5 text-xs text-red-400">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-medium">连接失败</p>
+                <p className="opacity-90">{error}</p>
+              </div>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Host & Protocol */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-slate-300 flex items-center justify-between">
+                <span>路由器地址 & 协议</span>
+                <span className="text-[10px] text-slate-500">IP 或域名</span>
+              </label>
+              <div className="flex gap-2">
+                <select
+                  value={useTls ? 'https' : 'http'}
+                  onChange={(e) => {
+                    const isHttps = e.target.value === 'https';
+                    setUseTls(isHttps);
+                    setPort(isHttps ? '443' : '80');
+                  }}
+                  className="bg-slate-800/90 border border-slate-700 text-slate-200 text-xs rounded-xl px-2.5 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer"
+                >
+                  <option value="https">HTTPS</option>
+                  <option value="http">HTTP</option>
+                </select>
+
+                <div className="relative flex-1">
+                  <Server className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+                  <input
+                    type="text"
+                    required
+                    value={host}
+                    onChange={(e) => setHost(e.target.value)}
+                    placeholder="192.168.88.1"
+                    className="w-full bg-slate-800/90 border border-slate-700 text-slate-100 text-xs rounded-xl pl-9 pr-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono"
+                  />
+                </div>
+
+                <input
+                  type="number"
+                  required
+                  value={port}
+                  onChange={(e) => setPort(e.target.value)}
+                  placeholder="端口"
+                  className="w-20 bg-slate-800/90 border border-slate-700 text-slate-100 text-xs rounded-xl px-2.5 py-2 text-center focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono"
+                />
+              </div>
+            </div>
+
+            {/* Username */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-slate-300">管理员用户名</label>
+              <div className="relative">
+                <User className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+                <input
+                  type="text"
+                  required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="admin"
+                  className="w-full bg-slate-800/90 border border-slate-700 text-slate-100 text-xs rounded-xl pl-9 pr-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono"
+                />
+              </div>
+            </div>
+
+            {/* Password */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-slate-300">管理员密码</label>
+              <div className="relative">
+                <KeyRound className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="默认为空或路由器设置密码"
+                  className="w-full bg-slate-800/90 border border-slate-700 text-slate-100 text-xs rounded-xl pl-9 pr-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono"
+                />
+              </div>
+            </div>
+
+            {/* Options: Remember credentials & Self-signed SSL */}
+            <div className="space-y-2 pt-1">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="remember-credentials"
+                    checked={rememberCredentials}
+                    onChange={(e) => setRememberCredentials(e.target.checked)}
+                    className="rounded border-slate-700 bg-slate-800 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                  />
+                  <label
+                    htmlFor="remember-credentials"
+                    className="text-xs text-slate-300 cursor-pointer font-medium"
+                  >
+                    记住账号与密码
+                  </label>
+                </div>
+                {rememberCredentials && (
+                  <span className="text-[10px] text-blue-400 font-mono">下次自动填入</span>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="ssl-verify"
+                  checked={!rejectUnauthorized}
+                  onChange={(e) => setRejectUnauthorized(!e.target.checked)}
+                  className="rounded border-slate-700 bg-slate-800 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                />
+                <label htmlFor="ssl-verify" className="text-xs text-slate-400 cursor-pointer">
+                  允许自签名 SSL 证书（推荐开启）
+                </label>
+              </div>
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full mt-2 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 disabled:opacity-50 text-white font-medium text-xs py-2.5 rounded-xl transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 cursor-pointer"
+            >
+              {loading ? (
+                <>
+                  <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                  <span>正在验证连接...</span>
+                </>
+              ) : (
+                <>
+                  <span>连接设备</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Quick Demo Mode */}
+          <div className="mt-5 pt-4 border-t border-slate-800/80 text-center">
+            <button
+              type="button"
+              onClick={handleDemoLogin}
+              disabled={loading}
+              className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-slate-800/70 hover:bg-slate-700/80 border border-slate-700 text-xs text-slate-300 transition-colors cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span>快速进入演示模式 (Demo Mode)</span>
+            </button>
+            <p className="text-[11px] text-slate-500 mt-2">
+              无需真实连接 RouterOS 设备，即刻体验全套管理功能
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
