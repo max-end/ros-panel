@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { rosApi } from '../api/client.js';
 import { RosInterface } from '../types/index.js';
+import { useI18n } from '../i18n/context.js';
 import { Network, RefreshCw, Power, Edit2, Check, X, ArrowDown, ArrowUp } from 'lucide-react';
 
 function formatBytes(bytes: number | string | undefined): string {
@@ -14,6 +15,7 @@ function formatBytes(bytes: number | string | undefined): string {
 }
 
 export const Interfaces: React.FC = () => {
+  const { t } = useI18n();
   const [interfaces, setInterfaces] = useState<RosInterface[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -70,10 +72,10 @@ export const Interfaces: React.FC = () => {
         <div>
           <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
             <Network className="w-5 h-5 text-blue-400" />
-            <span>网络接口管理</span>
+            <span>{t('interfaces.title')}</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            查看与配置以太网口、网桥、VLAN 及虚拟接口参数
+            {t('interfaces.subtitle')}
           </p>
         </div>
         <button
@@ -82,7 +84,7 @@ export const Interfaces: React.FC = () => {
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 transition cursor-pointer"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-          <span>刷新接口</span>
+          <span>{t('common.refresh')}</span>
         </button>
       </div>
 
@@ -92,14 +94,14 @@ export const Interfaces: React.FC = () => {
           <table className="w-full text-left text-xs min-w-[650px]">
             <thead className="bg-slate-950/60 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-mono">
               <tr>
-                <th className="py-3.5 px-4 font-medium">状态</th>
-                <th className="py-3.5 px-4 font-medium">接口名称</th>
-                <th className="py-3.5 px-4 font-medium">类型</th>
+                <th className="py-3.5 px-4 font-medium">{t('common.status')}</th>
+                <th className="py-3.5 px-4 font-medium">{t('common.interface')}</th>
+                <th className="py-3.5 px-4 font-medium">{t('common.type')}</th>
                 <th className="py-3.5 px-4 font-medium">MTU</th>
-                <th className="py-3.5 px-4 font-medium">MAC 地址</th>
-                <th className="py-3.5 px-4 font-medium">累计收发 (Rx / Tx)</th>
-                <th className="py-3.5 px-4 font-medium">注释备注</th>
-                <th className="py-3.5 px-4 font-medium text-right">操作</th>
+                <th className="py-3.5 px-4 font-medium">{t('interfaces.mac')}</th>
+                <th className="py-3.5 px-4 font-medium">{t('interfaces.traffic')}</th>
+                <th className="py-3.5 px-4 font-medium">{t('common.comment')}</th>
+                <th className="py-3.5 px-4 font-medium text-right">{t('common.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60 text-slate-300">
@@ -115,16 +117,16 @@ export const Interfaces: React.FC = () => {
                       <div className="flex items-center gap-2">
                         {isDisabled ? (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-500 border border-slate-700">
-                            已禁用
+                            {t('common.disabled')}
                           </span>
                         ) : isRunning ? (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                            运行中
+                            {t('common.running')}
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                            无链路 (Down)
+                            {t('common.down')}
                           </span>
                         )}
                       </div>
@@ -175,7 +177,7 @@ export const Interfaces: React.FC = () => {
                             value={editComment}
                             onChange={(e) => setEditComment(e.target.value)}
                             className="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            placeholder="输入注释"
+                            placeholder={t('common.comment', 'Comment')}
                           />
                           <button
                             onClick={() => handleSaveComment(iface['.id'])}
@@ -193,7 +195,7 @@ export const Interfaces: React.FC = () => {
                       ) : (
                         <div className="flex items-center gap-2 group">
                           <span className="text-slate-400 text-[11px]">
-                            {iface.comment || <span className="text-slate-600 italic">无</span>}
+                            {iface.comment || <span className="text-slate-600 italic">{t('common.none')}</span>}
                           </span>
                           <button
                             onClick={() => {
@@ -201,7 +203,7 @@ export const Interfaces: React.FC = () => {
                               setEditComment(iface.comment || '');
                             }}
                             className="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-slate-300 p-0.5 cursor-pointer"
-                            title="修改注释"
+                            title={t('interfaces.editComment')}
                           >
                             <Edit2 className="w-3 h-3" />
                           </button>
@@ -219,10 +221,10 @@ export const Interfaces: React.FC = () => {
                             ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border-emerald-500/20'
                             : 'bg-red-500/10 text-red-400 hover:bg-red-500/20 border-red-500/20'
                         }`}
-                        title={isDisabled ? '点击启用接口' : '点击禁用接口'}
+                        title={isDisabled ? t('common.enable') : t('common.disable')}
                       >
                         <Power className="w-3 h-3" />
-                        <span>{isDisabled ? '启用' : '禁用'}</span>
+                        <span>{isDisabled ? t('common.enable') : t('common.disable')}</span>
                       </button>
                     </td>
                   </tr>
@@ -232,7 +234,7 @@ export const Interfaces: React.FC = () => {
               {interfaces.length === 0 && !loading && (
                 <tr>
                   <td colSpan={8} className="py-12 text-center text-slate-500 text-xs">
-                    未发现网络接口
+                    {t('common.noData')}
                   </td>
                 </tr>
               )}

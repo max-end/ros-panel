@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { rosApi } from '../api/client.js';
 import { RosIpAddress, RosInterface } from '../types/index.js';
+import { useI18n } from '../i18n/context.js';
 import { Binary, Plus, Trash2, RefreshCw, X, Check } from 'lucide-react';
 
 export const IPAddress: React.FC = () => {
+  const { t } = useI18n();
   const [addresses, setAddresses] = useState<RosIpAddress[]>([]);
   const [interfaces, setInterfaces] = useState<RosInterface[]>([]);
   const [loading, setLoading] = useState(true);
@@ -76,10 +78,10 @@ export const IPAddress: React.FC = () => {
         <div>
           <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
             <Binary className="w-5 h-5 text-blue-400" />
-            <span>IP 地址管理 (IP Addresses)</span>
+            <span>{t('ip.title')}</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            配置路由器各接口的 IPv4 地址、子网与路由网段
+            {t('ip.subtitle')}
           </p>
         </div>
 
@@ -90,7 +92,7 @@ export const IPAddress: React.FC = () => {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 transition cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>刷新</span>
+            <span>{t('common.refresh')}</span>
           </button>
 
           <button
@@ -98,7 +100,7 @@ export const IPAddress: React.FC = () => {
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>添加 IP 地址</span>
+            <span>{t('ip.newIp')}</span>
           </button>
         </div>
       </div>
@@ -109,12 +111,12 @@ export const IPAddress: React.FC = () => {
           <table className="w-full text-left text-xs min-w-[600px]">
             <thead className="bg-slate-950/60 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-mono">
               <tr>
-                <th className="py-3.5 px-4 font-medium">IP 地址 / 掩码</th>
-                <th className="py-3.5 px-4 font-medium">网络 (Network)</th>
-                <th className="py-3.5 px-4 font-medium">绑定接口</th>
-                <th className="py-3.5 px-4 font-medium">属性</th>
-                <th className="py-3.5 px-4 font-medium">注释备注</th>
-                <th className="py-3.5 px-4 font-medium text-right">操作</th>
+                <th className="py-3.5 px-4 font-medium">{t('common.address')}</th>
+                <th className="py-3.5 px-4 font-medium">{t('common.network')}</th>
+                <th className="py-3.5 px-4 font-medium">{t('common.interface')}</th>
+                <th className="py-3.5 px-4 font-medium">{t('common.type')}</th>
+                <th className="py-3.5 px-4 font-medium">{t('common.comment')}</th>
+                <th className="py-3.5 px-4 font-medium text-right">{t('common.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60 text-slate-300">
@@ -139,16 +141,16 @@ export const IPAddress: React.FC = () => {
                       <div className="flex gap-1.5">
                         {isDynamic ? (
                           <span className="px-1.5 py-0.5 rounded text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                            动态 (DHCP/PPP)
+                            {t('common.dynamic')}
                           </span>
                         ) : (
                           <span className="px-1.5 py-0.5 rounded text-[10px] bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                            静态配置
+                            {t('common.static')}
                           </span>
                         )}
                         {isDisabled && (
                           <span className="px-1.5 py-0.5 rounded text-[10px] bg-slate-800 text-slate-500 border border-slate-700">
-                            已禁用
+                            {t('common.disabled')}
                           </span>
                         )}
                       </div>
@@ -161,7 +163,7 @@ export const IPAddress: React.FC = () => {
                         <button
                           onClick={() => handleDeleteIp(item['.id'], item.address)}
                           className="p-1 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition cursor-pointer"
-                          title="删除 IP"
+                          title={t('common.delete')}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -174,7 +176,7 @@ export const IPAddress: React.FC = () => {
               {addresses.length === 0 && !loading && (
                 <tr>
                   <td colSpan={6} className="py-12 text-center text-slate-500 text-xs">
-                    暂未配置 IP 地址
+                    {t('common.noData')}
                   </td>
                 </tr>
               )}
@@ -188,7 +190,7 @@ export const IPAddress: React.FC = () => {
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl">
             <div className="flex justify-between items-center pb-3 border-b border-slate-800">
-              <h3 className="font-semibold text-sm text-slate-100">添加新 IP 地址</h3>
+              <h3 className="font-semibold text-sm text-slate-100">{t('ip.newIp')}</h3>
               <button
                 onClick={() => setShowAddModal(false)}
                 className="text-slate-400 hover:text-slate-200 p-1 cursor-pointer"
@@ -200,12 +202,12 @@ export const IPAddress: React.FC = () => {
             <form onSubmit={handleAddIp} className="mt-4 space-y-4">
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  IP 地址与子网掩码 (CIDR 格式)
+                  {t('ip.addressWithMask')}
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="例如: 192.168.10.1/24"
+                  placeholder="e.g. 192.168.10.1/24"
                   value={newAddress}
                   onChange={(e) => setNewAddress(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -214,7 +216,7 @@ export const IPAddress: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  绑定网络接口
+                  {t('ip.selectInterface')}
                 </label>
                 <select
                   value={newInterface}
@@ -231,11 +233,11 @@ export const IPAddress: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  注释备注 (选填)
+                  {t('common.comment')}
                 </label>
                 <input
                   type="text"
-                  placeholder="例如: Office VLAN Gateway"
+                  placeholder="e.g. Office Gateway"
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -248,14 +250,14 @@ export const IPAddress: React.FC = () => {
                   onClick={() => setShowAddModal(false)}
                   className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition cursor-pointer"
                 >
-                  取消
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
                   className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
                 >
-                  {submitting ? '提交中...' : '确认添加'}
+                  {submitting ? t('common.saving') : t('common.save')}
                 </button>
               </div>
             </form>

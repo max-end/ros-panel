@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { rosApi } from '../api/client.js';
 import { RosCloud, CustomDdnsItem } from '../types/index.js';
+import { useI18n } from '../i18n/context.js';
 import {
   Globe2,
   Cloud,
@@ -21,6 +22,7 @@ import {
 } from 'lucide-react';
 
 export const DdnsSettings: React.FC = () => {
+  const { t } = useI18n();
   const [cloud, setCloud] = useState<RosCloud | null>(null);
   const [customList, setCustomList] = useState<CustomDdnsItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -171,10 +173,10 @@ export const DdnsSettings: React.FC = () => {
         <div>
           <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
             <Globe2 className="w-5 h-5 text-blue-400" />
-            <span>动态域名解析 (DDNS / Dynamic DNS)</span>
+            <span>{t('ddns.title')}</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            配置 MikroTik 官方免费 Cloud 域名与 Cloudflare、阿里云、DNSPod 多服务商公网动态解析
+            {t('ddns.subtitle')}
           </p>
         </div>
 
@@ -184,7 +186,7 @@ export const DdnsSettings: React.FC = () => {
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 transition cursor-pointer"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-          <span>刷新状态</span>
+          <span>{t('common.refresh')}</span>
         </button>
       </div>
 
@@ -197,13 +199,13 @@ export const DdnsSettings: React.FC = () => {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-slate-100">MikroTik 官方原厂 Cloud DDNS</h3>
+                <h3 className="text-sm font-bold text-slate-100">{t('ddns.cloudTitle')}</h3>
                 <span className="px-2 py-0.5 rounded text-[10px] bg-blue-500/10 text-blue-400 border border-blue-500/20 font-medium">
-                  零配置 · 永久免费
+                  {t('ddns.cloudFree')}
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-0.5">
-                基于 MikroTik 官方云端节点，根据路由器序列号直接生成专属公网访问域名
+                Cloud dynamic hostname generated directly from RouterOS hardware serial
               </p>
             </div>
           </div>
@@ -220,7 +222,7 @@ export const DdnsSettings: React.FC = () => {
               }`}
             >
               <Power className="w-3.5 h-3.5" />
-              <span>{isCloudEnabled ? '服务已启用 (Enabled)' : '服务已关闭 (Disabled)'}</span>
+              <span>{isCloudEnabled ? t('common.enabled') : t('common.disabled')}</span>
             </button>
 
             <button
@@ -229,7 +231,7 @@ export const DdnsSettings: React.FC = () => {
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${forceUpdating ? 'animate-spin' : ''}`} />
-              <span>{forceUpdating ? '刷新中...' : '强制立即更新'}</span>
+              <span>{forceUpdating ? '...' : t('ddns.forceUpdate')}</span>
             </button>
           </div>
         </div>
@@ -238,16 +240,16 @@ export const DdnsSettings: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Domain name */}
           <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-4 flex flex-col justify-between">
-            <span className="text-[11px] text-slate-400 block mb-1">专属云解析域名 (DNS Name)</span>
+            <span className="text-[11px] text-slate-400 block mb-1">{t('ddns.cloudDomain', '专属云解析域名 (DNS Name)')}</span>
             <div className="flex items-center justify-between gap-2 mt-1">
               <span className="font-mono font-bold text-xs text-blue-400 truncate select-all">
-                {cloud?.['dns-name'] || '未获取或未启用'}
+                {cloud?.['dns-name'] || '--'}
               </span>
               {cloud?.['dns-name'] && (
                 <button
                   onClick={() => handleCopyDomain(cloud['dns-name']!)}
                   className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition cursor-pointer shrink-0"
-                  title="复制完整域名"
+                  title={t('common.copy', 'Copy')}
                 >
                   {copiedDomain ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                 </button>
@@ -257,7 +259,7 @@ export const DdnsSettings: React.FC = () => {
 
           {/* Detected Public IPv4 */}
           <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-4 flex flex-col justify-between">
-            <span className="text-[11px] text-slate-400 block mb-1">云端探测公网 IPv4</span>
+            <span className="text-[11px] text-slate-400 block mb-1">{t('ddns.detectedIpv4', '云端探测公网 IPv4')}</span>
             <div className="flex items-center justify-between gap-2 mt-1">
               <span className="font-mono font-bold text-xs text-emerald-400 select-all">
                 {cloud?.['public-address'] || '--'}
@@ -270,10 +272,10 @@ export const DdnsSettings: React.FC = () => {
 
           {/* Detected Public IPv6 & Sync status */}
           <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-4 flex flex-col justify-between">
-            <span className="text-[11px] text-slate-400 block mb-1">探测公网 IPv6 / 状态</span>
+            <span className="text-[11px] text-slate-400 block mb-1">{t('ddns.detectedIpv6', '探测公网 IPv6 / 状态')}</span>
             <div className="flex items-center justify-between gap-2 mt-1">
               <span className="font-mono text-xs text-slate-300 truncate select-all">
-                {cloud?.['public-address-ipv6'] || '未检测到 IPv6'}
+                {cloud?.['public-address-ipv6'] || '--'}
               </span>
             </div>
           </div>
@@ -289,13 +291,13 @@ export const DdnsSettings: React.FC = () => {
                 onChange={handleToggleUpdateTime}
                 className="w-3.5 h-3.5 rounded bg-slate-800 border-slate-700 text-blue-600 focus:ring-0 cursor-pointer"
               />
-              <span>通过 MikroTik Cloud 自动同步路由器网络时间 (Update Time)</span>
+              <span>{t('ddns.updateTime', '通过 MikroTik Cloud 自动同步路由器网络时间 (Update Time)')}</span>
             </label>
           </div>
 
           <div className="flex items-center gap-1.5 text-slate-500 text-[11px]">
             <Clock className="w-3.5 h-3.5" />
-            <span>自动监测周期: 默认 1 分钟检测一次公网 IP 变动</span>
+            <span>{t('ddns.pollInterval', '自动监测周期: 默认 1 分钟检测一次公网 IP 变动')}</span>
           </div>
         </div>
       </div>
@@ -306,10 +308,10 @@ export const DdnsSettings: React.FC = () => {
           <div>
             <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2">
               <Layers className="w-4 h-4 text-blue-400" />
-              <span>第三方主流服务商动态域名 (Cloudflare / 阿里云 / DNSPod / DuckDNS)</span>
+              <span>{t('ddns.customTitle')}</span>
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
-              将自己的顶级个人域名绑定到家庭/办公宽带公网 IP，IP 变化时自动推送更新
+              Bind personal domain to dynamic broadband public IP with auto-sync
             </p>
           </div>
 
@@ -318,7 +320,7 @@ export const DdnsSettings: React.FC = () => {
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>新建 DDNS 任务</span>
+            <span>{t('ddns.addJob')}</span>
           </button>
         </div>
 
@@ -349,7 +351,7 @@ export const DdnsSettings: React.FC = () => {
                     <button
                       onClick={() => handleDeleteCustom(item.id, item.name)}
                       className="text-slate-500 hover:text-red-400 hover:bg-red-500/10 p-1.5 rounded-lg transition cursor-pointer"
-                      title="删除任务"
+                      title={t('common.delete')}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -357,19 +359,19 @@ export const DdnsSettings: React.FC = () => {
 
                   <div className="mt-4 space-y-2 text-xs">
                     <div className="flex justify-between items-center py-1 border-b border-slate-800/60">
-                      <span className="text-slate-500">最新解析 IP</span>
+                      <span className="text-slate-500">{t('ddns.latestIp', '最新解析 IP')}</span>
                       <span className="font-mono font-bold text-slate-200 select-all">
-                        {item.lastIp || '未同步'}
+                        {item.lastIp || '--'}
                       </span>
                     </div>
 
                     <div className="flex justify-between items-center py-1 border-b border-slate-800/60">
-                      <span className="text-slate-500">检测周期</span>
+                      <span className="text-slate-500">{t('ddns.interval', '检测周期')}</span>
                       <span className="font-mono text-slate-400">{item.checkInterval || '5m'}</span>
                     </div>
 
                     <div className="flex justify-between items-center py-1 border-b border-slate-800/60">
-                      <span className="text-slate-500">上次同步时间</span>
+                      <span className="text-slate-500">{t('ddns.lastSync', '上次同步时间')}</span>
                       <span className="font-mono text-slate-400">{item.lastSyncTime || '--'}</span>
                     </div>
                   </div>
@@ -378,7 +380,7 @@ export const DdnsSettings: React.FC = () => {
                 <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span className="text-[11px] text-emerald-400 font-medium">运行正常</span>
+                    <span className="text-[11px] text-emerald-400 font-medium">{t('common.running', 'Normal')}</span>
                   </div>
 
                   <button
@@ -387,7 +389,7 @@ export const DdnsSettings: React.FC = () => {
                     className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs transition cursor-pointer"
                   >
                     <RefreshCw className={`w-3 h-3 ${isSyncing ? 'animate-spin text-blue-400' : ''}`} />
-                    <span>{isSyncing ? '同步中...' : '测试并同步'}</span>
+                    <span>{isSyncing ? '...' : t('ddns.syncNow', 'Sync Now')}</span>
                   </button>
                 </div>
               </div>
@@ -396,7 +398,7 @@ export const DdnsSettings: React.FC = () => {
 
           {customList.length === 0 && (
             <div className="col-span-full py-12 text-center text-slate-500 text-xs bg-slate-900/40 border border-slate-800/60 rounded-2xl">
-              暂未添加第三方 DDNS 任务。点击右上角“新建 DDNS 任务”即可配置 Cloudflare 或阿里云域名动态解析。
+              {t('ddns.emptyCustom', '暂未添加第三方 DDNS 任务。点击右上角“新建 DDNS 任务”即可配置 Cloudflare 或阿里云域名动态解析。')}
             </div>
           )}
         </div>
@@ -409,7 +411,7 @@ export const DdnsSettings: React.FC = () => {
             <div className="flex justify-between items-center pb-3 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <Globe2 className="w-4 h-4 text-blue-400" />
-                <h3 className="font-semibold text-sm text-slate-100">新建第三方 DDNS 任务</h3>
+                <h3 className="font-semibold text-sm text-slate-100">{t('ddns.addCustom', '新建第三方 DDNS 任务')}</h3>
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
@@ -421,11 +423,11 @@ export const DdnsSettings: React.FC = () => {
 
             <form onSubmit={handleAddSubmit} className="mt-4 space-y-4">
               <div>
-                <label className="text-xs font-medium text-slate-300 block mb-1">任务备注名称</label>
+                <label className="text-xs font-medium text-slate-300 block mb-1">{t('ddns.taskName', '任务备注名称')}</label>
                 <input
                   type="text"
                   required
-                  placeholder="例如: 家庭 NAS Cloudflare DDNS"
+                  placeholder="e.g. Home NAS Cloudflare DDNS"
                   value={taskName}
                   onChange={(e) => setTaskName(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -433,26 +435,26 @@ export const DdnsSettings: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-xs font-medium text-slate-300 block mb-1">DNS 服务商</label>
+                <label className="text-xs font-medium text-slate-300 block mb-1">{t('ddns.provider', 'DNS 服务商')}</label>
                 <select
                   value={provider}
                   onChange={(e) => setProvider(e.target.value as any)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                 >
-                  <option value="cloudflare">Cloudflare (推荐 · 免费 API)</option>
-                  <option value="aliyun">阿里云 DNS (Aliyun)</option>
-                  <option value="dnspod">腾讯云 DNSPod</option>
+                  <option value="cloudflare">Cloudflare (Recommended · Free API)</option>
+                  <option value="aliyun">Aliyun DNS</option>
+                  <option value="dnspod">Tencent DNSPod</option>
                   <option value="duckdns">DuckDNS</option>
-                  <option value="webhook">自定义 Webhook 推送</option>
+                  <option value="webhook">Custom Webhook</option>
                 </select>
               </div>
 
               <div>
-                <label className="text-xs font-medium text-slate-300 block mb-1">需要动态解析的域名</label>
+                <label className="text-xs font-medium text-slate-300 block mb-1">{t('ddns.domain', '需要动态解析的域名')}</label>
                 <input
                   type="text"
                   required
-                  placeholder="例如: nas.example.com"
+                  placeholder="e.g. nas.example.com"
                   value={domain}
                   onChange={(e) => setDomain(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -465,14 +467,14 @@ export const DdnsSettings: React.FC = () => {
                     <label className="text-xs font-medium text-slate-300 block mb-1">Cloudflare Zone ID</label>
                     <input
                       type="text"
-                      placeholder="在 Cloudflare 域名概述页面右侧获取"
+                      placeholder="Cloudflare Zone ID"
                       value={zoneId}
                       onChange={(e) => setZoneId(e.target.value)}
                       className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-medium text-slate-300 block mb-1">API Token (拥有 DNS 编辑权限)</label>
+                    <label className="text-xs font-medium text-slate-300 block mb-1">API Token (DNS Edit Permission)</label>
                     <input
                       type="password"
                       placeholder="Cloudflare API Token"
@@ -500,7 +502,7 @@ export const DdnsSettings: React.FC = () => {
                     <label className="text-xs font-medium text-slate-300 block mb-1">AccessKey Secret</label>
                     <input
                       type="password"
-                      placeholder="阿里云密钥 Secret"
+                      placeholder="Aliyun Secret"
                       value={apiSecret}
                       onChange={(e) => setApiSecret(e.target.value)}
                       className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -523,16 +525,16 @@ export const DdnsSettings: React.FC = () => {
               )}
 
               <div>
-                <label className="text-xs font-medium text-slate-300 block mb-1">更新检测间隔</label>
+                <label className="text-xs font-medium text-slate-300 block mb-1">{t('ddns.interval', '更新检测间隔')}</label>
                 <select
                   value={checkInterval}
                   onChange={(e) => setCheckInterval(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                 >
-                  <option value="1m">每 1 分钟检测一次</option>
-                  <option value="5m">每 5 分钟检测一次 (推荐)</option>
-                  <option value="10m">每 10 分钟检测一次</option>
-                  <option value="30m">每 30 分钟检测一次</option>
+                  <option value="1m">Every 1 minute</option>
+                  <option value="5m">Every 5 minutes (Recommended)</option>
+                  <option value="10m">Every 10 minutes</option>
+                  <option value="30m">Every 30 minutes</option>
                 </select>
               </div>
 
@@ -542,14 +544,14 @@ export const DdnsSettings: React.FC = () => {
                   onClick={() => setShowAddModal(false)}
                   className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition cursor-pointer"
                 >
-                  取消
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={submittingAdd}
                   className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
                 >
-                  {submittingAdd ? '保存中...' : '保存并生效'}
+                  {submittingAdd ? '...' : t('common.save')}
                 </button>
               </div>
             </form>

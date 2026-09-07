@@ -126,10 +126,10 @@ export const Upgrade: React.FC = () => {
         <div>
           <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
             <ArrowUpCircle className="w-5 h-5 text-blue-400" />
-            <span>RouterOS 固件升级与维护 (System & Firmware Upgrade)</span>
+            <span>{t('upgrade.title', 'RouterOS 固件升级与维护')}</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            官方软件包云端在线检索、稳定版安全补丁更新与 RouterBOARD 引导硬件升级
+            {t('upgrade.subtitle', '官方软件包云端在线检索、稳定版安全补丁更新与 RouterBOARD 引导硬件升级')}
           </p>
         </div>
 
@@ -140,7 +140,7 @@ export const Upgrade: React.FC = () => {
             className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-medium flex items-center gap-1.5 transition cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>刷新状态</span>
+            <span>{t('action.refresh', '刷新状态')}</span>
           </button>
 
           <button
@@ -149,7 +149,7 @@ export const Upgrade: React.FC = () => {
             className="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium flex items-center gap-1.5 transition shadow-lg shadow-blue-600/30 cursor-pointer"
           >
             <Sparkles className={`w-3.5 h-3.5 ${checking ? 'animate-spin' : ''}`} />
-            <span>{checking ? '正在联网检索...' : '检查官方新版'}</span>
+            <span>{checking ? t('upgrade.checking', '正在联网检索...') : t('upgrade.check', '检查官方新版')}</span>
           </button>
         </div>
       </div>
@@ -177,7 +177,7 @@ export const Upgrade: React.FC = () => {
           <div className="lg:col-span-8 space-y-5">
             <div className="flex flex-wrap items-center gap-3">
               <span className="text-xs uppercase tracking-wider font-semibold text-slate-400">
-                RouterOS v7 系统更新分支
+                {t('upgrade.channel', 'Update Channel')}
               </span>
               <div className="flex items-center gap-1 bg-slate-800/80 p-1 rounded-xl border border-slate-700">
                 {(['stable', 'long-term', 'testing', 'development'] as const).map((ch) => (
@@ -190,7 +190,7 @@ export const Upgrade: React.FC = () => {
                         : 'text-slate-400 hover:text-slate-200'
                     }`}
                   >
-                    {ch === 'stable' ? '稳定版 (Stable)' : ch === 'long-term' ? '长期版 (Long-term)' : ch}
+                    {ch === 'stable' ? 'Stable' : ch === 'long-term' ? 'Long-term' : ch}
                   </button>
                 ))}
               </div>
@@ -199,15 +199,15 @@ export const Upgrade: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Current Version */}
               <div className="bg-slate-800/50 border border-slate-750 rounded-xl p-4">
-                <span className="text-[11px] text-slate-400 block font-medium">当前运行固件版本</span>
+                <span className="text-[11px] text-slate-400 block font-medium">{t('upgrade.current', '当前运行固件版本')}</span>
                 <div className="text-2xl font-bold font-mono text-slate-100 mt-1 flex items-center gap-2">
                   <span>v{currentVer}</span>
                   <span className="text-xs px-2 py-0.5 rounded-full bg-slate-700 text-slate-300 font-sans font-normal">
-                    已安装
+                    {t('upgrade.installed', '已安装')}
                   </span>
                 </div>
                 <span className="text-[11px] text-slate-500 mt-2 block font-mono">
-                  硬件平台: {deviceInfo?.['board-name'] || 'MikroTik'} ({deviceInfo?.['architecture-name'] || 'arm64'})
+                  Platform: {deviceInfo?.['board-name'] || 'MikroTik'} ({deviceInfo?.['architecture-name'] || 'arm64'})
                 </span>
               </div>
 
@@ -219,23 +219,23 @@ export const Upgrade: React.FC = () => {
                     : 'bg-slate-800/50 border-slate-750'
                 }`}
               >
-                <span className="text-[11px] text-slate-400 block font-medium">官方云端最新版本</span>
+                <span className="text-[11px] text-slate-400 block font-medium">{t('upgrade.latest', '官方云端最新版本')}</span>
                 <div className="text-2xl font-bold font-mono mt-1 flex items-center gap-2">
                   <span className={hasNewVersion ? 'text-emerald-400' : 'text-slate-200'}>
                     v{latestVer}
                   </span>
                   {hasNewVersion ? (
                     <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-sans font-semibold animate-pulse">
-                      发现新版本
+                      {t('upgrade.newAvailable', '发现新版本')}
                     </span>
                   ) : (
                     <span className="text-xs px-2 py-0.5 rounded-full bg-slate-700 text-slate-300 font-sans font-normal">
-                      已是最新
+                      {t('upgrade.upToDate', '已是最新')}
                     </span>
                   )}
                 </div>
                 <span className="text-[11px] text-slate-400 mt-2 block">
-                  状态: {updateInfo?.status || 'Installed version is current'}
+                  Status: {updateInfo?.status || 'Installed version is current'}
                 </span>
               </div>
             </div>
@@ -245,12 +245,12 @@ export const Upgrade: React.FC = () => {
           <div className="lg:col-span-4 bg-slate-800/60 border border-slate-700/60 rounded-xl p-5 flex flex-col justify-between space-y-4">
             <div>
               <h3 className="font-semibold text-xs text-slate-200 uppercase tracking-wider">
-                系统升级操作 (Upgrade Action)
+                {t('upgrade.action', '系统升级操作 (Upgrade Action)')}
               </h3>
               <p className="text-xs text-slate-400 mt-1 leading-relaxed">
                 {hasNewVersion
-                  ? '检测到官方已发布更新版本，升级包将自动下载并优雅重启加载。'
-                  : '当前已运行目标分支的最新版本，系统内核稳健安全。'}
+                  ? t('upgrade.descNew', '检测到官方已发布更新版本，升级包将自动下载并优雅重启加载。')
+                  : t('upgrade.descCurrent', '当前已运行目标分支的最新版本，系统内核稳健安全。')}
               </p>
             </div>
 
@@ -264,7 +264,7 @@ export const Upgrade: React.FC = () => {
               }`}
             >
               <ArrowUpCircle className="w-4 h-4" />
-              <span>{hasNewVersion ? '立即下载并在线升级' : '无需升级 (系统最新)'}</span>
+              <span>{hasNewVersion ? t('upgrade.installNow', '立即下载并在线升级') : t('upgrade.upToDateBtn', '无需升级 (系统最新)')}</span>
             </button>
           </div>
         </div>
@@ -277,7 +277,7 @@ export const Upgrade: React.FC = () => {
             <div className="flex items-center gap-2 text-slate-200">
               <FileText className="w-4 h-4 text-blue-400" />
               <h3 className="font-semibold text-xs uppercase tracking-wider">
-                官方更新日志与发布说明 (Release Notes)
+                {t('upgrade.releaseNotes', '官方更新日志与发布说明')}
               </h3>
             </div>
             <a
@@ -286,7 +286,7 @@ export const Upgrade: React.FC = () => {
               rel="noreferrer"
               className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1 font-medium"
             >
-              <span>官方发布主页</span>
+              <span>{t('upgrade.officialChangelog', 'Official Changelogs')}</span>
               <ExternalLink className="w-3 h-3" />
             </a>
           </div>
@@ -303,34 +303,34 @@ export const Upgrade: React.FC = () => {
             <div className="flex items-center gap-2 text-slate-200 pb-3 border-b border-slate-800">
               <Cpu className="w-4 h-4 text-emerald-400" />
               <h3 className="font-semibold text-xs uppercase tracking-wider">
-                RouterBOARD 引导硬件 (BIOS)
+                {t('upgrade.routerboard', 'RouterBOARD 引导硬件 (BIOS)')}
               </h3>
             </div>
 
             <div className="space-y-3 text-xs mt-4">
               <div className="flex justify-between py-1.5 border-b border-slate-800/60">
-                <span className="text-slate-400">主板型号</span>
+                <span className="text-slate-400">{t('upgrade.boardModel', '主板型号')}</span>
                 <span className="font-mono text-slate-200 font-semibold">
                   {routerboard?.model || deviceInfo?.['board-name'] || 'RB5009UG+S+IN'}
                 </span>
               </div>
 
               <div className="flex justify-between py-1.5 border-b border-slate-800/60">
-                <span className="text-slate-400">硬件序列号</span>
+                <span className="text-slate-400">{t('upgrade.serialNumber', '硬件序列号')}</span>
                 <span className="font-mono text-slate-300">
                   {routerboard?.['serial-number'] || 'HE608XYZ9910'}
                 </span>
               </div>
 
               <div className="flex justify-between py-1.5 border-b border-slate-800/60">
-                <span className="text-slate-400">当前引导固件</span>
+                <span className="text-slate-400">{t('upgrade.currentFirmware', '当前引导固件')}</span>
                 <span className="font-mono text-slate-200">
                   v{routerboard?.['current-firmware'] || '7.16.2'}
                 </span>
               </div>
 
               <div className="flex justify-between py-1.5 border-b border-slate-800/60">
-                <span className="text-slate-400">待写入新固件</span>
+                <span className="text-slate-400">{t('upgrade.upgradeFirmware', '待写入新固件')}</span>
                 <span className="font-mono text-emerald-400 font-bold">
                   v{routerboard?.['upgrade-firmware'] || '7.18.1'}
                 </span>
@@ -345,10 +345,10 @@ export const Upgrade: React.FC = () => {
               className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium flex items-center justify-center gap-1.5 transition cursor-pointer shadow-md"
             >
               <Cpu className="w-3.5 h-3.5 text-blue-400" />
-              <span>{upgradingRb ? '正在写入引导固件...' : '升级 RouterBOARD 硬件固件'}</span>
+              <span>{upgradingRb ? '...' : t('upgrade.upgradeRbBtn', '升级 RouterBOARD 硬件固件')}</span>
             </button>
             <p className="text-[10px] text-slate-500 text-center mt-2">
-              引导固件升级安全无损，将在设备下次物理重启时生效
+              {t('upgrade.rbNotice', '引导固件升级安全无损，将在设备下次物理重启时生效')}
             </p>
           </div>
         </div>
@@ -363,7 +363,7 @@ export const Upgrade: React.FC = () => {
                 <ArrowUpCircle className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-semibold text-sm text-slate-100">确认升级固件版本</h3>
+                <h3 className="font-semibold text-sm text-slate-100">{t('upgrade.confirmTitle', '确认升级固件版本')}</h3>
                 <span className="text-[11px] text-slate-400 font-mono">
                   v{currentVer} ➜ v{latestVer}
                 </span>
@@ -373,7 +373,7 @@ export const Upgrade: React.FC = () => {
             <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-300 flex items-start gap-2.5">
               <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
               <p className="leading-relaxed">
-                升级固件将下载官方软件包并<strong>自动重启路由器</strong>。重启过程预计持续 <strong>60~90 秒</strong>，在此期间局域网与外网连接将中断。请确认当前无关键网络传输业务。
+                {t('upgrade.confirmDesc', '升级固件将下载官方软件包并自动重启路由器。重启过程预计持续 60~90 秒，在此期间局域网与外网连接将中断。请确认当前无关键网络传输业务。')}
               </p>
             </div>
 
@@ -383,7 +383,7 @@ export const Upgrade: React.FC = () => {
                 onClick={() => setShowConfirmModal(false)}
                 className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs py-2.5 rounded-xl cursor-pointer font-medium"
               >
-                取消
+                {t('common.cancel')}
               </button>
               <button
                 type="button"
@@ -391,7 +391,7 @@ export const Upgrade: React.FC = () => {
                 className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs py-2.5 rounded-xl transition cursor-pointer font-semibold shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-1.5"
               >
                 <ArrowUpCircle className="w-3.5 h-3.5" />
-                <span>确认并开始升级</span>
+                <span>{t('upgrade.confirmBtn', '确认并开始升级')}</span>
               </button>
             </div>
           </div>

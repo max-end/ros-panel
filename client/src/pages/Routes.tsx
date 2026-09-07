@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { rosApi } from '../api/client.js';
 import { RosRoute, RosInterface } from '../types/index.js';
+import { useI18n } from '../i18n/context.js';
 import {
   Route as RouteIcon,
   Plus,
@@ -15,6 +16,7 @@ import {
 } from 'lucide-react';
 
 export const Routes: React.FC = () => {
+  const { t } = useI18n();
   const [routes, setRoutes] = useState<RosRoute[]>([]);
   const [interfaces, setInterfaces] = useState<RosInterface[]>([]);
   const [loading, setLoading] = useState(true);
@@ -114,10 +116,10 @@ export const Routes: React.FC = () => {
         <div>
           <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
             <RouteIcon className="w-5 h-5 text-blue-400" />
-            <span>静态路由与路由表 (IP Routing)</span>
+            <span>{t('routes.title')}</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            查看 RouterOS 完整路由表、默认网关及自定义静态转发规则
+            {t('routes.subtitle')}
           </p>
         </div>
 
@@ -128,7 +130,7 @@ export const Routes: React.FC = () => {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 transition cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>刷新</span>
+            <span>{t('common.refresh')}</span>
           </button>
 
           <button
@@ -136,7 +138,7 @@ export const Routes: React.FC = () => {
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>新建静态路由</span>
+            <span>{t('routes.addRoute')}</span>
           </button>
         </div>
       </div>
@@ -147,7 +149,7 @@ export const Routes: React.FC = () => {
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="搜索目标子网、网关或备注..."
+            placeholder={t('common.search')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full bg-slate-800/80 border border-slate-700 rounded-xl pl-9 pr-3.5 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -157,15 +159,15 @@ export const Routes: React.FC = () => {
         <div className="flex items-center gap-3 text-xs text-slate-400 font-mono">
           <span className="flex items-center gap-1">
             <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold text-[10px]">A</span>
-            <span>Active (活跃)</span>
+            <span>Active</span>
           </span>
           <span className="flex items-center gap-1">
             <span className="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 font-bold text-[10px]">S</span>
-            <span>Static (静态)</span>
+            <span>Static</span>
           </span>
           <span className="flex items-center gap-1">
             <span className="px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold text-[10px]">D</span>
-            <span>Dynamic (动态)</span>
+            <span>Dynamic</span>
           </span>
         </div>
       </div>
@@ -176,13 +178,13 @@ export const Routes: React.FC = () => {
           <table className="w-full text-left text-xs min-w-[650px]">
             <thead className="bg-slate-950/60 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-mono">
               <tr>
-                <th className="py-3.5 px-4 font-medium">标志</th>
-                <th className="py-3.5 px-4 font-medium">目标网络 (Dst. Address)</th>
-                <th className="py-3.5 px-4 font-medium">下一跳网关 (Gateway)</th>
-                <th className="py-3.5 px-4 font-medium">跃点 (Distance)</th>
-                <th className="py-3.5 px-4 font-medium">路由表</th>
-                <th className="py-3.5 px-4 font-medium">备注</th>
-                <th className="py-3.5 px-4 font-medium text-right">操作</th>
+                <th className="py-3.5 px-4 font-medium">{t('common.status')}</th>
+                <th className="py-3.5 px-4 font-medium">{t('routes.dstAddress')}</th>
+                <th className="py-3.5 px-4 font-medium">{t('routes.nextHop')}</th>
+                <th className="py-3.5 px-4 font-medium">{t('routes.distance')}</th>
+                <th className="py-3.5 px-4 font-medium">{t('common.type')}</th>
+                <th className="py-3.5 px-4 font-medium">{t('common.comment')}</th>
+                <th className="py-3.5 px-4 font-medium text-right">{t('common.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60 text-slate-300">
@@ -200,27 +202,27 @@ export const Routes: React.FC = () => {
                     <td className="py-3 px-4 font-mono font-bold">
                       <div className="flex items-center gap-1">
                         {isActive && (
-                          <span className="px-1.5 py-0.5 rounded text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" title="活跃路由 Active">
+                          <span className="px-1.5 py-0.5 rounded text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" title={t('routes.active', 'Active')}>
                             A
                           </span>
                         )}
                         {isStatic && (
-                          <span className="px-1.5 py-0.5 rounded text-[10px] bg-blue-500/10 text-blue-400 border border-blue-500/20" title="静态配置 Static">
+                          <span className="px-1.5 py-0.5 rounded text-[10px] bg-blue-500/10 text-blue-400 border border-blue-500/20" title={t('routes.static', 'Static')}>
                             S
                           </span>
                         )}
                         {isDynamic && (
-                          <span className="px-1.5 py-0.5 rounded text-[10px] bg-purple-500/10 text-purple-400 border border-purple-500/20" title="动态生成 Dynamic">
+                          <span className="px-1.5 py-0.5 rounded text-[10px] bg-purple-500/10 text-purple-400 border border-purple-500/20" title={t('routes.dynamic', 'Dynamic')}>
                             D
                           </span>
                         )}
                         {isConnect && (
-                          <span className="px-1.5 py-0.5 rounded text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20" title="直连网段 Connect">
+                          <span className="px-1.5 py-0.5 rounded text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20" title={t('routes.connect', 'Connect')}>
                             C
                           </span>
                         )}
                         {isDisabled && (
-                          <span className="px-1.5 py-0.5 rounded text-[10px] bg-slate-800 text-slate-500 border border-slate-700" title="已禁用">
+                          <span className="px-1.5 py-0.5 rounded text-[10px] bg-slate-800 text-slate-500 border border-slate-700" title={t('common.disabled', 'Disabled')}>
                             X
                           </span>
                         )}
@@ -259,7 +261,7 @@ export const Routes: React.FC = () => {
                                   ? 'text-emerald-400 hover:bg-emerald-500/10'
                                   : 'text-slate-400 hover:text-amber-400 hover:bg-slate-800'
                               }`}
-                              title={isDisabled ? '启用路由' : '禁用路由'}
+                              title={isDisabled ? t('common.enabled') : t('common.disabled')}
                             >
                               <Power className="w-3.5 h-3.5" />
                             </button>
@@ -268,7 +270,7 @@ export const Routes: React.FC = () => {
                               onClick={() => handleDelete(route['.id'], route['dst-address'])}
                               disabled={isBusy}
                               className="p-1 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded transition cursor-pointer"
-                              title="删除此静态路由"
+                              title={t('common.delete')}
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -283,7 +285,7 @@ export const Routes: React.FC = () => {
               {filtered.length === 0 && !loading && (
                 <tr>
                   <td colSpan={7} className="py-12 text-center text-slate-500 text-xs">
-                    未找到匹配的路由条目
+                    {t('common.noData')}
                   </td>
                 </tr>
               )}
@@ -299,7 +301,7 @@ export const Routes: React.FC = () => {
             <div className="flex justify-between items-center pb-3 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <RouteIcon className="w-4 h-4 text-blue-400" />
-                <h3 className="font-semibold text-sm text-slate-100">新建静态路由 (Static Route)</h3>
+                <h3 className="font-semibold text-sm text-slate-100">{t('routes.addRoute', '新建静态路由')}</h3>
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
@@ -312,12 +314,12 @@ export const Routes: React.FC = () => {
             <form onSubmit={handleAddSubmit} className="mt-4 space-y-4">
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  目标网络子网 (Dst. Address)
+                  {t('routes.dstAddress', '目标网络子网 (Dst. Address)')}
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="例如: 10.0.0.0/8 或 0.0.0.0/0"
+                  placeholder="e.g. 10.0.0.0/8 or 0.0.0.0/0"
                   value={dstAddress}
                   onChange={(e) => setDstAddress(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -326,12 +328,12 @@ export const Routes: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  下一跳网关 IP 或 承载接口 (Gateway)
+                  {t('routes.gateway', '下一跳网关 IP 或 承载接口 (Gateway)')}
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="例如: 192.168.88.254 或 ether1-wan 或 wireguard1"
+                  placeholder="e.g. 192.168.88.254 or ether1-wan"
                   value={gateway}
                   onChange={(e) => setGateway(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -352,7 +354,7 @@ export const Routes: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  路由跃点距离 (Distance)
+                  {t('routes.distance', '路由跃点距离 (Distance)')}
                 </label>
                 <input
                   type="number"
@@ -366,11 +368,11 @@ export const Routes: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  注释备注 (选填)
+                  {t('common.comment')}
                 </label>
                 <input
                   type="text"
-                  placeholder="例如: 分部专线互联"
+                  placeholder="Comment"
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -383,14 +385,14 @@ export const Routes: React.FC = () => {
                   onClick={() => setShowAddModal(false)}
                   className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition cursor-pointer"
                 >
-                  取消
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={submittingAdd}
                   className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
                 >
-                  {submittingAdd ? '保存中...' : '添加路由'}
+                  {submittingAdd ? t('common.creating') : t('common.save')}
                 </button>
               </div>
             </form>

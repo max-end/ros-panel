@@ -112,7 +112,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
 
       {/* Sidebar Container */}
       <aside
-        className={`w-60 bg-[#0B0F19] border-r border-slate-800/70 flex flex-col shrink-0 min-h-screen select-none z-50 transition-transform duration-200 ease-in-out fixed inset-y-0 left-0 lg:static lg:translate-x-0 ${
+        className={`w-60 bg-[#0B0F19] border-r border-slate-800/70 flex flex-col shrink-0 select-none z-50 transition-transform duration-200 ease-in-out fixed inset-y-0 left-0 h-screen max-h-screen lg:sticky lg:top-0 lg:translate-x-0 ${
           mobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
         }`}
       >

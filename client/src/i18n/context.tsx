@@ -48,7 +48,13 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const t = (key: string, fallback?: string): string => {
     const dict = dictionaries[language] || dictionaries.zh;
-    return dict[key] || fallback || key;
+    const value = dict[key];
+    if (value !== undefined) return value;
+    if (fallback !== undefined) return fallback;
+    if ((import.meta as any).env?.DEV) {
+      console.warn(`[i18n] Missing translation for key: "${key}" (lang: ${language})`);
+    }
+    return key;
   };
 
   return (

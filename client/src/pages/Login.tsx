@@ -166,10 +166,10 @@ export const Login: React.FC = () => {
             <div className="mb-5 p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 flex items-start gap-2.5 text-xs text-red-400 animate-in fade-in duration-200">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="font-semibold text-red-300">连接失败，表单信息已为您保留</p>
+                <p className="font-semibold text-red-300">Connection Failed</p>
                 <p className="opacity-90 mt-0.5 break-all leading-relaxed">{error}</p>
                 <p className="text-[11px] text-slate-400 mt-1">
-                  💡 请核对 IP 地址、端口、用户名或密码无误后直接点击重试。
+                  Please verify the IP address, port, username or password and retry.
                 </p>
               </div>
             </div>
@@ -179,8 +179,8 @@ export const Login: React.FC = () => {
             {/* Host & Protocol */}
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-slate-300 flex items-center justify-between">
-                <span>路由器地址 & 协议</span>
-                <span className="text-[10px] text-slate-500">IP 或域名</span>
+                <span>{t('login.host')}</span>
+                <span className="text-[10px] text-slate-500">IP / Domain</span>
               </label>
               <div className="flex gap-2">
                 <select
@@ -216,7 +216,7 @@ export const Login: React.FC = () => {
                   disabled={loading}
                   value={port}
                   onChange={(e) => setPort(e.target.value)}
-                  placeholder="端口"
+                  placeholder={t('login.port')}
                   className="w-20 bg-slate-800/90 border border-slate-700 text-slate-100 text-xs rounded-xl px-2.5 py-2 text-center focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono disabled:opacity-60"
                 />
               </div>
@@ -224,7 +224,7 @@ export const Login: React.FC = () => {
 
             {/* Username */}
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-slate-300">管理员用户名</label>
+              <label className="text-xs font-medium text-slate-300">{t('login.username')}</label>
               <div className="relative">
                 <User className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
                 <input
@@ -241,7 +241,7 @@ export const Login: React.FC = () => {
 
             {/* Password */}
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-slate-300">管理员密码</label>
+              <label className="text-xs font-medium text-slate-300">{t('login.password')}</label>
               <div className="relative">
                 <KeyRound className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
                 <input
@@ -250,7 +250,7 @@ export const Login: React.FC = () => {
                   disabled={loading}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="默认为空或路由器设置密码"
+                  placeholder="Password"
                   className="w-full bg-slate-800/90 border border-slate-700 text-slate-100 text-xs rounded-xl pl-9 pr-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono disabled:opacity-60"
                 />
               </div>
@@ -272,12 +272,9 @@ export const Login: React.FC = () => {
                     htmlFor="remember-credentials"
                     className="text-xs text-slate-300 cursor-pointer font-medium select-none"
                   >
-                    记住账号与密码
+                    {t('login.remember')}
                   </label>
                 </div>
-                {rememberCredentials && (
-                  <span className="text-[10px] text-blue-400 font-mono">下次自动填入</span>
-                )}
               </div>
 
               <div className="flex items-center gap-2">
@@ -290,7 +287,7 @@ export const Login: React.FC = () => {
                   className="rounded border-slate-700 bg-slate-800 text-blue-600 focus:ring-blue-500 cursor-pointer disabled:opacity-60"
                 />
                 <label htmlFor="ssl-verify" className="text-xs text-slate-400 cursor-pointer select-none">
-                  允许自签名 SSL 证书（推荐开启）
+                  Allow self-signed SSL certificates
                 </label>
               </div>
             </div>
@@ -304,11 +301,11 @@ export const Login: React.FC = () => {
               {loading ? (
                 <>
                   <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                  <span>正在验证连接...</span>
+                  <span>{t('login.connecting')}</span>
                 </>
               ) : (
                 <>
-                  <span>连接并登入控制台</span>
+                  <span>{t('login.submit')}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </>
               )}
@@ -324,10 +321,10 @@ export const Login: React.FC = () => {
               className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-slate-800/70 hover:bg-slate-700/80 border border-slate-700 text-xs text-slate-300 transition-colors cursor-pointer disabled:opacity-50"
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              <span>快速进入演示模式 (Demo Mode)</span>
+              <span>{t('login.demo')}</span>
             </button>
             <p className="text-[11px] text-slate-500 mt-2">
-              无需真实连接 RouterOS 设备，即刻体验全套管理功能
+              {t('login.securityNotice')}
             </p>
           </div>
         </div>

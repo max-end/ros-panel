@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { rosApi } from '../api/client.js';
 import { RosLog } from '../types/index.js';
+import { useI18n } from '../i18n/context.js';
 import { FileText, RefreshCw, Search, Filter } from 'lucide-react';
 
 export const Logs: React.FC = () => {
+  const { t } = useI18n();
   const [logs, setLogs] = useState<RosLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -43,10 +45,10 @@ export const Logs: React.FC = () => {
         <div>
           <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
             <FileText className="w-5 h-5 text-blue-400" />
-            <span>系统运行日志 (System Logs)</span>
+            <span>{t('logs.title')}</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            实时查看 RouterOS 内核、接口、DHCP 及认证事件记录
+            {t('logs.subtitle')}
           </p>
         </div>
 
@@ -58,14 +60,14 @@ export const Logs: React.FC = () => {
               onChange={(e) => setSelectedTopic(e.target.value)}
               className="bg-slate-800 border border-slate-700 text-xs text-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer w-full sm:w-auto"
             >
-              <option value="all">所有主题</option>
-              <option value="error">错误 (error)</option>
-              <option value="warning">警告 (warning)</option>
-              <option value="info">常规 (info)</option>
-              <option value="dhcp">DHCP 分配</option>
-              <option value="firewall">防火墙命中</option>
-              <option value="wireguard">WireGuard 握手</option>
-              <option value="account">登录与鉴权</option>
+              <option value="all">{t('logs.allTopics')}</option>
+              <option value="error">error</option>
+              <option value="warning">warning</option>
+              <option value="info">info</option>
+              <option value="dhcp">DHCP</option>
+              <option value="firewall">Firewall</option>
+              <option value="wireguard">WireGuard</option>
+              <option value="account">Account</option>
             </select>
           </div>
 
@@ -73,7 +75,7 @@ export const Logs: React.FC = () => {
             <Search className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5" />
             <input
               type="text"
-              placeholder="搜索日志..."
+              placeholder={t('common.search')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="bg-slate-800 border border-slate-700 text-xs text-slate-200 rounded-lg pl-7 pr-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-44"
@@ -86,7 +88,7 @@ export const Logs: React.FC = () => {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 transition cursor-pointer shrink-0"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>刷新</span>
+            <span>{t('common.refresh')}</span>
           </button>
         </div>
       </div>
@@ -94,8 +96,8 @@ export const Logs: React.FC = () => {
       {/* Logs Terminal View */}
       <div className="bg-slate-900/90 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl font-mono text-xs">
         <div className="bg-slate-950/80 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
-          <span>日志记录数: {filtered.length} 条</span>
-          <span className="text-[10px] text-slate-500">按时间正序排列</span>
+          <span>{t('logs.totalEntries')}: {filtered.length}</span>
+          <span className="text-[10px] text-slate-500">{t('logs.chronological')}</span>
         </div>
 
         <div className="divide-y divide-slate-800/60 max-h-[600px] overflow-y-auto p-2">
@@ -144,7 +146,7 @@ export const Logs: React.FC = () => {
 
           {filtered.length === 0 && !loading && (
             <div className="py-16 text-center text-slate-500 text-xs font-sans">
-              未找到符合条件的日志记录
+              {t('common.noData')}
             </div>
           )}
         </div>

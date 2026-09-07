@@ -17,7 +17,7 @@ export const Layout: React.FC = () => {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         <Navbar onToggleMobileMenu={() => setMobileMenuOpen((prev) => !prev)} />
-        <main className="flex-1 p-3.5 sm:p-6 lg:p-8 overflow-y-auto">
+        <main className="flex-1 p-3 sm:p-5 lg:p-8 min-w-0">
           <div className="max-w-7xl mx-auto w-full space-y-6">
             <Outlet />
           </div>

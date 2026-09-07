@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { rosApi } from '../api/client.js';
 import { WolDevice, RosInterface, RosDhcpLease } from '../types/index.js';
+import { useI18n } from '../i18n/context.js';
 import {
   Zap,
   Plus,
@@ -18,6 +19,7 @@ import {
 } from 'lucide-react';
 
 export const WakeOnLan: React.FC = () => {
+  const { t } = useI18n();
   const [devices, setDevices] = useState<WolDevice[]>([]);
   const [interfaces, setInterfaces] = useState<RosInterface[]>([]);
   const [dhcpLeases, setDhcpLeases] = useState<RosDhcpLease[]>([]);
@@ -136,10 +138,10 @@ export const WakeOnLan: React.FC = () => {
   };
 
   const handleImportDhcpLease = (lease: RosDhcpLease) => {
-    setNewName(lease['host-name'] || `主机-${lease.address.slice(-3)}`);
+    setNewName(lease['host-name'] || `Host-${lease.address.slice(-3)}`);
     setNewMac(lease['mac-address']);
     setNewIp(lease.address);
-    setNewDesc(`自动导入于 DHCP (${lease.address})`);
+    setNewDesc(`Imported from DHCP (${lease.address})`);
     setActiveImportTab('manual');
   };
 
@@ -175,10 +177,10 @@ export const WakeOnLan: React.FC = () => {
         <div>
           <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
             <Zap className="w-5 h-5 text-amber-400" />
-            <span>网络唤醒中心 (Wake-on-LAN / WoL)</span>
+            <span>{t('wol.title')}</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            通过 RouterOS 向局域网广播魔术数据包（Magic Packet），远程唤醒已关机的电脑与服务器
+            {t('wol.subtitle')}
           </p>
         </div>
 
@@ -189,7 +191,7 @@ export const WakeOnLan: React.FC = () => {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 transition cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>刷新</span>
+            <span>{t('common.refresh')}</span>
           </button>
 
           <button
@@ -197,7 +199,7 @@ export const WakeOnLan: React.FC = () => {
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>添加常用唤醒设备</span>
+            <span>{t('wol.addDevice')}</span>
           </button>
         </div>
       </div>
@@ -208,12 +210,12 @@ export const WakeOnLan: React.FC = () => {
           <div className="flex items-center gap-2">
             <Radio className="w-4 h-4 text-blue-400" />
             <h3 className="font-semibold text-xs text-slate-100 uppercase tracking-wider">
-              快速手动网络唤醒
+              {t('wol.wake')}
             </h3>
           </div>
           <span className="text-[11px] text-slate-500 flex items-center gap-1">
             <HelpCircle className="w-3.5 h-3.5" />
-            目标主板 BIOS 需开启 Wake-on-LAN 支持
+            Requires target BIOS Wake-on-LAN enabled
           </span>
         </div>
 
@@ -227,12 +229,12 @@ export const WakeOnLan: React.FC = () => {
         <form onSubmit={handleManualWake} className="flex flex-col md:flex-row gap-3 items-end">
           <div className="flex-1 w-full md:w-auto">
             <label className="text-xs font-medium text-slate-300 block mb-1">
-              目标网卡物理地址 (MAC Address)
+              {t('wol.mac')}
             </label>
             <input
               type="text"
               required
-              placeholder="例如: A4:83:E7:3B:55:12 或 a4-83-e7-3b-55-12"
+              placeholder={t('wol.macPlaceholder')}
               value={manualMac}
               onChange={(e) => setManualMac(e.target.value)}
               className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -241,7 +243,7 @@ export const WakeOnLan: React.FC = () => {
 
           <div className="w-full md:w-60">
             <label className="text-xs font-medium text-slate-300 block mb-1">
-              广播接口 (Interface)
+              {t('wol.interface')}
             </label>
             <select
               value={manualInterface}
@@ -265,12 +267,12 @@ export const WakeOnLan: React.FC = () => {
               {manualSending ? (
                 <>
                   <span className="w-3.5 h-3.5 border-2 border-slate-950/30 border-t-slate-950 rounded-full animate-spin"></span>
-                  <span>广播中...</span>
+                  <span>...</span>
                 </>
               ) : (
                 <>
                   <Send className="w-3.5 h-3.5" />
-                  <span>发送唤醒魔术包</span>
+                  <span>{t('wol.wake')}</span>
                 </>
               )}
             </button>
@@ -282,13 +284,13 @@ export const WakeOnLan: React.FC = () => {
       <div>
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-sm text-slate-200 flex items-center gap-2">
-            <span>常驻收藏唤醒列表</span>
+            <span>{t('wol.devices')}</span>
             <span className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-mono">
-              {devices.length} 台
+              {devices.length}
             </span>
           </h3>
           <span className="text-xs text-slate-400">
-            支持一键唤醒及开机后在线状态回测
+            One-click wake up and online check
           </span>
         </div>
 
@@ -309,7 +311,7 @@ export const WakeOnLan: React.FC = () => {
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
                       <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 shrink-0">
-                        {device.name.includes('NAS') || device.name.includes('服务器') ? (
+                        {device.name.includes('NAS') || device.name.includes('Server') ? (
                           <Server className="w-5 h-5" />
                         ) : (
                           <Laptop className="w-5 h-5" />
@@ -318,7 +320,7 @@ export const WakeOnLan: React.FC = () => {
                       <div className="min-w-0">
                         <h4 className="font-bold text-sm text-slate-100 truncate">{device.name}</h4>
                         <p className="text-[11px] text-slate-400 mt-0.5 truncate">
-                          {device.description || '常驻网络设备'}
+                          {device.description || '--'}
                         </p>
                       </div>
                     </div>
@@ -326,7 +328,7 @@ export const WakeOnLan: React.FC = () => {
                     <button
                       onClick={() => handleDeleteDevice(device.id, device.name)}
                       className="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-400 hover:bg-red-500/10 p-1 rounded-lg transition cursor-pointer shrink-0"
-                      title="移除此设备"
+                      title={t('common.delete')}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -335,32 +337,32 @@ export const WakeOnLan: React.FC = () => {
                   {/* Device Spec Table */}
                   <div className="mt-4 space-y-2 text-xs">
                     <div className="flex justify-between items-center py-1 border-b border-slate-800/60">
-                      <span className="text-slate-500">MAC 地址</span>
+                      <span className="text-slate-500">{t('common.macAddress')}</span>
                       <span className="font-mono font-semibold text-slate-200 select-all">
                         {device.mac}
                       </span>
                     </div>
 
                     <div className="flex justify-between items-center py-1 border-b border-slate-800/60">
-                      <span className="text-slate-500">广播接口</span>
+                      <span className="text-slate-500">{t('wol.interface')}</span>
                       <span className="font-mono text-blue-400">{device.interface}</span>
                     </div>
 
                     <div className="flex justify-between items-center py-1 border-b border-slate-800/60">
-                      <span className="text-slate-500">内网 IP</span>
+                      <span className="text-slate-500">{t('common.ipAddress')}</span>
                       <div className="flex items-center gap-2">
                         <span className="font-mono text-slate-300">
-                          {device.ip || '未指定'}
+                          {device.ip || '--'}
                         </span>
                         {device.ip && (
                           <button
                             onClick={() => handleCheckOnline(device)}
                             disabled={isChecking}
                             className="text-[10px] text-blue-400 hover:text-blue-300 flex items-center gap-0.5 cursor-pointer disabled:opacity-50"
-                            title="探测是否已开机在线"
+                            title="Check online status"
                           >
                             <Activity className={`w-3 h-3 ${isChecking ? 'animate-spin' : ''}`} />
-                            <span>{isChecking ? '探测中' : '测开机'}</span>
+                            <span>{isChecking ? '...' : 'Ping'}</span>
                           </button>
                         )}
                       </div>
@@ -368,15 +370,15 @@ export const WakeOnLan: React.FC = () => {
 
                     {status && (
                       <div className="flex justify-between items-center py-1 border-b border-slate-800/60">
-                        <span className="text-slate-500">当前开机状态</span>
+                        <span className="text-slate-500">{t('common.status')}</span>
                         {status.isOnline ? (
                           <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                            已开机在线 ({status.latency || '<1ms'})
+                            Online ({status.latency || '<1ms'})
                           </span>
                         ) : (
                           <span className="text-[11px] text-slate-500">
-                            离线关机中
+                            Offline
                           </span>
                         )}
                       </div>
@@ -385,10 +387,10 @@ export const WakeOnLan: React.FC = () => {
                     <div className="flex justify-between items-center py-1 text-[11px] text-slate-500">
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
-                        上次唤醒
+                        Last Wake
                       </span>
                       <span className="font-mono">
-                        {device.lastWokenAt || '从未唤醒'}
+                        {device.lastWokenAt || '--'}
                       </span>
                     </div>
                   </div>
@@ -410,12 +412,12 @@ export const WakeOnLan: React.FC = () => {
                       {isWaking ? (
                         <>
                           <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                          <span>魔术包广播中...</span>
+                          <span>...</span>
                         </>
                       ) : (
                         <>
                           <Zap className="w-3.5 h-3.5 text-amber-300" />
-                          <span>立即网络唤醒 (Wake Up)</span>
+                          <span>{t('wol.wake')}</span>
                         </>
                       )}
                     </button>
@@ -427,7 +429,7 @@ export const WakeOnLan: React.FC = () => {
 
           {devices.length === 0 && !loading && (
             <div className="col-span-full py-16 text-center bg-slate-900/40 border border-slate-800 rounded-2xl text-xs text-slate-500">
-              暂无收藏的唤醒设备。点击右上角“添加常用唤醒设备”添加您的台式机或 NAS。
+              {t('common.noData')}
             </div>
           )}
         </div>
@@ -440,7 +442,7 @@ export const WakeOnLan: React.FC = () => {
             <div className="flex justify-between items-center pb-3 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <Zap className="w-4 h-4 text-amber-400" />
-                <h3 className="font-semibold text-sm text-slate-100">添加常驻网络唤醒设备</h3>
+                <h3 className="font-semibold text-sm text-slate-100">{t('wol.addDevice')}</h3>
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
@@ -461,7 +463,7 @@ export const WakeOnLan: React.FC = () => {
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
                 }`}
               >
-                从 DHCP 客户端直接选取 ({dhcpLeases.length})
+                From DHCP Leases ({dhcpLeases.length})
               </button>
               <button
                 type="button"
@@ -472,7 +474,7 @@ export const WakeOnLan: React.FC = () => {
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
                 }`}
               >
-                手动填写参数
+                Manual Input
               </button>
             </div>
 
@@ -485,7 +487,7 @@ export const WakeOnLan: React.FC = () => {
                   >
                     <div>
                       <div className="font-semibold text-xs text-slate-100">
-                        {lease['host-name'] || '未命名设备'}
+                        {lease['host-name'] || 'Unknown'}
                       </div>
                       <div className="text-[11px] font-mono text-slate-400 mt-0.5">
                         {lease.address} · {lease['mac-address']}
@@ -496,13 +498,13 @@ export const WakeOnLan: React.FC = () => {
                       onClick={() => handleImportDhcpLease(lease)}
                       className="px-2.5 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 text-xs font-medium transition cursor-pointer"
                     >
-                      导入填表
+                      Import
                     </button>
                   </div>
                 ))}
                 {dhcpLeases.length === 0 && (
                   <div className="text-center py-8 text-slate-500 text-xs">
-                    暂未发现 DHCP 在线租约客户端
+                    {t('common.noData')}
                   </div>
                 )}
               </div>
@@ -510,12 +512,12 @@ export const WakeOnLan: React.FC = () => {
               <form onSubmit={handleAddSubmit} className="space-y-4">
                 <div>
                   <label className="text-xs font-medium text-slate-300 block mb-1">
-                    设备名称
+                    {t('common.name')}
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="例如: 个人工作站 PC 或 群晖 NAS"
+                    placeholder={t('wol.devicePlaceholder')}
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -524,7 +526,7 @@ export const WakeOnLan: React.FC = () => {
 
                 <div>
                   <label className="text-xs font-medium text-slate-300 block mb-1">
-                    MAC 物理地址
+                    {t('common.macAddress')}
                   </label>
                   <input
                     type="text"
@@ -539,7 +541,7 @@ export const WakeOnLan: React.FC = () => {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="text-xs font-medium text-slate-300 block mb-1">
-                      广播接口
+                      {t('wol.interface')}
                     </label>
                     <select
                       value={newInterface}
@@ -556,7 +558,7 @@ export const WakeOnLan: React.FC = () => {
 
                   <div>
                     <label className="text-xs font-medium text-slate-300 block mb-1">
-                      设备 IP (选填，用于探测开机)
+                      {t('common.ipAddress')}
                     </label>
                     <input
                       type="text"
@@ -570,11 +572,11 @@ export const WakeOnLan: React.FC = () => {
 
                 <div>
                   <label className="text-xs font-medium text-slate-300 block mb-1">
-                    备注信息 (选填)
+                    {t('common.comment')}
                   </label>
                   <input
                     type="text"
-                    placeholder="例如: 主卧电脑，支持 PCIe WoL"
+                    placeholder="e.g. Workstation PC"
                     value={newDesc}
                     onChange={(e) => setNewDesc(e.target.value)}
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -587,14 +589,14 @@ export const WakeOnLan: React.FC = () => {
                     onClick={() => setShowAddModal(false)}
                     className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition cursor-pointer"
                   >
-                    取消
+                    {t('common.cancel')}
                   </button>
                   <button
                     type="submit"
                     disabled={addLoading}
                     className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
                   >
-                    {addLoading ? '保存中...' : '保存至唤醒列表'}
+                    {addLoading ? t('common.saving') : t('common.save')}
                   </button>
                 </div>
               </form>

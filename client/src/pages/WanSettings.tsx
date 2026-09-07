@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { rosApi } from '../api/client.js';
 import { RosPppoeClient, RosDhcpClient, RosInterface } from '../types/index.js';
 import { formatRosUptime, formatRosUptimeDetailed } from '../utils/format.js';
+import { useI18n } from '../i18n/context.js';
 import {
   Globe,
   Plus,
@@ -24,6 +25,7 @@ import {
 } from 'lucide-react';
 
 export const WanSettings: React.FC = () => {
+  const { t } = useI18n();
   const [activeTab, setActiveTab] = useState<'pppoe' | 'dhcp'>('pppoe');
   const [pppoeClients, setPppoeClients] = useState<RosPppoeClient[]>([]);
   const [dhcpClients, setDhcpClients] = useState<RosDhcpClient[]>([]);
@@ -43,7 +45,7 @@ export const WanSettings: React.FC = () => {
   const [addPassword, setAddPassword] = useState('');
   const [addDefaultRoute, setAddDefaultRoute] = useState(true);
   const [addPeerDns, setAddPeerDns] = useState(true);
-  const [addComment, setAddComment] = useState('电信宽带拨号');
+  const [addComment, setAddComment] = useState('PPPoE Broadband');
   const [submittingAdd, setSubmittingAdd] = useState(false);
 
   // Edit PPPoE Modal state
@@ -212,10 +214,10 @@ export const WanSettings: React.FC = () => {
         <div>
           <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
             <Globe className="w-5 h-5 text-blue-400" />
-            <span>外网接入与宽带拨号 (WAN Settings)</span>
+            <span>{t('wan.title', '外网接入与宽带拨号')}</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            配置光纤 PPPoE 宽带账号密码、公网 IP 监控、一键重新拨号与 DHCP 动态接入
+            {t('wan.subtitle', 'PPPoE 光纤宽带拨号、动态 IP 获取 (DHCP Client) 与接口状态管理')}
           </p>
         </div>
 
@@ -226,7 +228,7 @@ export const WanSettings: React.FC = () => {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 transition cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>刷新</span>
+            <span>{t('action.refresh', '刷新')}</span>
           </button>
 
           {activeTab === 'pppoe' && (
@@ -235,7 +237,7 @@ export const WanSettings: React.FC = () => {
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>新建 PPPoE 宽带拨号</span>
+              <span>{t('action.add', '新建')} PPPoE</span>
             </button>
           )}
         </div>
@@ -252,7 +254,7 @@ export const WanSettings: React.FC = () => {
           }`}
         >
           <Radio className="w-4 h-4" />
-          <span>PPPoE 宽带拨号 ({pppoeClients.length})</span>
+          <span>{t('wan.pppoeClients', 'PPPoE 拨号连接')} ({pppoeClients.length})</span>
         </button>
 
         <button
@@ -264,7 +266,7 @@ export const WanSettings: React.FC = () => {
           }`}
         >
           <Network className="w-4 h-4" />
-          <span>动态 IP 接入 (DHCP Client) ({dhcpClients.length})</span>
+          <span>{t('wan.dhcpClients', 'DHCP 客户端')} ({dhcpClients.length})</span>
         </button>
       </div>
 
@@ -294,22 +296,22 @@ export const WanSettings: React.FC = () => {
                         <h3 className="font-bold text-base text-slate-100 font-mono">{client.name}</h3>
                         {isDisabled ? (
                           <span className="px-2.5 py-0.5 rounded-full text-[11px] bg-slate-800 text-slate-500 border border-slate-700 font-medium">
-                            已禁用 / 已断开
+                            {t('wan.statusDisconnected', '已禁用 / 已断开')}
                           </span>
                         ) : isRunning ? (
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
                             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                            拨号已连通 (Connected)
+                            {t('wan.statusConnected', '拨号已连通')}
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] bg-amber-500/10 text-amber-400 border border-amber-500/20 font-medium">
                             <span className="w-2 h-2 rounded-full bg-amber-400 animate-spin"></span>
-                            正在拨号协商中 (Dialing...)
+                            {t('wan.statusDialing', '未获取 / 等待拨通')}
                           </span>
                         )}
                       </div>
                       <p className="text-xs text-slate-400 mt-1">
-                        承载网卡: <span className="font-mono text-blue-400">{client.interface}</span>
+                        {t('common.interface')}: <span className="font-mono text-blue-400">{client.interface}</span>
                         {client.comment && <span className="ml-2 text-slate-500">({client.comment})</span>}
                       </p>
                     </div>
@@ -321,10 +323,10 @@ export const WanSettings: React.FC = () => {
                       onClick={() => handleRedial(client)}
                       disabled={isRedialing || isDisabled}
                       className="px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/20 text-xs font-medium flex items-center gap-1.5 transition cursor-pointer disabled:opacity-50"
-                      title="强制断开并重新发起宽带拨号，通常可更换公网动态 IP"
+                      title={t('wan.redialDesc', '强制断开并重新发起宽带拨号')}
                     >
                       <RotateCcw className={`w-3.5 h-3.5 ${isRedialing ? 'animate-spin' : ''}`} />
-                      <span>{isRedialing ? '正在重拨...' : '一键重新拨号'}</span>
+                      <span>{isRedialing ? '...' : t('action.reconnect', '重新拨号')}</span>
                     </button>
 
                     <button
@@ -332,7 +334,7 @@ export const WanSettings: React.FC = () => {
                       className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium flex items-center gap-1.5 transition cursor-pointer"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
-                      <span>修改账密</span>
+                      <span>{t('action.edit', '编辑')}</span>
                     </button>
 
                     <button
@@ -342,7 +344,7 @@ export const WanSettings: React.FC = () => {
                           ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border-emerald-500/20'
                           : 'bg-red-500/10 text-red-400 hover:bg-red-500/20 border-red-500/20'
                       }`}
-                      title={isDisabled ? '启用拨号' : '断开拨号'}
+                      title={isDisabled ? t('common.enabled') : t('common.disabled')}
                     >
                       <Power className="w-4 h-4" />
                     </button>
@@ -350,7 +352,7 @@ export const WanSettings: React.FC = () => {
                     <button
                       onClick={() => handleDeletePppoe(client['.id'], client.name)}
                       className="p-2 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition cursor-pointer"
-                      title="删除此连接"
+                      title={t('common.delete')}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -370,14 +372,14 @@ export const WanSettings: React.FC = () => {
                   <div className="md:col-span-2 bg-slate-800/40 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
                     <div>
                       <span className="text-[11px] text-slate-400 uppercase tracking-wider font-mono">
-                        当前获取的外网公网 IPv4 地址
+                        {t('wan.publicIp', '当前获取的外网公网 IPv4 地址')}
                       </span>
                       <div className="text-2xl font-bold font-mono text-emerald-400 mt-2 select-all flex items-center gap-2">
-                        <span>{client['active-address'] || client.address || '未获取 / 等待拨通'}</span>
+                        <span>{client['active-address'] || client.address || t('wan.statusDialing', '未获取 / 等待拨通')}</span>
                       </div>
                       {client.gateway && (
                         <div className="text-xs text-slate-400 font-mono mt-1">
-                          远端网关: <span className="text-slate-300 font-semibold">{client.gateway}</span>
+                          {t('wan.gateway', '远端网关')}: <span className="text-slate-300 font-semibold">{client.gateway}</span>
                         </div>
                       )}
                     </div>
@@ -386,9 +388,9 @@ export const WanSettings: React.FC = () => {
                         <Clock className="w-3.5 h-3.5 text-slate-500" />
                         <span
                           className="cursor-help"
-                          title={`详细在线时长: ${formatRosUptimeDetailed(client.uptime)}`}
+                          title={`Uptime: ${formatRosUptimeDetailed(client.uptime)}`}
                         >
-                          在线时长: {formatRosUptime(client.uptime)}
+                          {t('wan.uptime', '在线时长')}: {formatRosUptime(client.uptime)}
                         </span>
                       </div>
                       <div className="flex items-center gap-1 font-mono">
@@ -400,14 +402,14 @@ export const WanSettings: React.FC = () => {
                   {/* Account & Password */}
                   <div className="bg-slate-800/40 border border-slate-800 rounded-xl p-4 space-y-2.5 text-xs">
                     <div>
-                      <span className="text-[11px] text-slate-400 block">宽带上网账号 (Username)</span>
+                      <span className="text-[11px] text-slate-400 block">{t('wan.account', '宽带上网账号')}</span>
                       <span className="font-mono font-bold text-slate-200 select-all block mt-0.5">
                         {client.user}
                       </span>
                     </div>
 
                     <div>
-                      <span className="text-[11px] text-slate-400 block">宽带密码 (Password)</span>
+                      <span className="text-[11px] text-slate-400 block">{t('wan.password', '宽带密码')}</span>
                       <div className="flex items-center gap-2 mt-0.5">
                         <span className="font-mono text-slate-300">
                           {showPwd ? client.password || '******' : '••••••••••••'}
@@ -430,10 +432,10 @@ export const WanSettings: React.FC = () => {
 
                   {/* Gateway & DNS Config */}
                   <div className="bg-slate-800/40 border border-slate-800 rounded-xl p-4 space-y-2 text-xs">
-                    <span className="text-[11px] text-slate-400 block">网络路由与解析策略</span>
+                    <span className="text-[11px] text-slate-400 block">Routing &amp; DNS Policy</span>
                     <div className="space-y-1.5 pt-1">
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-400">默认路由 (Default Route):</span>
+                        <span className="text-slate-400">{t('wan.defaultRoute')}:</span>
                         <span
                           className={`font-semibold font-mono ${
                             client['add-default-route'] === 'true' || client['add-default-route'] === true
@@ -442,13 +444,13 @@ export const WanSettings: React.FC = () => {
                           }`}
                         >
                           {client['add-default-route'] === 'true' || client['add-default-route'] === true
-                            ? '已启用'
-                            : '未启用'}
+                            ? t('common.enabled')
+                            : t('common.disabled')}
                         </span>
                       </div>
 
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-400">使用运营商 DNS (Peer DNS):</span>
+                        <span className="text-slate-400">{t('wan.peerDns')}:</span>
                         <span
                           className={`font-semibold font-mono ${
                             client['use-peer-dns'] === 'true' || client['use-peer-dns'] === true
@@ -457,8 +459,8 @@ export const WanSettings: React.FC = () => {
                           }`}
                         >
                           {client['use-peer-dns'] === 'true' || client['use-peer-dns'] === true
-                            ? '已启用'
-                            : '未启用'}
+                            ? t('common.enabled')
+                            : t('common.disabled')}
                         </span>
                       </div>
                     </div>
@@ -470,13 +472,13 @@ export const WanSettings: React.FC = () => {
 
           {pppoeClients.length === 0 && !loading && (
             <div className="p-12 text-center bg-slate-900/60 border border-slate-800 rounded-2xl text-xs text-slate-400 space-y-3">
-              <p>暂无配置 PPPoE 宽带拨号客户端。</p>
+              <p>{t('wan.noPppoe', '暂无配置 PPPoE 宽带拨号客户端。')}</p>
               <button
                 onClick={() => setShowAddModal(true)}
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
-                <span>立即新建宽带拨号</span>
+                <span>{t('wan.addPppoe', '立即新建宽带拨号')}</span>
               </button>
             </div>
           )}
@@ -488,7 +490,7 @@ export const WanSettings: React.FC = () => {
         <div className="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
           <div className="p-4 border-b border-slate-800 flex justify-between items-center">
             <h3 className="font-semibold text-xs text-slate-200">
-              WAN 动态 IP 接入列表 (DHCP Clients)
+              {t('wan.dhcpClients')}
             </h3>
           </div>
 
@@ -496,13 +498,13 @@ export const WanSettings: React.FC = () => {
             <table className="w-full text-left text-xs min-w-[650px]">
               <thead className="bg-slate-950/60 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-mono">
                 <tr>
-                  <th className="py-3.5 px-4 font-medium">状态</th>
-                  <th className="py-3.5 px-4 font-medium">绑定网口</th>
-                  <th className="py-3.5 px-4 font-medium">获取的 IP / 掩码</th>
-                  <th className="py-3.5 px-4 font-medium">网关 (Gateway)</th>
-                  <th className="py-3.5 px-4 font-medium">主 DNS</th>
-                  <th className="py-3.5 px-4 font-medium">默认路由</th>
-                  <th className="py-3.5 px-4 font-medium text-right">操作</th>
+                  <th className="py-3.5 px-4 font-medium">{t('common.status')}</th>
+                  <th className="py-3.5 px-4 font-medium">{t('common.interface')}</th>
+                  <th className="py-3.5 px-4 font-medium">{t('common.address')}</th>
+                  <th className="py-3.5 px-4 font-medium">{t('common.gateway')}</th>
+                  <th className="py-3.5 px-4 font-medium">DNS</th>
+                  <th className="py-3.5 px-4 font-medium">{t('wan.defaultRoute')}</th>
+                  <th className="py-3.5 px-4 font-medium text-right">{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60 text-slate-300">
@@ -515,12 +517,12 @@ export const WanSettings: React.FC = () => {
                       <td className="py-3 px-4">
                         {isDisabled ? (
                           <span className="px-2 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-500 border border-slate-700">
-                            已禁用
+                            {t('common.disabled')}
                           </span>
                         ) : isBound ? (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                            已获取 (Bound)
+                            {t('common.bound')}
                           </span>
                         ) : (
                           <span className="px-2 py-0.5 rounded-full text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20">
@@ -547,8 +549,8 @@ export const WanSettings: React.FC = () => {
 
                       <td className="py-3 px-4 font-mono text-slate-400 text-[11px]">
                         {client['add-default-route'] === 'true' || client['add-default-route'] === true
-                          ? '是'
-                          : '否'}
+                          ? t('common.yes')
+                          : t('common.no')}
                       </td>
 
                       <td className="py-3 px-4 text-right">
@@ -556,17 +558,17 @@ export const WanSettings: React.FC = () => {
                           <button
                             onClick={() => handleRenewDhcp(client['.id'])}
                             className="px-2 py-1 rounded bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 text-[11px] transition cursor-pointer"
-                            title="重新向光猫或上级网络请求续订租约"
+                            title="Renew DHCP lease"
                           >
-                            续租
+                            {t('wan.renew')}
                           </button>
 
                           <button
                             onClick={() => handleReleaseDhcp(client['.id'])}
                             className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] transition cursor-pointer"
-                            title="释放当前获取的租约"
+                            title="Release DHCP lease"
                           >
-                            释放
+                            {t('wan.release')}
                           </button>
 
                           <button
@@ -576,7 +578,7 @@ export const WanSettings: React.FC = () => {
                                 ? 'text-emerald-400 hover:bg-emerald-500/10'
                                 : 'text-slate-400 hover:text-amber-400 hover:bg-slate-800'
                             }`}
-                            title={isDisabled ? '启用' : '禁用'}
+                            title={isDisabled ? t('common.enabled') : t('common.disabled')}
                           >
                             <Power className="w-3.5 h-3.5" />
                           </button>
@@ -589,7 +591,7 @@ export const WanSettings: React.FC = () => {
                 {dhcpClients.length === 0 && !loading && (
                   <tr>
                     <td colSpan={7} className="py-12 text-center text-slate-500 text-xs">
-                      暂无 WAN 口 DHCP 客户端
+                      {t('common.noData')}
                     </td>
                   </tr>
                 )}
@@ -606,7 +608,7 @@ export const WanSettings: React.FC = () => {
             <div className="flex justify-between items-center pb-3 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <Globe className="w-4 h-4 text-blue-400" />
-                <h3 className="font-semibold text-sm text-slate-100">新建 PPPoE 宽带拨号连接</h3>
+                <h3 className="font-semibold text-sm text-slate-100">{t('wan.newPppoe')}</h3>
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
@@ -619,7 +621,7 @@ export const WanSettings: React.FC = () => {
             <form onSubmit={handleAddPppoeSubmit} className="mt-4 space-y-4">
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  连接名称 (Interface Name)
+                  {t('wan.interfaceName')}
                 </label>
                 <input
                   type="text"
@@ -633,7 +635,7 @@ export const WanSettings: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  承载物理网口 (连接光猫千兆口)
+                  {t('wan.underlyingInterface')}
                 </label>
                 <select
                   value={addInterface}
@@ -652,12 +654,12 @@ export const WanSettings: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  宽带账号 (Username)
+                  {t('wan.account')}
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="运营商提供的上网账号"
+                  placeholder="Username"
                   value={addUser}
                   onChange={(e) => setAddUser(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -666,11 +668,11 @@ export const WanSettings: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  宽带密码 (Password)
+                  {t('wan.password')}
                 </label>
                 <input
                   type="password"
-                  placeholder="运营商提供的上网密码"
+                  placeholder="Password"
                   value={addPassword}
                   onChange={(e) => setAddPassword(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -685,7 +687,7 @@ export const WanSettings: React.FC = () => {
                     onChange={(e) => setAddDefaultRoute(e.target.checked)}
                     className="rounded border-slate-700 bg-slate-800 text-blue-600 focus:ring-blue-500"
                   />
-                  <span className="text-xs text-slate-300">自动添加默认路由 (Add Default Route)</span>
+                  <span className="text-xs text-slate-300">{t('wan.defaultRoute')}</span>
                 </label>
 
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -695,17 +697,17 @@ export const WanSettings: React.FC = () => {
                     onChange={(e) => setAddPeerDns(e.target.checked)}
                     className="rounded border-slate-700 bg-slate-800 text-blue-600 focus:ring-blue-500"
                   />
-                  <span className="text-xs text-slate-300">使用运营商下发的 DNS (Use Peer DNS)</span>
+                  <span className="text-xs text-slate-300">{t('wan.peerDns')}</span>
                 </label>
               </div>
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  注释备注 (选填)
+                  {t('common.comment')}
                 </label>
                 <input
                   type="text"
-                  placeholder="例如: 电信千兆专线"
+                  placeholder="Comment"
                   value={addComment}
                   onChange={(e) => setAddComment(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -718,14 +720,14 @@ export const WanSettings: React.FC = () => {
                   onClick={() => setShowAddModal(false)}
                   className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition cursor-pointer"
                 >
-                  取消
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={submittingAdd}
                   className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
                 >
-                  {submittingAdd ? '创建中...' : '立即拨号'}
+                  {submittingAdd ? t('common.saving') : t('wan.saveAndDial')}
                 </button>
               </div>
             </form>
@@ -741,7 +743,7 @@ export const WanSettings: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Edit2 className="w-4 h-4 text-blue-400" />
                 <h3 className="font-semibold text-sm text-slate-100">
-                  修改宽带账密 ({editingClient.name})
+                  {t('wan.editPppoe')} ({editingClient.name})
                 </h3>
               </div>
               <button
@@ -755,7 +757,7 @@ export const WanSettings: React.FC = () => {
             <form onSubmit={handleSaveEdit} className="mt-4 space-y-4">
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  承载物理网口
+                  {t('wan.underlyingInterface')}
                 </label>
                 <select
                   value={editInterface}
@@ -774,7 +776,7 @@ export const WanSettings: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  宽带上网账号 (Username)
+                  {t('wan.account')}
                 </label>
                 <input
                   type="text"
@@ -787,11 +789,11 @@ export const WanSettings: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  宽带上网密码 (Password)
+                  {t('wan.password')}
                 </label>
                 <input
                   type="text"
-                  placeholder="留空则保持原密码不变"
+                  placeholder="Password"
                   value={editPassword}
                   onChange={(e) => setEditPassword(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -806,7 +808,7 @@ export const WanSettings: React.FC = () => {
                     onChange={(e) => setEditDefaultRoute(e.target.checked)}
                     className="rounded border-slate-700 bg-slate-800 text-blue-600 focus:ring-blue-500"
                   />
-                  <span className="text-xs text-slate-300">自动添加默认路由 (Add Default Route)</span>
+                  <span className="text-xs text-slate-300">{t('wan.defaultRoute')}</span>
                 </label>
 
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -816,13 +818,13 @@ export const WanSettings: React.FC = () => {
                     onChange={(e) => setEditPeerDns(e.target.checked)}
                     className="rounded border-slate-700 bg-slate-800 text-blue-600 focus:ring-blue-500"
                   />
-                  <span className="text-xs text-slate-300">使用运营商下发的 DNS (Use Peer DNS)</span>
+                  <span className="text-xs text-slate-300">{t('wan.peerDns')}</span>
                 </label>
               </div>
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  注释备注
+                  {t('common.comment')}
                 </label>
                 <input
                   type="text"
@@ -838,14 +840,14 @@ export const WanSettings: React.FC = () => {
                   onClick={() => setEditingClient(null)}
                   className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition cursor-pointer"
                 >
-                  取消
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={submittingEdit}
                   className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
                 >
-                  {submittingEdit ? '保存中...' : '保存修改'}
+                  {submittingEdit ? t('common.saving') : t('common.save')}
                 </button>
               </div>
             </form>

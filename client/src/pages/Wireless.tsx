@@ -129,9 +129,9 @@ export const Wireless: React.FC = () => {
   const getSignalMeta = (signal: number | string) => {
     const s = typeof signal === 'string' ? parseInt(signal, 10) : signal;
     if (isNaN(s)) return { color: 'text-slate-400', bg: 'bg-slate-500', label: '--' };
-    if (s >= -60) return { color: 'text-emerald-400', bg: 'bg-emerald-500', label: '极强' };
-    if (s >= -75) return { color: 'text-amber-400', bg: 'bg-amber-500', label: '良好' };
-    return { color: 'text-red-400', bg: 'bg-red-500', label: '较弱' };
+    if (s >= -60) return { color: 'text-emerald-400', bg: 'bg-emerald-500', label: t('wireless.signalExcellent', 'Great') };
+    if (s >= -75) return { color: 'text-amber-400', bg: 'bg-amber-500', label: t('wireless.signalGood', 'Good') };
+    return { color: 'text-red-400', bg: 'bg-red-500', label: t('wireless.signalFair', 'Fair') };
   };
 
   return (
@@ -141,10 +141,10 @@ export const Wireless: React.FC = () => {
         <div>
           <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
             <Wifi className="w-5 h-5 text-blue-400" />
-            <span>无线管理与 CAPsMAN 集中控制器 (Wi-Fi & Wireless AP)</span>
+            <span>{t('wireless.title', '无线管理与 CAPsMAN 集中控制器')}</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            双频 Wi-Fi 6 / 802.11ax 射频配置、WPA3 安全加密、无线终端信号感知与集中漫游下发
+            {t('wireless.subtitle', '双频 Wi-Fi 6 / 802.11ax 射频配置、WPA3 安全加密、无线终端信号感知与集中漫游下发')}
           </p>
         </div>
 
@@ -155,7 +155,7 @@ export const Wireless: React.FC = () => {
             className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-medium flex items-center gap-1.5 transition cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>刷新</span>
+            <span>{t('action.refresh', '刷新')}</span>
           </button>
 
           <button
@@ -167,7 +167,7 @@ export const Wireless: React.FC = () => {
             className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium flex items-center gap-1.5 transition shadow-lg shadow-blue-600/30 cursor-pointer"
           >
             <Zap className="w-3.5 h-3.5" />
-            <span>一键配置向导</span>
+            <span>{t('wireless.quickSetup', '一键配置向导')}</span>
           </button>
         </div>
       </div>
@@ -197,7 +197,7 @@ export const Wireless: React.FC = () => {
           }`}
         >
           <Radio className="w-4 h-4" />
-          <span>无线射频接口 ({interfaces.length})</span>
+          <span>{t('wireless.radios', '无线射频接口')} ({interfaces.length})</span>
         </button>
 
         <button
@@ -209,7 +209,7 @@ export const Wireless: React.FC = () => {
           }`}
         >
           <Users className="w-4 h-4" />
-          <span>已连终端感知 ({clients.length})</span>
+          <span>{t('wireless.clients', '已连终端感知')} ({clients.length})</span>
         </button>
 
         <button
@@ -221,7 +221,7 @@ export const Wireless: React.FC = () => {
           }`}
         >
           <Layers className="w-4 h-4" />
-          <span>CAPsMAN 集中控制器</span>
+          <span>{t('wireless.capsman', 'CAPsMAN 集中控制器')}</span>
         </button>
       </div>
 
@@ -230,7 +230,7 @@ export const Wireless: React.FC = () => {
         <div className="space-y-4">
           {interfaces.length === 0 ? (
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-12 text-center text-slate-500 text-xs">
-              当前设备未探测到内置 Wi-Fi 射频模块，或当前设备为纯有线路由器 (可通过 CAPsMAN 集中纳管外部 AP)。
+              {t('wireless.noHardware', '当前设备未探测到内置 Wi-Fi 射频模块，或当前设备为纯有线路由器 (可通过 CAPsMAN 集中纳管外部 AP)。')}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -273,11 +273,11 @@ export const Wireless: React.FC = () => {
                           {isRunning && !isDisabled ? (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                              广播中
+                              {t('wireless.broadcasting', 'Broadcasting')}
                             </span>
                           ) : (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-400 border border-slate-700 font-medium">
-                              已停用
+                              {t('common.disabled', 'Disabled')}
                             </span>
                           )}
                         </div>
@@ -288,7 +288,7 @@ export const Wireless: React.FC = () => {
                         <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3 flex items-center justify-between">
                           <div>
                             <span className="text-[10px] text-slate-400 uppercase tracking-wider block">
-                              无线网络名称 (SSID)
+                              SSID
                             </span>
                             <span className="font-bold font-mono text-base text-slate-100 mt-0.5 block select-all">
                               {iface.ssid || iface.name}
@@ -301,14 +301,14 @@ export const Wireless: React.FC = () => {
 
                         <div className="grid grid-cols-2 gap-2">
                           <div className="bg-slate-800/40 border border-slate-800 rounded-xl p-2.5">
-                            <span className="text-[10px] text-slate-400 block">信道与频宽</span>
+                            <span className="text-[10px] text-slate-400 block">{t('wireless.channelWidth', 'Channel & Width')}</span>
                             <span className="font-mono text-slate-200 block mt-0.5 truncate font-medium">
-                              {iface.channel || iface.frequency || '自动 (Auto)'}
+                              {iface.channel || iface.frequency || 'Auto'}
                             </span>
                           </div>
 
                           <div className="bg-slate-800/40 border border-slate-800 rounded-xl p-2.5">
-                            <span className="text-[10px] text-slate-400 block">加密安全算法</span>
+                            <span className="text-[10px] text-slate-400 block">{t('wireless.securityMode', 'Security Mode')}</span>
                             <span className="font-mono text-emerald-400 block mt-0.5 truncate font-medium flex items-center gap-1">
                               <Lock className="w-3 h-3" />
                               <span>{iface.security || 'WPA2/WPA3-SAE'}</span>
@@ -320,14 +320,14 @@ export const Wireless: React.FC = () => {
 
                     <div className="mt-5 pt-3 border-t border-slate-800 flex items-center justify-between">
                       <span className="text-[11px] text-slate-500 font-mono">
-                        发射功率: {iface['tx-power'] ? `${iface['tx-power']} dBm` : '默认'}
+                        Tx Power: {iface['tx-power'] ? `${iface['tx-power']} dBm` : 'default'}
                       </span>
                       <button
                         onClick={() => handleOpenEdit(iface)}
                         className="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium flex items-center gap-1 transition cursor-pointer"
                       >
                         <Edit2 className="w-3 h-3 text-blue-400" />
-                        <span>编辑配置</span>
+                        <span>{t('common.edit')}</span>
                       </button>
                     </div>
                   </div>
@@ -345,27 +345,27 @@ export const Wireless: React.FC = () => {
             <div className="flex items-center gap-2">
               <Users className="w-4 h-4 text-emerald-400" />
               <h3 className="font-semibold text-xs text-slate-200 uppercase tracking-wider">
-                当前关联在线无线终端感知 (Registration Table)
+                {t('wireless.registrationTable', 'Registration Table')}
               </h3>
             </div>
-            <span className="text-xs text-slate-400 font-mono">共 {clients.length} 台设备</span>
+            <span className="text-xs text-slate-400 font-mono">{clients.length} {t('wireless.devicesCount', 'Devices')}</span>
           </div>
 
           {clients.length === 0 ? (
             <div className="p-12 text-center text-slate-500 text-xs">
-              当前暂无无线终端接入 Wi-Fi 网络。
+              {t('wireless.noClients', '当前暂无无线终端接入 Wi-Fi 网络。')}
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs text-slate-300">
                 <thead className="bg-slate-950/50 text-[11px] text-slate-400 uppercase tracking-wider border-b border-slate-800">
                   <tr>
-                    <th className="px-4 py-3">设备 / 主机名</th>
-                    <th className="px-4 py-3">MAC / IP 地址</th>
-                    <th className="px-4 py-3">接入 AP</th>
-                    <th className="px-4 py-3">信号强度 (RSSI)</th>
-                    <th className="px-4 py-3">协商速率 (Tx / Rx)</th>
-                    <th className="px-4 py-3">在线时长</th>
+                    <th className="px-4 py-3">{t('wireless.deviceHostname', 'Device / Hostname')}</th>
+                    <th className="px-4 py-3">MAC / IP</th>
+                    <th className="px-4 py-3">AP</th>
+                    <th className="px-4 py-3">{t('wireless.signalStrength', 'RSSI')}</th>
+                    <th className="px-4 py-3">{t('wireless.rates', 'Tx / Rx Rate')}</th>
+                    <th className="px-4 py-3">{t('dhcp.uptime', 'Uptime')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
@@ -383,7 +383,7 @@ export const Wireless: React.FC = () => {
                             {isApple ? <Laptop className="w-4 h-4 text-blue-400" /> : <Smartphone className="w-4 h-4 text-indigo-400" />}
                           </div>
                           <div>
-                            <span className="font-semibold block">{client.hostname || '无线移动终端'}</span>
+                            <span className="font-semibold block">{client.hostname || t('wireless.wirelessClient', 'Wireless Device')}</span>
                             <span className="text-[10px] text-slate-500 font-mono">{client.ssid || 'Wi-Fi 6'}</span>
                           </div>
                         </td>
@@ -449,39 +449,39 @@ export const Wireless: React.FC = () => {
               </div>
               <div>
                 <h3 className="font-bold text-sm text-slate-100">
-                  MikroTik CAPsMAN 集中无线漫游控制器
+                  {t('wireless.capsmanTitle', 'MikroTik CAPsMAN 集中无线漫游控制器')}
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Controlled Access Point system Manager - 企业集中分发 SSID、WPA3 密钥与 802.11k/v/r 快速无缝漫游
+                  {t('wireless.capsmanSubtitle', 'Controlled Access Point system Manager - 企业集中分发 SSID、WPA3 密钥与 802.11k/v/r 快速无缝漫游')}
                 </p>
               </div>
             </div>
 
             <span className="px-2.5 py-1 rounded-full text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>控制器就绪</span>
+              <span>{t('wireless.controllerReady', 'Controller Ready')}</span>
             </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-slate-800/40 border border-slate-800 rounded-xl p-4">
-              <span className="text-[11px] text-slate-400 block font-medium">CAPsMAN 运行状态</span>
+              <span className="text-[11px] text-slate-400 block font-medium">{t('wireless.capsmanStatus', 'CAPsMAN 运行状态')}</span>
               <span className="text-xl font-bold font-mono text-emerald-400 mt-1 block">
-                {capsman?.enabled ? 'Active (运行中)' : 'Disabled'}
+                {capsman?.enabled ? 'Active' : 'Disabled'}
               </span>
             </div>
 
             <div className="bg-slate-800/40 border border-slate-800 rounded-xl p-4">
-              <span className="text-[11px] text-slate-400 block font-medium">受管远端 AP 节点</span>
+              <span className="text-[11px] text-slate-400 block font-medium">{t('wireless.remoteNodes', '受管远端 AP 节点')}</span>
               <span className="text-xl font-bold font-mono text-blue-400 mt-1 block">
-                {capsman?.radiosCount || 2} 台射频设备
+                {capsman?.radiosCount || 2} Radios
               </span>
             </div>
 
             <div className="bg-slate-800/40 border border-slate-800 rounded-xl p-4">
-              <span className="text-[11px] text-slate-400 block font-medium">证书鉴权机制</span>
+              <span className="text-[11px] text-slate-400 block font-medium">{t('wireless.certAuth', '证书鉴权机制')}</span>
               <span className="text-xl font-bold font-mono text-slate-200 mt-1 block">
-                Auto CA (自动签发)
+                Auto CA
               </span>
             </div>
           </div>
@@ -489,10 +489,10 @@ export const Wireless: React.FC = () => {
           <div className="p-4 bg-slate-950/60 border border-slate-800 rounded-xl text-xs text-slate-400 space-y-2 leading-relaxed">
             <p className="font-semibold text-slate-200 flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-indigo-400" />
-              <span>CAPsMAN 集中控制器说明</span>
+              <span>{t('wireless.capsmanInfo', 'CAPsMAN 集中控制器说明')}</span>
             </p>
             <p>
-              CAPsMAN 允许将此台 MikroTik 路由器作为核心集中控制器，统一管理多台 cAP、hAP 或 wAP 无线 AP。无论添加多少台分布式吸顶/面板 AP，客户端在各个 AP 之间走动均可享受统一的 SSID 与毫秒级无感知切换漫游。
+              {t('wireless.capsmanDesc', 'CAPsMAN allows this MikroTik router to act as a centralized wireless controller, managing multiple cAP, hAP, or wAP devices with unified SSID and seamless 802.11r roaming.')}
             </p>
           </div>
         </div>
@@ -508,8 +508,8 @@ export const Wireless: React.FC = () => {
                   <Zap className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-sm text-slate-100">Wi-Fi 极简快速配置向导</h3>
-                  <span className="text-[11px] text-slate-400">一键同步修改 2.4G 与 5G 无线名称密码</span>
+                  <h3 className="font-semibold text-sm text-slate-100">{t('wireless.quickSetup', 'Wi-Fi 极简快速配置向导')}</h3>
+                  <span className="text-[11px] text-slate-400">{t('wireless.quickSyncDesc', '一键同步修改 2.4G 与 5G 无线名称密码')}</span>
                 </div>
               </div>
               <button
@@ -523,12 +523,12 @@ export const Wireless: React.FC = () => {
             <form onSubmit={handleQuickSetupSubmit} className="space-y-4">
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  统一无线网络名称 (SSID)
+                  SSID
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="例如: Office-Corp-WiFi"
+                  placeholder="e.g. Office-Corp-WiFi"
                   value={quickSsid}
                   onChange={(e) => setQuickSsid(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
@@ -537,12 +537,12 @@ export const Wireless: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  无线连接密码 (WPA2 / WPA3-SAE)
+                  Password (WPA2 / WPA3-SAE)
                 </label>
                 <div className="relative">
                   <input
                     type={showQuickPwd ? 'text' : 'password'}
-                    placeholder="不输入则保持原密码"
+                    placeholder={t('wireless.keepPasswordPlaceholder', 'Leave empty to keep current password')}
                     value={quickPassword}
                     onChange={(e) => setQuickPassword(e.target.value)}
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono pr-9"
@@ -555,7 +555,7 @@ export const Wireless: React.FC = () => {
                     {showQuickPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
-                <p className="text-[10px] text-slate-500 mt-1">建议 8 位以上英文字母+数字组合</p>
+                <p className="text-[10px] text-slate-500 mt-1">{t('wireless.passwordHint', '建议 8 位以上英文字母+数字组合')}</p>
               </div>
 
               <div className="flex gap-2 pt-2 border-t border-slate-800">
@@ -564,14 +564,14 @@ export const Wireless: React.FC = () => {
                   onClick={() => setShowQuickSetup(false)}
                   className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs py-2.5 rounded-xl cursor-pointer"
                 >
-                  取消
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={submittingQuick}
                   className="flex-1 bg-blue-600 hover:bg-blue-500 text-white text-xs py-2.5 rounded-xl font-medium shadow-lg shadow-blue-600/30 transition cursor-pointer"
                 >
-                  {submittingQuick ? '正在同步配置...' : '立即应用至所有射频'}
+                  {submittingQuick ? '...' : t('wireless.applyToAll', 'Apply to All Radios')}
                 </button>
               </div>
             </form>
@@ -587,7 +587,7 @@ export const Wireless: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Edit2 className="w-4 h-4 text-blue-400" />
                 <h3 className="font-semibold text-sm text-slate-100">
-                  编辑射频接口: {editingIface.name}
+                  {t('wireless.editRadio', 'Edit Radio')}: {editingIface.name}
                 </h3>
               </div>
               <button
@@ -601,7 +601,7 @@ export const Wireless: React.FC = () => {
             <form onSubmit={handleSaveEdit} className="space-y-4">
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  无线网络名称 (SSID)
+                  SSID
                 </label>
                 <input
                   type="text"
@@ -614,11 +614,11 @@ export const Wireless: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  更新密码 (留空则保持不变)
+                  {t('wireless.updatePasswordLabel', 'Update Password (Leave empty to keep)')}
                 </label>
                 <input
                   type="password"
-                  placeholder="留空保持原密码"
+                  placeholder={t('wireless.keepPasswordPlaceholder', 'Leave empty to keep current password')}
                   value={editPassword}
                   onChange={(e) => setEditPassword(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono"
@@ -626,7 +626,7 @@ export const Wireless: React.FC = () => {
               </div>
 
               <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl border border-slate-750">
-                <span className="text-xs text-slate-300">接口停用状态</span>
+                <span className="text-xs text-slate-300">{t('common.disabled')}</span>
                 <button
                   type="button"
                   onClick={() => setEditDisabled(!editDisabled)}
@@ -648,14 +648,14 @@ export const Wireless: React.FC = () => {
                   onClick={() => setEditingIface(null)}
                   className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs py-2.5 rounded-xl cursor-pointer"
                 >
-                  取消
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={submittingEdit}
                   className="flex-1 bg-blue-600 hover:bg-blue-500 text-white text-xs py-2.5 rounded-xl font-medium shadow-lg shadow-blue-600/30 transition cursor-pointer"
                 >
-                  {submittingEdit ? '保存中...' : '保存更改'}
+                  {submittingEdit ? '...' : t('common.save')}
                 </button>
               </div>
             </form>

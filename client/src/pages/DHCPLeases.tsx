@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { rosApi } from '../api/client.js';
 import { RosDhcpLease, RosDhcpServer, RosDhcpNetwork, RosIpPool } from '../types/index.js';
+import { useI18n } from '../i18n/context.js';
 import {
   Users,
   RefreshCw,
@@ -20,6 +21,7 @@ import {
 } from 'lucide-react';
 
 export const DHCPLeases: React.FC = () => {
+  const { t } = useI18n();
   const [activeTab, setActiveTab] = useState<'leases' | 'servers' | 'networks' | 'pools'>('leases');
   const [leases, setLeases] = useState<RosDhcpLease[]>([]);
   const [servers, setServers] = useState<RosDhcpServer[]>([]);
@@ -225,10 +227,10 @@ export const DHCPLeases: React.FC = () => {
         <div>
           <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
             <Users className="w-5 h-5 text-blue-400" />
-            <span>DHCP 综合管理中心 (DHCP Center)</span>
+            <span>{t('dhcp.title')}</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            局域网客户端租约监控、DHCP 服务端参数、下发网关与 IP 地址池配置
+            {t('dhcp.subtitle')}
           </p>
         </div>
 
@@ -238,7 +240,7 @@ export const DHCPLeases: React.FC = () => {
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 transition cursor-pointer"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-          <span>刷新</span>
+          <span>{t('common.refresh')}</span>
         </button>
       </div>
 
@@ -253,7 +255,7 @@ export const DHCPLeases: React.FC = () => {
           }`}
         >
           <Users className="w-4 h-4" />
-          <span>客户端租约 ({leases.length})</span>
+          <span>{t('dhcp.leases', '租约列表')} ({leases.length})</span>
         </button>
 
         <button
@@ -265,7 +267,7 @@ export const DHCPLeases: React.FC = () => {
           }`}
         >
           <Server className="w-4 h-4" />
-          <span>DHCP 服务端 ({servers.length})</span>
+          <span>{t('dhcp.servers', '服务列表')} ({servers.length})</span>
         </button>
 
         <button
@@ -277,7 +279,7 @@ export const DHCPLeases: React.FC = () => {
           }`}
         >
           <Network className="w-4 h-4" />
-          <span>下发网络参数 ({networks.length})</span>
+          <span>{t('dhcp.networks', '网段配置')} ({networks.length})</span>
         </button>
 
         <button
@@ -289,7 +291,7 @@ export const DHCPLeases: React.FC = () => {
           }`}
         >
           <Layers className="w-4 h-4" />
-          <span>IP 地址池 ({pools.length})</span>
+          <span>{t('dhcp.pools', '地址池')} ({pools.length})</span>
         </button>
       </div>
 
@@ -301,14 +303,14 @@ export const DHCPLeases: React.FC = () => {
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="搜索主机名、IP、MAC 地址..."
+                placeholder={t('common.search')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full bg-slate-800/80 border border-slate-700 rounded-xl pl-9 pr-3.5 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div className="text-xs text-slate-400">
-              共 <strong className="text-slate-200 font-mono">{filteredLeases.length}</strong> 台已分配客户端
+              Total <strong className="text-slate-200 font-mono">{filteredLeases.length}</strong> clients
             </div>
           </div>
 
@@ -317,13 +319,13 @@ export const DHCPLeases: React.FC = () => {
               <table className="w-full text-left text-xs min-w-[680px]">
                 <thead className="bg-slate-950/60 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-mono">
                   <tr>
-                    <th className="py-3.5 px-4 font-medium">设备主机名</th>
-                    <th className="py-3.5 px-4 font-medium">IP 地址</th>
-                    <th className="py-3.5 px-4 font-medium">MAC 物理地址</th>
-                    <th className="py-3.5 px-4 font-medium">类型</th>
-                    <th className="py-3.5 px-4 font-medium">租约剩余</th>
-                    <th className="py-3.5 px-4 font-medium">状态</th>
-                    <th className="py-3.5 px-4 font-medium text-right">操作</th>
+                    <th className="py-3.5 px-4 font-medium">{t('common.hostname', '主机名')}</th>
+                    <th className="py-3.5 px-4 font-medium">{t('common.ipAddress', 'IP 地址')}</th>
+                    <th className="py-3.5 px-4 font-medium">{t('common.macAddress', 'MAC 地址')}</th>
+                    <th className="py-3.5 px-4 font-medium">{t('common.type', '类型')}</th>
+                    <th className="py-3.5 px-4 font-medium">{t('dhcp.expires', '过期时间')}</th>
+                    <th className="py-3.5 px-4 font-medium">{t('common.status', '状态')}</th>
+                    <th className="py-3.5 px-4 font-medium text-right">{t('common.actions', '操作')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60 text-slate-300">
@@ -341,7 +343,7 @@ export const DHCPLeases: React.FC = () => {
                               <Laptop className="w-3.5 h-3.5" />
                             </div>
                             <span className="font-semibold text-slate-200">
-                              {lease['host-name'] || '未知设备'}
+                              {lease['host-name'] || 'Unknown'}
                             </span>
                           </div>
                         </td>
@@ -357,32 +359,32 @@ export const DHCPLeases: React.FC = () => {
                         <td className="py-3 px-4">
                           {isDynamic ? (
                             <span className="px-2 py-0.5 rounded text-[10px] bg-slate-800 text-slate-400 border border-slate-700">
-                              动态分配
+                              {t('common.dynamic')}
                             </span>
                           ) : (
                             <span className="px-2 py-0.5 rounded text-[10px] bg-blue-500/10 text-blue-400 border border-blue-500/20 font-medium">
-                              静态绑定
+                              {t('common.static')}
                             </span>
                           )}
                         </td>
 
                         <td className="py-3 px-4 font-mono text-slate-400">
-                          {lease['expires-after'] || '永久有效'}
+                          {lease['expires-after'] || 'Permanent'}
                         </td>
 
                         <td className="py-3 px-4">
                           {isDisabled ? (
                             <span className="px-2 py-0.5 rounded-full text-[10px] bg-red-500/10 text-red-400 border border-red-500/20">
-                              已阻断/禁用
+                              {t('common.disabled')}
                             </span>
                           ) : isBound ? (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                              正常连接 (Bound)
+                              {t('common.bound')}
                             </span>
                           ) : (
                             <span className="px-2 py-0.5 rounded-full text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                              {lease.status || '等待连接'}
+                              {lease.status || 'Waiting'}
                             </span>
                           )}
                         </td>
@@ -397,17 +399,17 @@ export const DHCPLeases: React.FC = () => {
                                   ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30 font-medium'
                                   : 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border-amber-500/20'
                               }`}
-                              title="向该设备发送网络唤醒魔术包 (Wake-on-LAN)"
+                              title="Wake-on-LAN"
                             >
                               {wakeSuccessId === lease['.id'] ? (
                                 <>
                                   <Check className="w-3 h-3 text-emerald-400" />
-                                  <span>已唤醒</span>
+                                  <span>{t('wol.wokenUp', '已唤醒')}</span>
                                 </>
                               ) : (
                                 <>
                                   <Zap className="w-3 h-3 text-amber-400" />
-                                  <span>唤醒</span>
+                                  <span>{t('wol.wake', '唤醒')}</span>
                                 </>
                               )}
                             </button>
@@ -417,10 +419,10 @@ export const DHCPLeases: React.FC = () => {
                                 onClick={() => handleMakeStatic(lease)}
                                 disabled={isBusy}
                                 className="inline-flex items-center gap-1 px-2 py-1 rounded bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 text-[11px] transition cursor-pointer"
-                                title="固定为此设备的静态 IP"
+                                title="Make static IP"
                               >
                                 <BookmarkCheck className="w-3 h-3" />
-                                <span>固定 IP</span>
+                                <span>{t('dhcp.makeStatic', '转为静态')}</span>
                               </button>
                             )}
 
@@ -432,7 +434,7 @@ export const DHCPLeases: React.FC = () => {
                                   ? 'text-emerald-400 hover:bg-emerald-500/10'
                                   : 'text-amber-400 hover:bg-amber-500/10'
                               }`}
-                              title={isDisabled ? '解禁该设备' : '禁用/阻断该设备'}
+                              title={isDisabled ? 'Enable' : 'Disable'}
                             >
                               <ShieldBan className="w-3.5 h-3.5" />
                             </button>
@@ -441,7 +443,7 @@ export const DHCPLeases: React.FC = () => {
                               onClick={() => handleDeleteLease(lease['.id'], lease.address)}
                               disabled={isBusy}
                               className="p-1 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded transition cursor-pointer"
-                              title="移除租约"
+                              title="Delete"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -454,7 +456,7 @@ export const DHCPLeases: React.FC = () => {
                   {filteredLeases.length === 0 && !loading && (
                     <tr>
                       <td colSpan={7} className="py-12 text-center text-slate-500 text-xs">
-                        未找到匹配的 DHCP 客户端
+                        {t('common.noData')}
                       </td>
                     </tr>
                   )}
@@ -472,12 +474,12 @@ export const DHCPLeases: React.FC = () => {
             <table className="w-full text-left text-xs min-w-[640px]">
               <thead className="bg-slate-950/60 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-mono">
                 <tr>
-                  <th className="py-3.5 px-4 font-medium">服务端名称</th>
-                  <th className="py-3.5 px-4 font-medium">监听接口</th>
-                  <th className="py-3.5 px-4 font-medium">默认租约时长 (Lease Time)</th>
-                  <th className="py-3.5 px-4 font-medium">绑定地址池 (Address Pool)</th>
-                  <th className="py-3.5 px-4 font-medium">状态</th>
-                  <th className="py-3.5 px-4 font-medium text-right">操作</th>
+                  <th className="py-3.5 px-4 font-medium">{t('common.name')}</th>
+                  <th className="py-3.5 px-4 font-medium">{t('common.interface')}</th>
+                  <th className="py-3.5 px-4 font-medium">{t('dhcp.leaseTime')}</th>
+                  <th className="py-3.5 px-4 font-medium">{t('dhcp.addressPool')}</th>
+                  <th className="py-3.5 px-4 font-medium">{t('common.status')}</th>
+                  <th className="py-3.5 px-4 font-medium text-right">{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60 text-slate-300">
@@ -497,17 +499,17 @@ export const DHCPLeases: React.FC = () => {
                         {server['lease-time'] || '10m'}
                       </td>
                       <td className="py-3 px-4 font-mono text-emerald-400">
-                        {server['address-pool'] || '无'}
+                        {server['address-pool'] || '--'}
                       </td>
                       <td className="py-3 px-4">
                         {isDisabled ? (
                           <span className="px-2 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-500 border border-slate-700">
-                            已禁用
+                            {t('common.disabled')}
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                            运行中 (Running)
+                            {t('common.running')}
                           </span>
                         )}
                       </td>
@@ -520,7 +522,7 @@ export const DHCPLeases: React.FC = () => {
                               ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
                               : 'bg-red-500/10 text-red-400 border-red-500/20'
                           }`}
-                          title={isDisabled ? '启用服务' : '禁用服务'}
+                          title={isDisabled ? 'Enable' : 'Disable'}
                         >
                           <Power className="w-3.5 h-3.5" />
                         </button>
@@ -539,14 +541,14 @@ export const DHCPLeases: React.FC = () => {
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <p className="text-xs text-slate-400">
-              配置分配给客户机的 IP 网关、DNS、子网掩码等全局网络参数
+              Configure distributed network gateway, DNS, and subnet parameters
             </p>
             <button
               onClick={() => setShowAddNetwork(true)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white transition cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>添加网络参数</span>
+              <span>{t('dhcp.addNetwork', '添加网段')}</span>
             </button>
           </div>
 
@@ -555,11 +557,11 @@ export const DHCPLeases: React.FC = () => {
               <table className="w-full text-left text-xs min-w-[620px]">
                 <thead className="bg-slate-950/60 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-mono">
                   <tr>
-                    <th className="py-3.5 px-4 font-medium">网段 (Address / CIDR)</th>
-                    <th className="py-3.5 px-4 font-medium">下发网关 (Gateway)</th>
-                    <th className="py-3.5 px-4 font-medium">下发 DNS 服务器</th>
-                    <th className="py-3.5 px-4 font-medium">备注说明</th>
-                    <th className="py-3.5 px-4 font-medium text-right">操作</th>
+                    <th className="py-3.5 px-4 font-medium">{t('common.network')}</th>
+                    <th className="py-3.5 px-4 font-medium">{t('common.gateway')}</th>
+                    <th className="py-3.5 px-4 font-medium">DNS</th>
+                    <th className="py-3.5 px-4 font-medium">{t('common.comment')}</th>
+                    <th className="py-3.5 px-4 font-medium text-right">{t('common.actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60 text-slate-300">
@@ -581,7 +583,7 @@ export const DHCPLeases: React.FC = () => {
                         <button
                           onClick={() => handleDeleteNetwork(net['.id'], net.address)}
                           className="p-1 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded transition cursor-pointer"
-                          title="删除"
+                          title="Delete"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -600,14 +602,14 @@ export const DHCPLeases: React.FC = () => {
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <p className="text-xs text-slate-400">
-              定义用于 DHCP 或 VPN 动态分配的连续 IP 地址段 (IP Pools)
+              Define IP range pools for DHCP server or VPN clients
             </p>
             <button
               onClick={() => setShowAddPool(true)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white transition cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>新建地址池</span>
+              <span>{t('dhcp.addPool', '添加地址池')}</span>
             </button>
           </div>
 
@@ -616,10 +618,10 @@ export const DHCPLeases: React.FC = () => {
               <table className="w-full text-left text-xs min-w-[550px]">
                 <thead className="bg-slate-950/60 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-mono">
                   <tr>
-                    <th className="py-3.5 px-4 font-medium">地址池名称 (Pool Name)</th>
-                    <th className="py-3.5 px-4 font-medium">分配 IP 范围 (Ranges)</th>
-                    <th className="py-3.5 px-4 font-medium">备注说明</th>
-                    <th className="py-3.5 px-4 font-medium text-right">操作</th>
+                    <th className="py-3.5 px-4 font-medium">{t('common.name', '名称')}</th>
+                    <th className="py-3.5 px-4 font-medium">Ranges</th>
+                    <th className="py-3.5 px-4 font-medium">{t('common.comment')}</th>
+                    <th className="py-3.5 px-4 font-medium text-right">{t('common.actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60 text-slate-300">
@@ -638,7 +640,7 @@ export const DHCPLeases: React.FC = () => {
                         <button
                           onClick={() => handleDeletePool(pool['.id'], pool.name)}
                           className="p-1 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded transition cursor-pointer"
-                          title="删除"
+                          title="Delete"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -659,7 +661,7 @@ export const DHCPLeases: React.FC = () => {
             <div className="flex justify-between items-center pb-3 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <Network className="w-4 h-4 text-blue-400" />
-                <h3 className="font-semibold text-sm text-slate-100">添加 DHCP 网络下发配置</h3>
+                <h3 className="font-semibold text-sm text-slate-100">{t('dhcp.addNetwork', '添加网段')}</h3>
               </div>
               <button
                 onClick={() => setShowAddNetwork(false)}
@@ -672,12 +674,12 @@ export const DHCPLeases: React.FC = () => {
             <form onSubmit={handleAddNetworkSubmit} className="mt-4 space-y-4">
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  子网网络地址 (Address / Mask)
+                  {t('common.network')} (CIDR)
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="例如: 192.168.88.0/24"
+                  placeholder="e.g. 192.168.88.0/24"
                   value={netAddress}
                   onChange={(e) => setNetAddress(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -686,11 +688,11 @@ export const DHCPLeases: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  网关 IP (Gateway)
+                  {t('common.gateway')}
                 </label>
                 <input
                   type="text"
-                  placeholder="例如: 192.168.88.1"
+                  placeholder="e.g. 192.168.88.1"
                   value={netGateway}
                   onChange={(e) => setNetGateway(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -699,11 +701,11 @@ export const DHCPLeases: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  DNS 服务器 (逗号分隔)
+                  DNS
                 </label>
                 <input
                   type="text"
-                  placeholder="例如: 192.168.88.1, 223.5.5.5"
+                  placeholder="e.g. 192.168.88.1, 223.5.5.5"
                   value={netDns}
                   onChange={(e) => setNetDns(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -712,11 +714,11 @@ export const DHCPLeases: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  备注说明 (选填)
+                  {t('common.comment')}
                 </label>
                 <input
                   type="text"
-                  placeholder="例如: 办公室主网络"
+                  placeholder="Comment"
                   value={netComment}
                   onChange={(e) => setNetComment(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -729,14 +731,14 @@ export const DHCPLeases: React.FC = () => {
                   onClick={() => setShowAddNetwork(false)}
                   className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition cursor-pointer"
                 >
-                  取消
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={submittingNet}
                   className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
                 >
-                  {submittingNet ? '保存中...' : '保存网络参数'}
+                  {submittingNet ? t('common.saving') : t('common.save')}
                 </button>
               </div>
             </form>
@@ -751,7 +753,7 @@ export const DHCPLeases: React.FC = () => {
             <div className="flex justify-between items-center pb-3 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <Layers className="w-4 h-4 text-blue-400" />
-                <h3 className="font-semibold text-sm text-slate-100">新建 IP 地址池 (IP Pool)</h3>
+                <h3 className="font-semibold text-sm text-slate-100">{t('dhcp.addPool', '添加地址池')}</h3>
               </div>
               <button
                 onClick={() => setShowAddPool(false)}
@@ -764,12 +766,12 @@ export const DHCPLeases: React.FC = () => {
             <form onSubmit={handleAddPoolSubmit} className="mt-4 space-y-4">
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  地址池名称 (Pool Name)
+                  {t('common.name', '名称')}
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="例如: office-pool"
+                  placeholder="e.g. office-pool"
                   value={poolName}
                   onChange={(e) => setPoolName(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -778,7 +780,7 @@ export const DHCPLeases: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  分配范围 (Ranges, 如 192.168.88.10-192.168.88.250)
+                  Ranges (e.g. 192.168.88.10-192.168.88.250)
                 </label>
                 <input
                   type="text"
@@ -792,11 +794,11 @@ export const DHCPLeases: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  备注说明 (选填)
+                  {t('common.comment')}
                 </label>
                 <input
                   type="text"
-                  placeholder="地址池用途说明"
+                  placeholder="Comment"
                   value={poolComment}
                   onChange={(e) => setPoolComment(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -809,14 +811,14 @@ export const DHCPLeases: React.FC = () => {
                   onClick={() => setShowAddPool(false)}
                   className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition cursor-pointer"
                 >
-                  取消
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={submittingPool}
                   className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
                 >
-                  {submittingPool ? '保存中...' : '创建地址池'}
+                  {submittingPool ? t('common.saving') : t('common.save')}
                 </button>
               </div>
             </form>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { rosApi } from '../api/client.js';
 import { DashboardOverviewData } from '../types/index.js';
 import { formatRosUptime, formatRosUptimeDetailed } from '../utils/format.js';
+import { useI18n } from '../i18n/context.js';
 import ReactECharts from 'echarts-for-react';
 import {
   Activity,
@@ -52,6 +53,7 @@ interface TrafficPoint {
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const [overview, setOverview] = useState<DashboardOverviewData | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedInterface, setSelectedInterface] = useState<string>('ether1-wan');
@@ -196,7 +198,7 @@ export const Dashboard: React.FC = () => {
       },
     },
     legend: {
-      data: ['下载速率 (Rx)', '上传速率 (Tx)'],
+      data: ['Rx', 'Tx'],
       textStyle: { color: '#94a3b8', fontSize: 11 },
       top: 0,
       right: 10,
@@ -227,7 +229,7 @@ export const Dashboard: React.FC = () => {
     },
     series: [
       {
-        name: '下载速率 (Rx)',
+        name: 'Rx',
         type: 'line',
         smooth: true,
         showSymbol: false,
@@ -248,7 +250,7 @@ export const Dashboard: React.FC = () => {
         data: trafficHistory.map((d) => d.rx),
       },
       {
-        name: '上传速率 (Tx)',
+        name: 'Tx',
         type: 'line',
         smooth: true,
         showSymbol: false,
@@ -292,19 +294,19 @@ export const Dashboard: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-0.5 flex flex-wrap items-center gap-3">
-              <span>架构: {res?.platform || 'MikroTik'}</span>
+              <span>{t('dashboard.arch', '架构')}: {res?.platform || 'MikroTik'}</span>
               <span>•</span>
               <span>
-                连续运行:{' '}
+                {t('dashboard.running', '连续运行')}:{' '}
                 <span
                   className="font-mono text-slate-200 cursor-help"
-                  title={`详细开机时间: ${formatRosUptimeDetailed(res?.uptime)} (原始: ${res?.uptime || '0s'})`}
+                  title={`Uptime: ${formatRosUptimeDetailed(res?.uptime)} (raw: ${res?.uptime || '0s'})`}
                 >
                   {formatRosUptime(res?.uptime)}
                 </span>
               </span>
               <span>•</span>
-              <span>构建: {res?.['build-time'] || '--'}</span>
+              <span>{t('dashboard.build', '构建')}: {res?.['build-time'] || '--'}</span>
             </p>
           </div>
         </div>
@@ -312,7 +314,7 @@ export const Dashboard: React.FC = () => {
         <div className="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-end border-t lg:border-t-0 border-slate-800/80 pt-3 lg:pt-0">
           <div className="flex items-center gap-2 text-xs text-slate-400">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>REST API 联机中</span>
+            <span>{t('navbar.restOnline', 'REST API Online')}</span>
           </div>
 
           <button
@@ -321,7 +323,7 @@ export const Dashboard: React.FC = () => {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 transition cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>刷新大屏</span>
+            <span>{t('dashboard.refresh', '刷新大屏')}</span>
           </button>
         </div>
       </div>
@@ -332,11 +334,11 @@ export const Dashboard: React.FC = () => {
         <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-xs font-medium text-slate-400">CPU 处理器负载</p>
+              <p className="text-xs font-medium text-slate-400">{t('dashboard.cpuLoad', 'CPU 处理器负载')}</p>
               <div className="flex items-baseline gap-2 mt-2">
                 <span className="text-3xl font-bold font-mono text-slate-100">{cpuPercent}%</span>
                 <span className="text-[11px] text-slate-400 font-mono">
-                  {res?.['cpu-count'] ? `${res['cpu-count']} 核` : ''}
+                  {res?.['cpu-count'] ? `${res['cpu-count']} ${t('dashboard.cores', '核')}` : ''}
                 </span>
               </div>
             </div>
@@ -358,7 +360,7 @@ export const Dashboard: React.FC = () => {
         <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-xs font-medium text-slate-400">内存占用 (RAM)</p>
+              <p className="text-xs font-medium text-slate-400">{t('dashboard.memoryUsage', '内存物理占用')}</p>
               <div className="flex items-baseline gap-2 mt-2">
                 <span className="text-3xl font-bold font-mono text-slate-100">{memPercent}%</span>
                 <span className="text-[11px] text-slate-400 font-mono">
@@ -382,7 +384,7 @@ export const Dashboard: React.FC = () => {
         <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-xs font-medium text-slate-400">内部存储空间 (Flash)</p>
+              <p className="text-xs font-medium text-slate-400">{t('dashboard.storageSpace', '内部存储空间 (Flash)')}</p>
               <div className="flex items-baseline gap-2 mt-2">
                 <span className="text-3xl font-bold font-mono text-slate-100">{hddPercent}%</span>
                 <span className="text-[11px] text-slate-400 font-mono">
@@ -406,11 +408,11 @@ export const Dashboard: React.FC = () => {
         <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-xs font-medium text-slate-400">硬件温度与供电状态</p>
+              <p className="text-xs font-medium text-slate-400">{t('dashboard.healthVoltage', '硬件温度与供电状态')}</p>
               <div className="flex items-baseline gap-2 mt-2">
                 <span className="text-3xl font-bold font-mono text-slate-100">{cpuTemp}°C</span>
                 <span className="text-[11px] text-slate-400 font-mono">
-                  主板 {boardTemp}°C
+                  Board {boardTemp}°C
                 </span>
               </div>
             </div>
@@ -419,8 +421,8 @@ export const Dashboard: React.FC = () => {
             </div>
           </div>
           <div className="mt-3 flex items-center justify-between text-xs text-slate-400 border-t border-slate-800/80 pt-2 font-mono">
-            <span>输入电压: {voltage} V</span>
-            <span className="text-emerald-400 font-medium">● 运行正常</span>
+            <span>Voltage: {voltage} V</span>
+            <span className="text-emerald-400 font-medium">● OK</span>
           </div>
         </div>
       </div>
@@ -434,24 +436,24 @@ export const Dashboard: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Globe className="w-4 h-4 text-blue-400" />
                 <h3 className="font-semibold text-xs text-slate-200 uppercase tracking-wider">
-                  WAN 外网拨号与公网连接
+                  {t('dashboard.wanStatus', '外网宽带状态 (WAN)')}
                 </h3>
               </div>
               <button
                 onClick={() => navigate('/wan-settings')}
                 className="text-blue-400 hover:text-blue-300 text-xs flex items-center gap-1 cursor-pointer"
               >
-                <span>外网设置</span>
+                <span>{t('wan.settings', '外网设置')}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
 
             <div className="mt-4">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-400">外网 IPv4 公网地址:</span>
+                <span className="text-xs text-slate-400">{t('dashboard.wanIpv4', '外网 IPv4 公网地址:')}</span>
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                  {wan?.status || '已拨通'}
+                  {wan?.status || t('common.connected', 'Connected')}
                 </span>
               </div>
 
@@ -462,7 +464,7 @@ export const Dashboard: React.FC = () => {
                 <button
                   onClick={() => handleCopyIp(wan?.ip || '116.228.88.142')}
                   className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition cursor-pointer"
-                  title="复制公网 IP"
+                  title={t('common.copy', 'Copy')}
                 >
                   {copiedIp ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                 </button>
@@ -472,13 +474,13 @@ export const Dashboard: React.FC = () => {
             {/* WAN Accumulated Usage stats */}
             <div className="grid grid-cols-2 gap-3 mt-4 pt-3 border-t border-slate-800/80 text-xs font-mono">
               <div className="bg-slate-800/40 p-2.5 rounded-xl border border-slate-800">
-                <span className="text-slate-500 text-[11px] block">WAN 累计总下载 (Rx)</span>
+                <span className="text-slate-500 text-[11px] block">{t('dashboard.totalRx', 'WAN 累计总下载 (Rx)')}</span>
                 <span className="text-slate-100 font-bold text-sm block mt-0.5">
                   {formatBytes(wan?.rxBytes || 1284501234)}
                 </span>
               </div>
               <div className="bg-slate-800/40 p-2.5 rounded-xl border border-slate-800">
-                <span className="text-slate-500 text-[11px] block">WAN 累计总上传 (Tx)</span>
+                <span className="text-slate-500 text-[11px] block">{t('dashboard.totalTx', 'WAN 累计总上传 (Tx)')}</span>
                 <span className="text-slate-100 font-bold text-sm block mt-0.5">
                   {formatBytes(wan?.txBytes || 584902340)}
                 </span>
@@ -487,12 +489,12 @@ export const Dashboard: React.FC = () => {
           </div>
 
           <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-            <span>承载端口: <span className="font-mono text-blue-400">{wan?.physicalPort || 'ether1-wan'}</span></span>
+            <span>{t('dashboard.physicalPort', '承载端口')}: <span className="font-mono text-blue-400">{wan?.physicalPort || 'ether1-wan'}</span></span>
             <span>
-              持续在线:{' '}
+              {t('dashboard.continuousOnline', '持续在线')}:{' '}
               <span
                 className="font-mono text-slate-300 cursor-help"
-                title={`详细连通时间: ${formatRosUptimeDetailed(wan?.uptime)}`}
+                title={`Uptime: ${formatRosUptimeDetailed(wan?.uptime)}`}
               >
                 {formatRosUptime(wan?.uptime)}
               </span>
@@ -507,10 +509,10 @@ export const Dashboard: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Network className="w-4 h-4 text-emerald-400" />
                 <h3 className="font-semibold text-xs text-slate-200 uppercase tracking-wider">
-                  物理前面板端口状态矩阵 (Port Matrix)
+                  {t('dashboard.portMatrix', '物理前面板端口状态矩阵')}
                 </h3>
               </div>
-              <span className="text-[11px] text-slate-500">点击网口直达实时吞吐监控</span>
+              <span className="text-[11px] text-slate-500">{t('dashboard.clickToMonitor', '点击网口直达实时吞吐监控')}</span>
             </div>
 
             {/* Ports Matrix Grid */}
@@ -545,7 +547,7 @@ export const Dashboard: React.FC = () => {
                             ? 'bg-emerald-400 animate-pulse'
                             : 'bg-slate-600'
                         }`}
-                        title={i.disabled ? '已禁用' : isUp ? '● 连接中' : '○ 断开'}
+                        title={i.disabled ? t('common.disabled') : isUp ? 'UP' : 'DOWN'}
                       ></span>
                     </div>
 
@@ -564,14 +566,14 @@ export const Dashboard: React.FC = () => {
           <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-              <span>UP 连通</span>
+              <span>UP</span>
               <span className="w-2 h-2 rounded-full bg-slate-600 ml-2"></span>
-              <span>DOWN 离线</span>
+              <span>DOWN</span>
               <span className="w-2 h-2 rounded-full bg-red-500 ml-2"></span>
-              <span>禁用</span>
+              <span>Disabled</span>
             </span>
             <span className="text-[11px] text-slate-500">
-              当前主图口: <strong className="text-blue-400 font-mono">{selectedInterface}</strong>
+              Interface: <strong className="text-blue-400 font-mono">{selectedInterface}</strong>
             </span>
           </div>
         </div>
@@ -583,18 +585,18 @@ export const Dashboard: React.FC = () => {
           <div>
             <div className="flex items-center gap-2">
               <Activity className="w-4 h-4 text-emerald-400" />
-              <h3 className="font-semibold text-sm text-slate-100">接口实时流量吞吐监控</h3>
+              <h3 className="font-semibold text-sm text-slate-100">{t('dashboard.trafficGraph', '接口实时吞吐走势')}</h3>
               <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                1.5s 持续动态采样
+                1.5s
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-1">
-              监控接口 <span className="font-mono text-blue-400 font-semibold">{selectedInterface}</span> 的入方向 (Rx) 与出方向 (Tx) 速率
+              Traffic monitor for <span className="font-mono text-blue-400 font-semibold">{selectedInterface}</span> (Rx / Tx)
             </p>
           </div>
 
           <div className="flex items-center gap-3">
-            <label className="text-xs text-slate-400">快速切换网口:</label>
+            <label className="text-xs text-slate-400">Interface:</label>
             <select
               value={selectedInterface}
               onChange={(e) => {
@@ -619,7 +621,7 @@ export const Dashboard: React.FC = () => {
               <ArrowDownCircle className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-xs text-slate-400">当前实时下载速率 (Rx)</p>
+              <p className="text-xs text-slate-400">Download Rate (Rx)</p>
               <p className="text-lg sm:text-xl font-bold font-mono text-emerald-400">{formatBps(currentRx)}</p>
             </div>
           </div>
@@ -629,7 +631,7 @@ export const Dashboard: React.FC = () => {
               <ArrowUpCircle className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-xs text-slate-400">当前实时上传速率 (Tx)</p>
+              <p className="text-xs text-slate-400">Upload Rate (Tx)</p>
               <p className="text-lg sm:text-xl font-bold font-mono text-blue-400">{formatBps(currentTx)}</p>
             </div>
           </div>
@@ -653,10 +655,9 @@ export const Dashboard: React.FC = () => {
             <Network className="w-4 h-4" />
           </div>
           <div>
-            <p className="text-[11px] text-slate-400">网络物理接口</p>
+            <p className="text-[11px] text-slate-400">{t('interfaces.title')}</p>
             <p className="text-base font-bold text-slate-100 font-mono">
               {overview?.stats.interfacesRunning ?? 0} / {overview?.stats.interfacesTotal ?? 0}
-              <span className="text-[10px] text-slate-500 ml-1">活跃</span>
             </p>
           </div>
         </div>
@@ -666,10 +667,9 @@ export const Dashboard: React.FC = () => {
             <Users className="w-4 h-4" />
           </div>
           <div>
-            <p className="text-[11px] text-slate-400">在线 DHCP 客户端</p>
+            <p className="text-[11px] text-slate-400">{t('dhcp.title')}</p>
             <p className="text-base font-bold text-slate-100 font-mono">
               {overview?.stats.activeDhcpLeases ?? 0}
-              <span className="text-[10px] text-slate-500 ml-1">台</span>
             </p>
           </div>
         </div>
@@ -679,10 +679,9 @@ export const Dashboard: React.FC = () => {
             <Shield className="w-4 h-4" />
           </div>
           <div>
-            <p className="text-[11px] text-slate-400">防火墙 / NAT 规则</p>
+            <p className="text-[11px] text-slate-400">{t('firewall.title')}</p>
             <p className="text-base font-bold text-slate-100 font-mono">
               {(overview?.stats.firewallFilterRules ?? 0) + (overview?.stats.firewallNatRules ?? 0)}
-              <span className="text-[10px] text-slate-500 ml-1">条</span>
             </p>
           </div>
         </div>
@@ -692,10 +691,9 @@ export const Dashboard: React.FC = () => {
             <RadioTower className="w-4 h-4" />
           </div>
           <div>
-            <p className="text-[11px] text-slate-400">WireGuard 节点</p>
+            <p className="text-[11px] text-slate-400">{t('wireguard.title')}</p>
             <p className="text-base font-bold text-slate-100 font-mono">
               {overview?.stats.wireguardPeersCount ?? 0}
-              <span className="text-[10px] text-slate-500 ml-1">个</span>
             </p>
           </div>
         </div>
@@ -709,14 +707,14 @@ export const Dashboard: React.FC = () => {
             <div className="flex items-center gap-2">
               <Laptop className="w-4 h-4 text-blue-400" />
               <h3 className="font-semibold text-xs text-slate-200 uppercase tracking-wider">
-                局域网活跃终端 (Top Active Clients)
+                {t('dashboard.onlineClients', '局域网在线终端')}
               </h3>
             </div>
             <button
               onClick={() => navigate('/dhcp-leases')}
               className="text-blue-400 hover:text-blue-300 text-xs flex items-center gap-1 cursor-pointer"
             >
-              <span>查看全部租约</span>
+              <span>{t('common.viewAll', 'View all')}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -747,15 +745,15 @@ export const Dashboard: React.FC = () => {
                     onClick={() => handleWakeClient(client.mac, client.id)}
                     disabled={wakingDeviceId === client.id}
                     className="flex items-center gap-1 px-2 py-1 rounded bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/20 text-[11px] transition cursor-pointer"
-                    title="唤醒此设备 (WoL)"
+                    title="Wake On LAN"
                   >
                     <Zap className="w-3 h-3" />
-                    <span>唤醒</span>
+                    <span>{t('wol.wake', '唤醒')}</span>
                   </button>
                 </div>
               ))
             ) : (
-              <p className="py-8 text-center text-slate-500 text-xs">暂无活跃客户端数据</p>
+              <p className="py-8 text-center text-slate-500 text-xs">{t('common.noData')}</p>
             )}
           </div>
         </div>
@@ -766,14 +764,14 @@ export const Dashboard: React.FC = () => {
             <div className="flex items-center gap-2">
               <FileText className="w-4 h-4 text-purple-400" />
               <h3 className="font-semibold text-xs text-slate-200 uppercase tracking-wider">
-                最近系统事件与安全动态 (Recent Logs)
+                {t('dashboard.recentLogs', '实时系统日志流')}
               </h3>
             </div>
             <button
               onClick={() => navigate('/logs')}
               className="text-blue-400 hover:text-blue-300 text-xs flex items-center gap-1 cursor-pointer"
             >
-              <span>查看全部日志</span>
+              <span>{t('common.viewAll', 'View all')}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -799,7 +797,7 @@ export const Dashboard: React.FC = () => {
                 </div>
               ))
             ) : (
-              <p className="py-8 text-center text-slate-500 text-xs">暂无最近日志记录</p>
+              <p className="py-8 text-center text-slate-500 text-xs">{t('common.noData')}</p>
             )}
           </div>
         </div>

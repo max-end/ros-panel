@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { rosApi } from '../api/client.js';
 import { useAuth } from '../store/authContext.js';
+import { useI18n } from '../i18n/context.js';
 import { TracerouteHop } from '../types/index.js';
 import { formatRosUptime, formatRosUptimeDetailed } from '../utils/format.js';
 import {
@@ -20,6 +21,7 @@ import {
 
 export const System: React.FC = () => {
   const { deviceInfo, config } = useAuth();
+  const { t } = useI18n();
   const [activeTab, setActiveTab] = useState<'ping' | 'traceroute' | 'terminal' | 'reboot'>('ping');
 
   // Ping state
@@ -118,10 +120,10 @@ export const System: React.FC = () => {
       <div>
         <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
           <Wrench className="w-5 h-5 text-blue-400" />
-          <span>工具箱与高级诊断 (System Diagnostics & Terminal)</span>
+          <span>{t('system.title')}</span>
         </h2>
         <p className="text-xs text-slate-400 mt-0.5">
-          Ping 连通性测试、Traceroute 路由多跳跟踪、Web 命令行控制台与远程维护
+          {t('system.subtitle')}
         </p>
       </div>
 
@@ -143,7 +145,7 @@ export const System: React.FC = () => {
           }`}
         >
           <Terminal className="w-4 h-4" />
-          <span>Ping 连通测试</span>
+          <span>{t('system.ping')}</span>
         </button>
 
         <button
@@ -155,7 +157,7 @@ export const System: React.FC = () => {
           }`}
         >
           <GitCommit className="w-4 h-4" />
-          <span>Traceroute 路由跟踪</span>
+          <span>{t('system.traceroute')}</span>
         </button>
 
         <button
@@ -167,7 +169,7 @@ export const System: React.FC = () => {
           }`}
         >
           <Play className="w-4 h-4" />
-          <span>Web 命令行控制台</span>
+          <span>{t('system.terminal')}</span>
         </button>
 
         <button
@@ -179,7 +181,7 @@ export const System: React.FC = () => {
           }`}
         >
           <RotateCcw className="w-4 h-4" />
-          <span>重启与硬件信息</span>
+          <span>{t('system.reboot')}</span>
         </button>
       </div>
 
@@ -190,12 +192,12 @@ export const System: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
               <div className="sm:col-span-8">
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  目标 IP 或域名
+                  {t('system.target')}
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="例如: 223.5.5.5 或 baidu.com"
+                  placeholder={t('system.targetPlaceholder')}
                   value={pingTarget}
                   onChange={(e) => setPingTarget(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -203,7 +205,7 @@ export const System: React.FC = () => {
               </div>
 
               <div className="sm:col-span-2">
-                <label className="text-xs font-medium text-slate-300 block mb-1">发包次数</label>
+                <label className="text-xs font-medium text-slate-300 block mb-1">{t('system.count')}</label>
                 <input
                   type="number"
                   min="1"
@@ -221,7 +223,7 @@ export const System: React.FC = () => {
                   className="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs py-2 rounded-xl transition flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-blue-600/30"
                 >
                   {pingLoading ? <span className="animate-spin">●</span> : <Send className="w-3.5 h-3.5" />}
-                  <span>{pingLoading ? '探测中...' : '发起测试'}</span>
+                  <span>{pingLoading ? '...' : t('system.runPing')}</span>
                 </button>
               </div>
             </div>
@@ -230,22 +232,22 @@ export const System: React.FC = () => {
           {pingResult && (
             <div className="mt-4 p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3 font-mono text-xs">
               <div className="flex justify-between items-center pb-2 border-b border-slate-800 text-[11px] text-slate-400">
-                <span>目标主机: <strong className="text-slate-200">{pingResult.host}</strong></span>
+                <span>{t('system.target')}: <strong className="text-slate-200">{pingResult.host}</strong></span>
                 <span className={pingResult.status === 'ok' ? 'text-emerald-400' : 'text-red-400'}>
-                  {pingResult.status === 'ok' ? '● 连通正常' : '● 连接超时'}
+                  {pingResult.status === 'ok' ? '● OK' : '● Timeout'}
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div className="bg-slate-900/60 p-2 rounded-lg">
-                  <span className="text-slate-500 text-[10px] block">平均往返延迟</span>
+                  <span className="text-slate-500 text-[10px] block">{t('system.rtt')}</span>
                   <span className="text-emerald-400 font-bold">{pingResult.time || '<1ms'}</span>
                 </div>
                 <div className="bg-slate-900/60 p-2 rounded-lg">
-                  <span className="text-slate-500 text-[10px] block">发送包数</span>
+                  <span className="text-slate-500 text-[10px] block">{t('system.sent')}</span>
                   <span className="text-slate-200 font-bold">{pingResult.sent}</span>
                 </div>
                 <div className="bg-slate-900/60 p-2 rounded-lg">
-                  <span className="text-slate-500 text-[10px] block">成功接收</span>
+                  <span className="text-slate-500 text-[10px] block">{t('system.received')}</span>
                   <span className="text-slate-200 font-bold">{pingResult.received}</span>
                 </div>
               </div>
@@ -261,7 +263,7 @@ export const System: React.FC = () => {
             <input
               type="text"
               required
-              placeholder="输入跟踪目标 IP 或域名 (例如: 114.114.114.114 或 qq.com)"
+              placeholder={t('system.targetPlaceholder')}
               value={traceTarget}
               onChange={(e) => setTraceTarget(e.target.value)}
               className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -272,7 +274,7 @@ export const System: React.FC = () => {
               className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs rounded-xl transition flex items-center gap-2 cursor-pointer shadow-lg shadow-blue-600/30"
             >
               {traceLoading ? <span className="animate-spin">●</span> : <GitCommit className="w-4 h-4" />}
-              <span>{traceLoading ? '跟踪中...' : '开始路由跟踪'}</span>
+              <span>{traceLoading ? '...' : t('system.runTrace')}</span>
             </button>
           </form>
 
@@ -280,11 +282,11 @@ export const System: React.FC = () => {
             <table className="w-full text-left text-xs min-w-[550px]">
               <thead className="bg-slate-950/80 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-mono">
                 <tr>
-                  <th className="py-2.5 px-3 font-medium">跳数 (Hop)</th>
-                  <th className="py-2.5 px-3 font-medium">节点 IP 地址</th>
-                  <th className="py-2.5 px-3 font-medium">最新延迟</th>
-                  <th className="py-2.5 px-3 font-medium">平均延迟</th>
-                  <th className="py-2.5 px-3 font-medium">丢包率</th>
+                  <th className="py-2.5 px-3 font-medium">Hop</th>
+                  <th className="py-2.5 px-3 font-medium">{t('common.ipAddress')}</th>
+                  <th className="py-2.5 px-3 font-medium">Last</th>
+                  <th className="py-2.5 px-3 font-medium">Avg</th>
+                  <th className="py-2.5 px-3 font-medium">{t('system.packetLoss')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60 text-slate-300 font-mono">
@@ -301,7 +303,7 @@ export const System: React.FC = () => {
                 {traceHops.length === 0 && !traceLoading && (
                   <tr>
                     <td colSpan={5} className="py-8 text-center text-slate-500 text-xs">
-                      输入目标并点击“开始路由跟踪”查看逐跳节点信息
+                      {t('common.noData')}
                     </td>
                   </tr>
                 )}
@@ -316,7 +318,7 @@ export const System: React.FC = () => {
         <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 shadow-2xl space-y-3 font-mono text-xs">
           <div className="flex items-center justify-between pb-2 border-b border-slate-800 text-slate-400 text-[11px]">
             <span>RouterOS CLI Terminal</span>
-            <span>输入任意 ROS 命令执行</span>
+            <span>Execute RouterOS commands</span>
           </div>
 
           <div className="h-80 overflow-y-auto space-y-4 pr-1">
@@ -338,7 +340,7 @@ export const System: React.FC = () => {
               <span className="text-emerald-400 font-bold mr-2">&gt;</span>
               <input
                 type="text"
-                placeholder="例如: /interface print 或 /ip firewall nat print"
+                placeholder="e.g. /interface print or /ip route print"
                 value={commandInput}
                 onChange={(e) => setCommandInput(e.target.value)}
                 className="w-full bg-transparent py-2 text-xs text-slate-100 focus:outline-none"
@@ -349,7 +351,7 @@ export const System: React.FC = () => {
               disabled={executing}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-xl text-xs transition cursor-pointer"
             >
-              {executing ? '执行中...' : '运行指令'}
+              {executing ? '...' : t('system.runCommand')}
             </button>
           </form>
         </div>
@@ -361,26 +363,26 @@ export const System: React.FC = () => {
           {/* Specs */}
           <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl">
             <h3 className="font-semibold text-xs text-slate-100 uppercase tracking-wider pb-3 border-b border-slate-800 mb-4">
-              当前设备硬件规格核验
+              Hardware Specs
             </h3>
             <div className="space-y-2.5 text-xs">
               <div className="flex justify-between py-1 border-b border-slate-800/60">
-                <span className="text-slate-400">硬件板卡型号</span>
+                <span className="text-slate-400">Board Model</span>
                 <span className="font-mono text-slate-200 font-bold">{deviceInfo?.['board-name'] || 'RB5009'}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-800/60">
-                <span className="text-slate-400">RouterOS 版本</span>
+                <span className="text-slate-400">RouterOS Version</span>
                 <span className="font-mono text-blue-400">{deviceInfo?.version || '7.16.2'}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-800/60">
-                <span className="text-slate-400">CPU 架构</span>
+                <span className="text-slate-400">Architecture</span>
                 <span className="font-mono text-slate-200">{deviceInfo?.['architecture-name'] || 'arm64'}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-800/60">
-                <span className="text-slate-400">连续开机时间</span>
+                <span className="text-slate-400">Uptime</span>
                 <span
                   className="font-mono text-slate-200 cursor-help"
-                  title={`详细开机时间: ${formatRosUptimeDetailed(deviceInfo?.uptime)}`}
+                  title={`Uptime: ${formatRosUptimeDetailed(deviceInfo?.uptime)}`}
                 >
                   {formatRosUptime(deviceInfo?.uptime)}
                 </span>
@@ -392,10 +394,10 @@ export const System: React.FC = () => {
           <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col justify-between">
             <div>
               <h3 className="font-semibold text-xs text-slate-100 uppercase tracking-wider pb-3 border-b border-slate-800 mb-4">
-                远程安全软重启 (Remote Reboot)
+                {t('system.reboot')}
               </h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                重启将优雅终止所有网络连接、保存系统状态并重启 RouterOS 内核。预计中断约 30-60 秒。
+                {t('system.rebootWarning')}
               </p>
             </div>
 
@@ -407,13 +409,13 @@ export const System: React.FC = () => {
                   className="w-full bg-red-600/10 hover:bg-red-600/20 text-red-400 border border-red-500/20 font-medium text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <RotateCcw className="w-4 h-4" />
-                  <span>准备重启路由器...</span>
+                  <span>{t('system.reboot')}...</span>
                 </button>
               ) : (
                 <div className="space-y-3">
                   <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-300 text-xs flex items-center gap-2">
                     <AlertTriangle className="w-4 h-4 shrink-0" />
-                    <span>二次安全确认: 重启后当前所有局域网终端将短暂断网！</span>
+                    <span>Warning: System will restart and network will disconnect!</span>
                   </div>
                   <div className="flex gap-2">
                     <button
@@ -421,7 +423,7 @@ export const System: React.FC = () => {
                       onClick={() => setShowRebootConfirm(false)}
                       className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs py-2 rounded-xl cursor-pointer"
                     >
-                      取消
+                      {t('common.cancel')}
                     </button>
                     <button
                       type="button"
@@ -429,7 +431,7 @@ export const System: React.FC = () => {
                       disabled={rebooting}
                       className="flex-1 bg-red-600 hover:bg-red-500 text-white font-medium text-xs py-2 rounded-xl transition cursor-pointer"
                     >
-                      {rebooting ? '正在下发重启...' : '确定立即重启'}
+                      {rebooting ? '...' : t('system.reboot')}
                     </button>
                   </div>
                 </div>

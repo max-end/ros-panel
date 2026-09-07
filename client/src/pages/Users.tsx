@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { rosApi } from '../api/client.js';
 import { RosUser } from '../types/index.js';
+import { useI18n } from '../i18n/context.js';
 import {
   UserCheck,
   Plus,
@@ -15,6 +16,7 @@ import {
 } from 'lucide-react';
 
 export const Users: React.FC = () => {
+  const { t } = useI18n();
   const [users, setUsers] = useState<RosUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -124,10 +126,10 @@ export const Users: React.FC = () => {
         <div>
           <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
             <UserCheck className="w-5 h-5 text-blue-400" />
-            <span>系统用户与权限管理 (Users & Security)</span>
+            <span>{t('users.title')}</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            配置 RouterOS 访问账号、权限组角色 (full / write / read) 与密码管控
+            {t('users.subtitle')}
           </p>
         </div>
 
@@ -138,7 +140,7 @@ export const Users: React.FC = () => {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 transition cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>刷新</span>
+            <span>{t('common.refresh')}</span>
           </button>
 
           <button
@@ -146,7 +148,7 @@ export const Users: React.FC = () => {
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>新建管理员用户</span>
+            <span>{t('users.addUser')}</span>
           </button>
         </div>
       </div>
@@ -157,12 +159,12 @@ export const Users: React.FC = () => {
           <table className="w-full text-left text-xs min-w-[620px]">
             <thead className="bg-slate-950/60 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-mono">
               <tr>
-                <th className="py-3.5 px-4 font-medium">登录用户名</th>
-                <th className="py-3.5 px-4 font-medium">权限角色组 (Group)</th>
-                <th className="py-3.5 px-4 font-medium">上次登录时间</th>
-                <th className="py-3.5 px-4 font-medium">账号状态</th>
-                <th className="py-3.5 px-4 font-medium">注释备注</th>
-                <th className="py-3.5 px-4 font-medium text-right">操作</th>
+                <th className="py-3.5 px-4 font-medium">{t('users.username')}</th>
+                <th className="py-3.5 px-4 font-medium">{t('users.group')}</th>
+                <th className="py-3.5 px-4 font-medium">{t('users.lastLogged')}</th>
+                <th className="py-3.5 px-4 font-medium">{t('common.status')}</th>
+                <th className="py-3.5 px-4 font-medium">{t('common.comment')}</th>
+                <th className="py-3.5 px-4 font-medium text-right">{t('common.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60 text-slate-300">
@@ -182,32 +184,32 @@ export const Users: React.FC = () => {
                     <td className="py-3 px-4">
                       {user.group === 'full' ? (
                         <span className="px-2 py-0.5 rounded text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
-                          full (超级管理)
+                          full (Superadmin)
                         </span>
                       ) : user.group === 'write' ? (
                         <span className="px-2 py-0.5 rounded text-[10px] bg-blue-500/10 text-blue-400 border border-blue-500/20 font-medium">
-                          write (配置运维)
+                          write (Operator)
                         </span>
                       ) : (
                         <span className="px-2 py-0.5 rounded text-[10px] bg-purple-500/10 text-purple-400 border border-purple-500/20 font-medium">
-                          read (只读审计)
+                          read (Auditor)
                         </span>
                       )}
                     </td>
 
                     <td className="py-3 px-4 font-mono text-slate-400">
-                      {user['last-logged-in'] || '从未登录'}
+                      {user['last-logged-in'] || '--'}
                     </td>
 
                     <td className="py-3 px-4">
                       {isDisabled ? (
                         <span className="px-2 py-0.5 rounded-full text-[10px] bg-red-500/10 text-red-400 border border-red-500/20">
-                          已禁用
+                          {t('common.disabled')}
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                          正常生效
+                          {t('common.running')}
                         </span>
                       )}
                     </td>
@@ -221,10 +223,10 @@ export const Users: React.FC = () => {
                         <button
                           onClick={() => setPasswordUser(user)}
                           className="px-2 py-1 rounded bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 text-[11px] flex items-center gap-1 transition cursor-pointer"
-                          title="修改登录密码"
+                          title={t('users.changePassword')}
                         >
                           <Key className="w-3 h-3" />
-                          <span>改密</span>
+                          <span>{t('users.changePassword')}</span>
                         </button>
 
                         <button
@@ -235,7 +237,7 @@ export const Users: React.FC = () => {
                               ? 'text-emerald-400 hover:bg-emerald-500/10'
                               : 'text-slate-400 hover:text-amber-400 hover:bg-slate-800'
                           }`}
-                          title={isDisabled ? '启用账号' : '禁用账号'}
+                          title={isDisabled ? 'Enable' : 'Disable'}
                         >
                           <Power className="w-3.5 h-3.5" />
                         </button>
@@ -245,7 +247,7 @@ export const Users: React.FC = () => {
                             onClick={() => handleDelete(user['.id'], user.name)}
                             disabled={isBusy}
                             className="p-1 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded transition cursor-pointer"
-                            title="删除账号"
+                            title={t('common.delete')}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -267,7 +269,7 @@ export const Users: React.FC = () => {
             <div className="flex justify-between items-center pb-3 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <UserCheck className="w-4 h-4 text-blue-400" />
-                <h3 className="font-semibold text-sm text-slate-100">新建管理员用户</h3>
+                <h3 className="font-semibold text-sm text-slate-100">{t('users.addUser')}</h3>
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
@@ -280,12 +282,12 @@ export const Users: React.FC = () => {
             <form onSubmit={handleAddSubmit} className="mt-4 space-y-4">
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  登录用户名
+                  {t('users.username')}
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="例如: operator1"
+                  placeholder="e.g. operator1"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -294,11 +296,11 @@ export const Users: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  登录密码 (选填)
+                  {t('common.password')}
                 </label>
                 <input
                   type="password"
-                  placeholder="留空则初始无密码"
+                  placeholder="Password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -307,26 +309,26 @@ export const Users: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  所属权限组 (Permission Group)
+                  {t('users.group')}
                 </label>
                 <select
                   value={newGroup}
                   onChange={(e) => setNewGroup(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                 >
-                  <option value="full">full (超级管理员 - 拥有全权)</option>
-                  <option value="write">write (读写操作员 - 允许修改无法改权限)</option>
-                  <option value="read">read (只读审计员 - 仅允许查看数据)</option>
+                  <option value="full">full ({t('users.groupFull')})</option>
+                  <option value="write">write ({t('users.groupWrite')})</option>
+                  <option value="read">read ({t('users.groupRead')})</option>
                 </select>
               </div>
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  注释说明
+                  {t('common.comment')}
                 </label>
                 <input
                   type="text"
-                  placeholder="例如: 外包工程师巡检账号"
+                  placeholder="Comment"
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -339,14 +341,14 @@ export const Users: React.FC = () => {
                   onClick={() => setShowAddModal(false)}
                   className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition cursor-pointer"
                 >
-                  取消
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={submittingAdd}
                   className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
                 >
-                  {submittingAdd ? '创建中...' : '创建账号'}
+                  {submittingAdd ? t('common.creating') : t('common.save')}
                 </button>
               </div>
             </form>
@@ -362,7 +364,7 @@ export const Users: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Key className="w-4 h-4 text-amber-400" />
                 <h3 className="font-semibold text-sm text-slate-100">
-                  修改登录密码 ({passwordUser.name})
+                  {t('users.changePassword')} ({passwordUser.name})
                 </h3>
               </div>
               <button
@@ -376,12 +378,12 @@ export const Users: React.FC = () => {
             <form onSubmit={handleChangePasswordSubmit} className="mt-4 space-y-4">
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  请输入新密码
+                  {t('users.newPassword')}
                 </label>
                 <input
                   type="password"
                   required
-                  placeholder="至少 6 位复杂字符"
+                  placeholder="Min. 6 characters"
                   value={updatedPassword}
                   onChange={(e) => setUpdatedPassword(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -394,14 +396,14 @@ export const Users: React.FC = () => {
                   onClick={() => setPasswordUser(null)}
                   className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition cursor-pointer"
                 >
-                  取消
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={submittingPassword}
                   className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
                 >
-                  {submittingPassword ? '更新中...' : '确认更新密码'}
+                  {submittingPassword ? t('common.saving') : t('common.save')}
                 </button>
               </div>
             </form>

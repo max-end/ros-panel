@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth, SavedDevice } from '../store/authContext.js';
+import { useI18n } from '../i18n/context.js';
 import {
   Router,
   Plus,
@@ -20,6 +21,7 @@ interface DeviceSwitcherModalProps {
 }
 
 export const DeviceSwitcherModal: React.FC<DeviceSwitcherModalProps> = ({ isOpen, onClose }) => {
+  const { t } = useI18n();
   const {
     config,
     deviceInfo,
@@ -115,8 +117,8 @@ export const DeviceSwitcherModal: React.FC<DeviceSwitcherModalProps> = ({ isOpen
               <Router className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-semibold text-sm text-slate-100">设备簿与多路由器切换</h3>
-              <p className="text-[11px] text-slate-400">一键快速在不同的 MikroTik 节点间无缝流转</p>
+              <h3 className="font-semibold text-sm text-slate-100">{t('modal.deviceSwitcherTitle')}</h3>
+              <p className="text-[11px] text-slate-400">{t('modal.deviceSwitcherDesc')}</p>
             </div>
           </div>
           <button
@@ -139,7 +141,7 @@ export const DeviceSwitcherModal: React.FC<DeviceSwitcherModalProps> = ({ isOpen
             <>
               {savedDevices.length === 0 ? (
                 <div className="text-center py-8 text-slate-500 text-xs">
-                  暂无其他已保存的路由器，点击下方按钮添加。
+                  {t('common.noData')}
                 </div>
               ) : (
                 savedDevices.map((dev) => {
@@ -175,7 +177,7 @@ export const DeviceSwitcherModal: React.FC<DeviceSwitcherModalProps> = ({ isOpen
                             {isCurrent && (
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                                当前连接
+                                Connected
                               </span>
                             )}
                           </div>
@@ -192,7 +194,7 @@ export const DeviceSwitcherModal: React.FC<DeviceSwitcherModalProps> = ({ isOpen
                             disabled={isBusy}
                             className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-medium flex items-center gap-1 cursor-pointer transition shadow-md shadow-blue-600/20"
                           >
-                            <span>{isBusy ? '连接中...' : '切换'}</span>
+                            <span>{isBusy ? '...' : 'Switch'}</span>
                             <ArrowRight className="w-3 h-3" />
                           </button>
                         )}
@@ -200,7 +202,7 @@ export const DeviceSwitcherModal: React.FC<DeviceSwitcherModalProps> = ({ isOpen
                         <button
                           onClick={() => removeSavedDevice(dev.id)}
                           className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition cursor-pointer"
-                          title="从设备簿移除"
+                          title={t('common.delete')}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -216,30 +218,30 @@ export const DeviceSwitcherModal: React.FC<DeviceSwitcherModalProps> = ({ isOpen
                 className="w-full py-2.5 rounded-xl border border-dashed border-slate-700 hover:border-blue-500 text-xs text-slate-400 hover:text-blue-400 transition flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>登记并添加新路由器</span>
+                <span>{t('modal.addRouter')}</span>
               </button>
             </>
           ) : (
             /* Add New Device Form */
             <form onSubmit={handleAddSubmit} className="space-y-3 bg-slate-950/60 p-4 rounded-xl border border-slate-800">
               <div className="flex items-center justify-between pb-2 border-b border-slate-800 text-xs font-medium text-slate-200">
-                <span>添加新节点配置</span>
+                <span>{t('modal.addRouter')}</span>
                 <button
                   type="button"
                   onClick={() => setShowAddForm(false)}
                   className="text-slate-400 hover:text-slate-200"
                 >
-                  返回列表
+                  {t('common.cancel')}
                 </button>
               </div>
 
               <div>
                 <label className="text-[11px] font-medium text-slate-300 block mb-1">
-                  路由器别名 (可选)
+                  Router Alias
                 </label>
                 <input
                   type="text"
-                  placeholder="例如: 办公室核心网关 / 家中旁路由"
+                  placeholder="e.g. Office Core Gateway"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -248,7 +250,7 @@ export const DeviceSwitcherModal: React.FC<DeviceSwitcherModalProps> = ({ isOpen
 
               <div className="grid grid-cols-12 gap-2">
                 <div className="col-span-4">
-                  <label className="text-[11px] font-medium text-slate-300 block mb-1">协议</label>
+                  <label className="text-[11px] font-medium text-slate-300 block mb-1">Protocol</label>
                   <select
                     value={newUseTls ? 'https' : 'http'}
                     onChange={(e) => {
@@ -264,7 +266,7 @@ export const DeviceSwitcherModal: React.FC<DeviceSwitcherModalProps> = ({ isOpen
                 </div>
 
                 <div className="col-span-5">
-                  <label className="text-[11px] font-medium text-slate-300 block mb-1">IP / 域名</label>
+                  <label className="text-[11px] font-medium text-slate-300 block mb-1">IP / Host</label>
                   <input
                     type="text"
                     required
@@ -276,7 +278,7 @@ export const DeviceSwitcherModal: React.FC<DeviceSwitcherModalProps> = ({ isOpen
                 </div>
 
                 <div className="col-span-3">
-                  <label className="text-[11px] font-medium text-slate-300 block mb-1">端口</label>
+                  <label className="text-[11px] font-medium text-slate-300 block mb-1">{t('common.port', '端口')}</label>
                   <input
                     type="number"
                     required
@@ -290,7 +292,7 @@ export const DeviceSwitcherModal: React.FC<DeviceSwitcherModalProps> = ({ isOpen
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-[11px] font-medium text-slate-300 block mb-1">用户名</label>
+                  <label className="text-[11px] font-medium text-slate-300 block mb-1">{t('common.username', '用户名')}</label>
                   <input
                     type="text"
                     required
@@ -302,10 +304,10 @@ export const DeviceSwitcherModal: React.FC<DeviceSwitcherModalProps> = ({ isOpen
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-medium text-slate-300 block mb-1">密码</label>
+                  <label className="text-[11px] font-medium text-slate-300 block mb-1">{t('common.password', '密码')}</label>
                   <input
                     type="password"
-                    placeholder="设备密码"
+                    placeholder="Password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-100 font-mono"
@@ -319,14 +321,14 @@ export const DeviceSwitcherModal: React.FC<DeviceSwitcherModalProps> = ({ isOpen
                   onClick={() => setShowAddForm(false)}
                   className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs py-2 rounded-xl"
                 >
-                  取消
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={submittingAdd}
                   className="flex-1 bg-blue-600 hover:bg-blue-500 text-white text-xs py-2 rounded-xl font-medium shadow-md shadow-blue-600/30"
                 >
-                  {submittingAdd ? '验证并保存中...' : '保存并连接'}
+                  {submittingAdd ? t('common.saving') : t('common.save')}
                 </button>
               </div>
             </form>
@@ -335,12 +337,12 @@ export const DeviceSwitcherModal: React.FC<DeviceSwitcherModalProps> = ({ isOpen
 
         {/* Modal Footer */}
         <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400 shrink-0">
-          <span>共保存 {savedDevices.length} 台设备</span>
+          <span>{savedDevices.length} devices</span>
           <button
             onClick={onClose}
             className="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs transition cursor-pointer"
           >
-            关闭
+            {t('common.close')}
           </button>
         </div>
       </div>

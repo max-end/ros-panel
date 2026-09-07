@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { rosApi } from '../api/client.js';
 import { RosFirewallRule, RosInterface } from '../types/index.js';
+import { useI18n } from '../i18n/context.js';
 import {
   Shield,
   Plus,
@@ -17,6 +18,7 @@ import {
 } from 'lucide-react';
 
 export const Firewall: React.FC = () => {
+  const { t } = useI18n();
   const [activeTab, setActiveTab] = useState<'nat' | 'filter'>('nat');
   const [filterRules, setFilterRules] = useState<RosFirewallRule[]>([]);
   const [natRules, setNatRules] = useState<RosFirewallRule[]>([]);
@@ -369,15 +371,12 @@ export const Firewall: React.FC = () => {
         <div>
           <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
             <Shield className="w-5 h-5 text-amber-400" />
-            <span>防火墙与网络地址转换 (Firewall & NAT)</span>
+            <span>{t('firewall.title')}</span>
           </h2>
           <div className="flex flex-wrap items-center gap-3 mt-0.5">
             <p className="text-xs text-slate-400">
-              配置端口映射 (Port Forwarding)、源地址伪装 (Masquerade) 以及数据包访问控制规则
+              {t('firewall.subtitle')}
             </p>
-            <span className="text-[11px] text-blue-400/90 font-medium">
-              💡 规则遵循自顶向下匹配，可拖拽手柄或点击箭头调序
-            </span>
           </div>
         </div>
 
@@ -385,7 +384,7 @@ export const Firewall: React.FC = () => {
           {movingRule && (
             <span className="text-[11px] text-blue-400 font-mono flex items-center gap-1.5 animate-pulse">
               <RefreshCw className="w-3 h-3 animate-spin" />
-              <span>保存排序中...</span>
+              <span>Saving...</span>
             </span>
           )}
 
@@ -395,7 +394,7 @@ export const Firewall: React.FC = () => {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 transition cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>刷新</span>
+            <span>{t('common.refresh')}</span>
           </button>
 
           {activeTab === 'nat' ? (
@@ -404,7 +403,7 @@ export const Firewall: React.FC = () => {
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>新建端口转发</span>
+              <span>{t('firewall.addNat')}</span>
             </button>
           ) : (
             <button
@@ -412,7 +411,7 @@ export const Firewall: React.FC = () => {
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>新建过滤规则</span>
+              <span>{t('firewall.addFilter')}</span>
             </button>
           )}
         </div>
@@ -429,7 +428,7 @@ export const Firewall: React.FC = () => {
           }`}
         >
           <ArrowUpRight className="w-4 h-4" />
-          <span>NAT 规则 & 端口转发 ({natRules.length})</span>
+          <span>{t('firewall.nat')} ({natRules.length})</span>
         </button>
 
         <button
@@ -441,7 +440,7 @@ export const Firewall: React.FC = () => {
           }`}
         >
           <Lock className="w-4 h-4" />
-          <span>过滤规则 (Filter Rules) ({filterRules.length})</span>
+          <span>{t('firewall.filter')} ({filterRules.length})</span>
         </button>
       </div>
 
@@ -452,15 +451,15 @@ export const Firewall: React.FC = () => {
             <table className="w-full text-left text-xs min-w-[700px]">
               <thead className="bg-slate-950/60 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-mono">
                 <tr>
-                  <th className="py-3.5 px-3 font-medium w-20 text-center">次序</th>
-                  <th className="py-3.5 px-4 font-medium">状态</th>
-                  <th className="py-3.5 px-4 font-medium">链 (Chain)</th>
-                  <th className="py-3.5 px-4 font-medium">动作 (Action)</th>
-                  <th className="py-3.5 px-4 font-medium">协议 / 外网端口</th>
-                  <th className="py-3.5 px-4 font-medium">内网目标 (To IP:Port)</th>
-                  <th className="py-3.5 px-4 font-medium">接口</th>
-                  <th className="py-3.5 px-4 font-medium">注释备注</th>
-                  <th className="py-3.5 px-4 font-medium text-right">操作</th>
+                  <th className="py-3.5 px-3 font-medium w-20 text-center">#</th>
+                  <th className="py-3.5 px-4 font-medium">{t('common.status')}</th>
+                  <th className="py-3.5 px-4 font-medium">{t('firewall.chain')}</th>
+                  <th className="py-3.5 px-4 font-medium">{t('firewall.action')}</th>
+                  <th className="py-3.5 px-4 font-medium">{t('firewall.protocol')} / {t('firewall.dstPort')}</th>
+                  <th className="py-3.5 px-4 font-medium">{t('firewall.toAddresses')}</th>
+                  <th className="py-3.5 px-4 font-medium">{t('common.interface')}</th>
+                  <th className="py-3.5 px-4 font-medium">{t('common.comment')}</th>
+                  <th className="py-3.5 px-4 font-medium text-right">{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60 text-slate-300">
@@ -491,7 +490,7 @@ export const Firewall: React.FC = () => {
                         <div className="flex items-center justify-center gap-1">
                           <div
                             className="p-1 text-slate-500 hover:text-slate-200 cursor-grab active:cursor-grabbing rounded hover:bg-slate-800 transition"
-                            title="按住拖拽排序"
+                            title={t('firewall.dragReorder', '按住拖拽排序')}
                           >
                             <GripVertical className="w-3.5 h-3.5" />
                           </div>
@@ -503,7 +502,7 @@ export const Firewall: React.FC = () => {
                               onClick={() => handleReorder('nat', index, index - 1)}
                               disabled={index === 0 || movingRule}
                               className="text-slate-500 hover:text-blue-400 disabled:opacity-20 p-0.5 cursor-pointer disabled:cursor-not-allowed transition"
-                              title="上移一行"
+                              title={t('firewall.moveUp', '上移一行')}
                             >
                               <ChevronUp className="w-3 h-3" />
                             </button>
@@ -511,7 +510,7 @@ export const Firewall: React.FC = () => {
                               onClick={() => handleReorder('nat', index, index + 1)}
                               disabled={index === natRules.length - 1 || movingRule}
                               className="text-slate-500 hover:text-blue-400 disabled:opacity-20 p-0.5 cursor-pointer disabled:cursor-not-allowed transition"
-                              title="下移一行"
+                              title={t('firewall.moveDown', '下移一行')}
                             >
                               <ChevronDown className="w-3 h-3" />
                             </button>
@@ -522,12 +521,12 @@ export const Firewall: React.FC = () => {
                       <td className="py-3 px-4">
                         {isDisabled ? (
                           <span className="px-2 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-500 border border-slate-700">
-                            已禁用
+                            {t('common.disabled')}
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                            生效中
+                            {t('common.running')}
                           </span>
                         )}
                       </td>
@@ -579,7 +578,7 @@ export const Firewall: React.FC = () => {
                             onClick={() => handleOpenEditNat(rule)}
                             disabled={isBusy || movingRule}
                             className="p-1 text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 rounded transition cursor-pointer"
-                            title="编辑规则"
+                            title={t('common.edit')}
                           >
                             <Edit2 className="w-3.5 h-3.5" />
                           </button>
@@ -592,7 +591,7 @@ export const Firewall: React.FC = () => {
                                 ? 'text-emerald-400 hover:bg-emerald-500/10'
                                 : 'text-slate-400 hover:text-amber-400 hover:bg-slate-800'
                             }`}
-                            title={isDisabled ? '启用' : '禁用'}
+                            title={isDisabled ? t('common.enabled') : t('common.disabled')}
                           >
                             <Power className="w-3.5 h-3.5" />
                           </button>
@@ -601,7 +600,7 @@ export const Firewall: React.FC = () => {
                             onClick={() => handleDeleteNat(rule['.id'], rule.comment)}
                             disabled={isBusy || movingRule}
                             className="p-1 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded transition cursor-pointer"
-                            title="删除规则"
+                            title={t('common.delete')}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -623,15 +622,15 @@ export const Firewall: React.FC = () => {
             <table className="w-full text-left text-xs min-w-[700px]">
               <thead className="bg-slate-950/60 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-mono">
                 <tr>
-                  <th className="py-3.5 px-3 font-medium w-20 text-center">次序</th>
-                  <th className="py-3.5 px-4 font-medium">状态</th>
-                  <th className="py-3.5 px-4 font-medium">链 (Chain)</th>
-                  <th className="py-3.5 px-4 font-medium">动作 (Action)</th>
-                  <th className="py-3.5 px-4 font-medium">协议 / 端口</th>
-                  <th className="py-3.5 px-4 font-medium">接口 (In / Out)</th>
-                  <th className="py-3.5 px-4 font-medium">累计匹配</th>
-                  <th className="py-3.5 px-4 font-medium">注释说明</th>
-                  <th className="py-3.5 px-4 font-medium text-right">操作</th>
+                  <th className="py-3.5 px-3 font-medium w-20 text-center">#</th>
+                  <th className="py-3.5 px-4 font-medium">{t('common.status')}</th>
+                  <th className="py-3.5 px-4 font-medium">{t('firewall.chain')}</th>
+                  <th className="py-3.5 px-4 font-medium">{t('firewall.action')}</th>
+                  <th className="py-3.5 px-4 font-medium">{t('firewall.protocol')} / {t('firewall.dstPort')}</th>
+                  <th className="py-3.5 px-4 font-medium">{t('common.interface')} (In / Out)</th>
+                  <th className="py-3.5 px-4 font-medium">{t('firewall.hits')}</th>
+                  <th className="py-3.5 px-4 font-medium">{t('common.comment')}</th>
+                  <th className="py-3.5 px-4 font-medium text-right">{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60 text-slate-300">
@@ -662,7 +661,7 @@ export const Firewall: React.FC = () => {
                         <div className="flex items-center justify-center gap-1">
                           <div
                             className="p-1 text-slate-500 hover:text-slate-200 cursor-grab active:cursor-grabbing rounded hover:bg-slate-800 transition"
-                            title="按住拖拽排序"
+                            title={t('firewall.dragReorder', '按住拖拽排序')}
                           >
                             <GripVertical className="w-3.5 h-3.5" />
                           </div>
@@ -674,7 +673,7 @@ export const Firewall: React.FC = () => {
                               onClick={() => handleReorder('filter', index, index - 1)}
                               disabled={index === 0 || movingRule}
                               className="text-slate-500 hover:text-blue-400 disabled:opacity-20 p-0.5 cursor-pointer disabled:cursor-not-allowed transition"
-                              title="上移一行"
+                              title={t('firewall.moveUp', '上移一行')}
                             >
                               <ChevronUp className="w-3 h-3" />
                             </button>
@@ -682,7 +681,7 @@ export const Firewall: React.FC = () => {
                               onClick={() => handleReorder('filter', index, index + 1)}
                               disabled={index === filterRules.length - 1 || movingRule}
                               className="text-slate-500 hover:text-blue-400 disabled:opacity-20 p-0.5 cursor-pointer disabled:cursor-not-allowed transition"
-                              title="下移一行"
+                              title={t('firewall.moveDown', '下移一行')}
                             >
                               <ChevronDown className="w-3 h-3" />
                             </button>
@@ -693,12 +692,12 @@ export const Firewall: React.FC = () => {
                       <td className="py-3 px-4">
                         {isDisabled ? (
                           <span className="px-2 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-500 border border-slate-700">
-                            已禁用
+                            {t('common.disabled')}
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                            生效中
+                            {t('common.running')}
                           </span>
                         )}
                       </td>
@@ -746,7 +745,7 @@ export const Firewall: React.FC = () => {
                             onClick={() => handleOpenEditFilter(rule)}
                             disabled={isBusy || movingRule}
                             className="p-1 text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 rounded transition cursor-pointer"
-                            title="编辑规则"
+                            title={t('common.edit')}
                           >
                             <Edit2 className="w-3.5 h-3.5" />
                           </button>
@@ -759,7 +758,7 @@ export const Firewall: React.FC = () => {
                                 ? 'text-emerald-400 hover:bg-emerald-500/10'
                                 : 'text-slate-400 hover:text-amber-400 hover:bg-slate-800'
                             }`}
-                            title={isDisabled ? '启用' : '禁用'}
+                            title={isDisabled ? t('common.enabled') : t('common.disabled')}
                           >
                             <Power className="w-3.5 h-3.5" />
                           </button>
@@ -768,7 +767,7 @@ export const Firewall: React.FC = () => {
                             onClick={() => handleDeleteFilter(rule['.id'], rule.comment)}
                             disabled={isBusy || movingRule}
                             className="p-1 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded transition cursor-pointer"
-                            title="删除规则"
+                            title={t('common.delete')}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -790,7 +789,7 @@ export const Firewall: React.FC = () => {
             <div className="flex justify-between items-center pb-3 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <ArrowUpRight className="w-5 h-5 text-blue-400" />
-                <h3 className="font-semibold text-sm text-slate-100">新建外网端口转发规则</h3>
+                <h3 className="font-semibold text-sm text-slate-100">{t('firewall.addPortForward', '新建外网端口转发规则')}</h3>
               </div>
               <button
                 onClick={() => setShowPortForwardModal(false)}
@@ -803,11 +802,11 @@ export const Firewall: React.FC = () => {
             <form onSubmit={handleAddPortForward} className="mt-4 space-y-4">
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  规则备注名称 (可选)
+                  {t('firewall.ruleName', '规则备注名称 (可选)')}
                 </label>
                 <input
                   type="text"
-                  placeholder="例如: NAS-Web / HomeAssistant"
+                  placeholder="e.g. NAS-Web / HomeAssistant"
                   value={pfName}
                   onChange={(e) => setPfName(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -816,7 +815,7 @@ export const Firewall: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-medium text-slate-300 block mb-1">传输协议</label>
+                  <label className="text-xs font-medium text-slate-300 block mb-1">{t('firewall.protocol', '传输协议')}</label>
                   <select
                     value={pfProtocol}
                     onChange={(e) => setPfProtocol(e.target.value as 'tcp' | 'udp')}
@@ -828,7 +827,7 @@ export const Firewall: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-slate-300 block mb-1">入网接口 (WAN)</label>
+                  <label className="text-xs font-medium text-slate-300 block mb-1">{t('firewall.inInterface', '入网接口 (WAN)')}</label>
                   <select
                     value={pfInInterface}
                     onChange={(e) => setPfInInterface(e.target.value)}
@@ -846,12 +845,12 @@ export const Firewall: React.FC = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-medium text-slate-300 block mb-1">
-                    外网访问端口 (External Dst Port)
+                    {t('firewall.dstPort', '外网访问端口 (External Dst Port)')}
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="例如: 8080"
+                    placeholder="e.g. 8080"
                     value={pfDstPort}
                     onChange={(e) => {
                       setPfDstPort(e.target.value);
@@ -863,12 +862,12 @@ export const Firewall: React.FC = () => {
 
                 <div>
                   <label className="text-xs font-medium text-slate-300 block mb-1">
-                    内网目标端口 (Internal Port)
+                    {t('firewall.toPorts', '内网目标端口 (Internal Port)')}
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="例如: 5000"
+                    placeholder="e.g. 5000"
                     value={pfToPort}
                     onChange={(e) => setPfToPort(e.target.value)}
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -878,12 +877,12 @@ export const Firewall: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  内网目标 IP 地址 (Internal Target IP)
+                  {t('firewall.toAddress', '内网目标 IP 地址 (Internal Target IP)')}
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="例如: 192.168.88.200"
+                  placeholder="e.g. 192.168.88.200"
                   value={pfToAddress}
                   onChange={(e) => setPfToAddress(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -891,7 +890,7 @@ export const Firewall: React.FC = () => {
               </div>
 
               <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-slate-300 text-xs flex items-center justify-between">
-                <span>下发规则预览:</span>
+                <span>{t('firewall.previewRule', '下发规则预览:')}</span>
                 <span className="font-mono text-blue-400 font-semibold">
                   WAN:{pfDstPort || '??'} → {pfToAddress || '192.168.x.x'}:{pfToPort || '??'} ({pfProtocol.toUpperCase()})
                 </span>
@@ -903,14 +902,14 @@ export const Firewall: React.FC = () => {
                   onClick={() => setShowPortForwardModal(false)}
                   className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition cursor-pointer"
                 >
-                  取消
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={pfSubmitting}
                   className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
                 >
-                  {pfSubmitting ? '下发中...' : '生成并应用规则'}
+                  {pfSubmitting ? '...' : t('firewall.applyRule', '生成并应用规则')}
                 </button>
               </div>
             </form>
@@ -926,7 +925,7 @@ export const Firewall: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Edit2 className="w-5 h-5 text-blue-400" />
                 <h3 className="font-semibold text-sm text-slate-100">
-                  编辑 NAT 规则 ({editingNatRule['.id']})
+                  {t('firewall.editNat', 'Edit NAT Rule')} ({editingNatRule['.id']})
                 </h3>
               </div>
               <button
@@ -940,19 +939,19 @@ export const Firewall: React.FC = () => {
             <form onSubmit={handleUpdateNat} className="mt-4 space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-medium text-slate-300 block mb-1">链 (Chain)</label>
+                  <label className="text-xs font-medium text-slate-300 block mb-1">{t('firewall.chain', '链 (Chain)')}</label>
                   <select
                     value={editNatChain}
                     onChange={(e) => setEditNatChain(e.target.value)}
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                   >
-                    <option value="dstnat">dstnat (目的地址转换/端口映射)</option>
-                    <option value="srcnat">srcnat (源地址转换/出网伪装)</option>
+                    <option value="dstnat">dstnat</option>
+                    <option value="srcnat">srcnat</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-slate-300 block mb-1">动作 (Action)</label>
+                  <label className="text-xs font-medium text-slate-300 block mb-1">{t('firewall.action', '动作 (Action)')}</label>
                   <select
                     value={editNatAction}
                     onChange={(e) => setEditNatAction(e.target.value)}
@@ -969,7 +968,7 @@ export const Firewall: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-medium text-slate-300 block mb-1">传输协议</label>
+                  <label className="text-xs font-medium text-slate-300 block mb-1">{t('firewall.protocol', '传输协议')}</label>
                   <select
                     value={editNatProtocol}
                     onChange={(e) => setEditNatProtocol(e.target.value)}
@@ -978,18 +977,18 @@ export const Firewall: React.FC = () => {
                     <option value="tcp">TCP</option>
                     <option value="udp">UDP</option>
                     <option value="icmp">ICMP</option>
-                    <option value="">any (任意)</option>
+                    <option value="">any</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-slate-300 block mb-1">入网接口 (In Interface)</label>
+                  <label className="text-xs font-medium text-slate-300 block mb-1">{t('firewall.inInterface', '入网接口 (In Interface)')}</label>
                   <select
                     value={editNatInInterface}
                     onChange={(e) => setEditNatInInterface(e.target.value)}
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                   >
-                    <option value="">any (任意接口)</option>
+                    <option value="">any</option>
                     {interfaces.map((i) => (
                       <option key={i['.id']} value={i.name}>
                         {i.name}
@@ -1002,11 +1001,11 @@ export const Firewall: React.FC = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-medium text-slate-300 block mb-1">
-                    目标端口 (Dst. Port)
+                    {t('firewall.dstPort', '目标端口 (Dst. Port)')}
                   </label>
                   <input
                     type="text"
-                    placeholder="例如: 8080"
+                    placeholder="e.g. 8080"
                     value={editNatDstPort}
                     onChange={(e) => setEditNatDstPort(e.target.value)}
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -1015,11 +1014,11 @@ export const Firewall: React.FC = () => {
 
                 <div>
                   <label className="text-xs font-medium text-slate-300 block mb-1">
-                    内网目标端口 (To Ports)
+                    {t('firewall.toPorts', '内网目标端口 (To Ports)')}
                   </label>
                   <input
                     type="text"
-                    placeholder="例如: 80"
+                    placeholder="e.g. 80"
                     value={editNatToPort}
                     onChange={(e) => setEditNatToPort(e.target.value)}
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -1029,11 +1028,11 @@ export const Firewall: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  内网目标 IP (To Addresses)
+                  {t('firewall.toAddress', '内网目标 IP (To Addresses)')}
                 </label>
                 <input
                   type="text"
-                  placeholder="例如: 192.168.88.200"
+                  placeholder="e.g. 192.168.88.200"
                   value={editNatToAddress}
                   onChange={(e) => setEditNatToAddress(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -1041,10 +1040,10 @@ export const Firewall: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-xs font-medium text-slate-300 block mb-1">注释备注 (Comment)</label>
+                <label className="text-xs font-medium text-slate-300 block mb-1">{t('common.comment')}</label>
                 <input
                   type="text"
-                  placeholder="规则用途备注"
+                  placeholder="Comment"
                   value={editNatComment}
                   onChange={(e) => setEditNatComment(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -1057,14 +1056,14 @@ export const Firewall: React.FC = () => {
                   onClick={() => setEditingNatRule(null)}
                   className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition cursor-pointer"
                 >
-                  取消
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={editNatSubmitting}
                   className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
                 >
-                  {editNatSubmitting ? '保存中...' : '保存更改'}
+                  {editNatSubmitting ? '...' : t('common.save')}
                 </button>
               </div>
             </form>
@@ -1079,7 +1078,7 @@ export const Firewall: React.FC = () => {
             <div className="flex justify-between items-center pb-3 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <Lock className="w-5 h-5 text-blue-400" />
-                <h3 className="font-semibold text-sm text-slate-100">新建过滤规则 (Filter Rule)</h3>
+                <h3 className="font-semibold text-sm text-slate-100">{t('firewall.addFilter', '新建过滤规则 (Filter Rule)')}</h3>
               </div>
               <button
                 onClick={() => setShowAddFilterModal(false)}
@@ -1092,38 +1091,38 @@ export const Firewall: React.FC = () => {
             <form onSubmit={handleAddFilter} className="mt-4 space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-medium text-slate-300 block mb-1">链 (Chain)</label>
+                  <label className="text-xs font-medium text-slate-300 block mb-1">{t('firewall.chain', '链 (Chain)')}</label>
                   <select
                     value={addFilterChain}
                     onChange={(e) => setAddFilterChain(e.target.value as any)}
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                   >
-                    <option value="forward">forward (转发数据流)</option>
-                    <option value="input">input (入站访问本机)</option>
-                    <option value="output">output (本机发起出站)</option>
+                    <option value="forward">forward</option>
+                    <option value="input">input</option>
+                    <option value="output">output</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-slate-300 block mb-1">执行动作 (Action)</label>
+                  <label className="text-xs font-medium text-slate-300 block mb-1">{t('firewall.action', '执行动作 (Action)')}</label>
                   <select
                     value={addFilterAction}
                     onChange={(e) => setAddFilterAction(e.target.value)}
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                   >
-                    <option value="accept">accept (允许通过)</option>
-                    <option value="drop">drop (静默丢弃)</option>
-                    <option value="reject">reject (拒绝并响应)</option>
-                    <option value="fasttrack-connection">fasttrack-connection (快速通道)</option>
-                    <option value="passthrough">passthrough (穿透)</option>
-                    <option value="log">log (记录日志)</option>
+                    <option value="accept">accept</option>
+                    <option value="drop">drop</option>
+                    <option value="reject">reject</option>
+                    <option value="fasttrack-connection">fasttrack-connection</option>
+                    <option value="passthrough">passthrough</option>
+                    <option value="log">log</option>
                   </select>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-medium text-slate-300 block mb-1">传输协议</label>
+                  <label className="text-xs font-medium text-slate-300 block mb-1">{t('firewall.protocol', '传输协议')}</label>
                   <select
                     value={addFilterProtocol}
                     onChange={(e) => setAddFilterProtocol(e.target.value)}
@@ -1132,15 +1131,15 @@ export const Firewall: React.FC = () => {
                     <option value="tcp">TCP</option>
                     <option value="udp">UDP</option>
                     <option value="icmp">ICMP</option>
-                    <option value="">any (全部协议)</option>
+                    <option value="">any</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-slate-300 block mb-1">目标端口 (Dst. Port)</label>
+                  <label className="text-xs font-medium text-slate-300 block mb-1">{t('firewall.dstPort', '目标端口 (Dst. Port)')}</label>
                   <input
                     type="text"
-                    placeholder="例如: 22,80,443"
+                    placeholder="e.g. 22,80,443"
                     value={addFilterDstPort}
                     onChange={(e) => setAddFilterDstPort(e.target.value)}
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -1150,10 +1149,10 @@ export const Firewall: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-medium text-slate-300 block mb-1">源 IP 地址 (Src. Address)</label>
+                  <label className="text-xs font-medium text-slate-300 block mb-1">{t('firewall.srcAddress', '源 IP 地址 (Src. Address)')}</label>
                   <input
                     type="text"
-                    placeholder="例如: 192.168.88.0/24"
+                    placeholder="e.g. 192.168.88.0/24"
                     value={addFilterSrcAddress}
                     onChange={(e) => setAddFilterSrcAddress(e.target.value)}
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -1161,10 +1160,10 @@ export const Firewall: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-slate-300 block mb-1">目标 IP 地址 (Dst. Address)</label>
+                  <label className="text-xs font-medium text-slate-300 block mb-1">{t('firewall.dstAddress', '目标 IP 地址 (Dst. Address)')}</label>
                   <input
                     type="text"
-                    placeholder="例如: 0.0.0.0/0"
+                    placeholder="e.g. 0.0.0.0/0"
                     value={addFilterDstAddress}
                     onChange={(e) => setAddFilterDstAddress(e.target.value)}
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -1174,13 +1173,13 @@ export const Firewall: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-medium text-slate-300 block mb-1">入网接口 (In Interface)</label>
+                  <label className="text-xs font-medium text-slate-300 block mb-1">{t('firewall.inInterface', '入网接口 (In Interface)')}</label>
                   <select
                     value={addFilterInInterface}
                     onChange={(e) => setAddFilterInInterface(e.target.value)}
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                   >
-                    <option value="">any (任意接口)</option>
+                    <option value="">any</option>
                     {interfaces.map((i) => (
                       <option key={i['.id']} value={i.name}>
                         {i.name}
@@ -1190,13 +1189,13 @@ export const Firewall: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-slate-300 block mb-1">出网接口 (Out Interface)</label>
+                  <label className="text-xs font-medium text-slate-300 block mb-1">{t('firewall.outInterface', '出网接口 (Out Interface)')}</label>
                   <select
                     value={addFilterOutInterface}
                     onChange={(e) => setAddFilterOutInterface(e.target.value)}
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                   >
-                    <option value="">any (任意接口)</option>
+                    <option value="">any</option>
                     {interfaces.map((i) => (
                       <option key={i['.id']} value={i.name}>
                         {i.name}
@@ -1207,10 +1206,10 @@ export const Firewall: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-xs font-medium text-slate-300 block mb-1">注释说明 (Comment)</label>
+                <label className="text-xs font-medium text-slate-300 block mb-1">{t('common.comment')}</label>
                 <input
                   type="text"
-                  placeholder="规则说明"
+                  placeholder="Comment"
                   value={addFilterComment}
                   onChange={(e) => setAddFilterComment(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -1223,14 +1222,14 @@ export const Firewall: React.FC = () => {
                   onClick={() => setShowAddFilterModal(false)}
                   className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition cursor-pointer"
                 >
-                  取消
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={addFilterSubmitting}
                   className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
                 >
-                  {addFilterSubmitting ? '创建中...' : '生成并应用规则'}
+                  {addFilterSubmitting ? '...' : t('firewall.applyRule', '生成并应用规则')}
                 </button>
               </div>
             </form>
@@ -1246,7 +1245,7 @@ export const Firewall: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Edit2 className="w-5 h-5 text-blue-400" />
                 <h3 className="font-semibold text-sm text-slate-100">
-                  编辑过滤规则 ({editingFilterRule['.id']})
+                  {t('firewall.editFilter', 'Edit Filter Rule')} ({editingFilterRule['.id']})
                 </h3>
               </div>
               <button
@@ -1260,38 +1259,38 @@ export const Firewall: React.FC = () => {
             <form onSubmit={handleUpdateFilter} className="mt-4 space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-medium text-slate-300 block mb-1">链 (Chain)</label>
+                  <label className="text-xs font-medium text-slate-300 block mb-1">{t('firewall.chain', '链 (Chain)')}</label>
                   <select
                     value={editFilterChain}
                     onChange={(e) => setEditFilterChain(e.target.value)}
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                   >
-                    <option value="forward">forward (转发数据流)</option>
-                    <option value="input">input (入站访问本机)</option>
-                    <option value="output">output (本机发起出站)</option>
+                    <option value="forward">forward</option>
+                    <option value="input">input</option>
+                    <option value="output">output</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-slate-300 block mb-1">执行动作 (Action)</label>
+                  <label className="text-xs font-medium text-slate-300 block mb-1">{t('firewall.action', '执行动作 (Action)')}</label>
                   <select
                     value={editFilterAction}
                     onChange={(e) => setEditFilterAction(e.target.value)}
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                   >
-                    <option value="accept">accept (允许通过)</option>
-                    <option value="drop">drop (静默丢弃)</option>
-                    <option value="reject">reject (拒绝并响应)</option>
-                    <option value="fasttrack-connection">fasttrack-connection (快速通道)</option>
-                    <option value="passthrough">passthrough (穿透)</option>
-                    <option value="log">log (记录日志)</option>
+                    <option value="accept">accept</option>
+                    <option value="drop">drop</option>
+                    <option value="reject">reject</option>
+                    <option value="fasttrack-connection">fasttrack-connection</option>
+                    <option value="passthrough">passthrough</option>
+                    <option value="log">log</option>
                   </select>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-medium text-slate-300 block mb-1">传输协议</label>
+                  <label className="text-xs font-medium text-slate-300 block mb-1">{t('firewall.protocol', '传输协议')}</label>
                   <select
                     value={editFilterProtocol}
                     onChange={(e) => setEditFilterProtocol(e.target.value)}
@@ -1300,15 +1299,15 @@ export const Firewall: React.FC = () => {
                     <option value="tcp">TCP</option>
                     <option value="udp">UDP</option>
                     <option value="icmp">ICMP</option>
-                    <option value="">any (全部协议)</option>
+                    <option value="">any</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-slate-300 block mb-1">目标端口 (Dst. Port)</label>
+                  <label className="text-xs font-medium text-slate-300 block mb-1">{t('firewall.dstPort', '目标端口 (Dst. Port)')}</label>
                   <input
                     type="text"
-                    placeholder="例如: 22,80,443"
+                    placeholder="e.g. 22,80,443"
                     value={editFilterDstPort}
                     onChange={(e) => setEditFilterDstPort(e.target.value)}
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -1318,10 +1317,10 @@ export const Firewall: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-medium text-slate-300 block mb-1">源 IP 地址 (Src. Address)</label>
+                  <label className="text-xs font-medium text-slate-300 block mb-1">{t('firewall.srcAddress', '源 IP 地址 (Src. Address)')}</label>
                   <input
                     type="text"
-                    placeholder="例如: 192.168.88.0/24"
+                    placeholder="e.g. 192.168.88.0/24"
                     value={editFilterSrcAddress}
                     onChange={(e) => setEditFilterSrcAddress(e.target.value)}
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -1329,10 +1328,10 @@ export const Firewall: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-slate-300 block mb-1">目标 IP 地址 (Dst. Address)</label>
+                  <label className="text-xs font-medium text-slate-300 block mb-1">{t('firewall.dstAddress', '目标 IP 地址 (Dst. Address)')}</label>
                   <input
                     type="text"
-                    placeholder="例如: 0.0.0.0/0"
+                    placeholder="e.g. 0.0.0.0/0"
                     value={editFilterDstAddress}
                     onChange={(e) => setEditFilterDstAddress(e.target.value)}
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -1342,13 +1341,13 @@ export const Firewall: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-medium text-slate-300 block mb-1">入网接口 (In Interface)</label>
+                  <label className="text-xs font-medium text-slate-300 block mb-1">{t('firewall.inInterface', '入网接口 (In Interface)')}</label>
                   <select
                     value={editFilterInInterface}
                     onChange={(e) => setEditFilterInInterface(e.target.value)}
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                   >
-                    <option value="">any (任意接口)</option>
+                    <option value="">any</option>
                     {interfaces.map((i) => (
                       <option key={i['.id']} value={i.name}>
                         {i.name}
@@ -1358,13 +1357,13 @@ export const Firewall: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-slate-300 block mb-1">出网接口 (Out Interface)</label>
+                  <label className="text-xs font-medium text-slate-300 block mb-1">{t('firewall.outInterface', '出网接口 (Out Interface)')}</label>
                   <select
                     value={editFilterOutInterface}
                     onChange={(e) => setEditFilterOutInterface(e.target.value)}
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                   >
-                    <option value="">any (任意接口)</option>
+                    <option value="">any</option>
                     {interfaces.map((i) => (
                       <option key={i['.id']} value={i.name}>
                         {i.name}
@@ -1375,10 +1374,10 @@ export const Firewall: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-xs font-medium text-slate-300 block mb-1">注释说明 (Comment)</label>
+                <label className="text-xs font-medium text-slate-300 block mb-1">{t('common.comment')}</label>
                 <input
                   type="text"
-                  placeholder="规则说明"
+                  placeholder="Comment"
                   value={editFilterComment}
                   onChange={(e) => setEditFilterComment(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -1391,14 +1390,14 @@ export const Firewall: React.FC = () => {
                   onClick={() => setEditingFilterRule(null)}
                   className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition cursor-pointer"
                 >
-                  取消
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={editFilterSubmitting}
                   className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
                 >
-                  {editFilterSubmitting ? '保存中...' : '保存更改'}
+                  {editFilterSubmitting ? '...' : t('common.save')}
                 </button>
               </div>
             </form>

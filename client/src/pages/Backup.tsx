@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { rosApi } from '../api/client.js';
 import { RosFile } from '../types/index.js';
+import { useI18n } from '../i18n/context.js';
 import {
   HardDriveDownload,
   FileCode,
@@ -24,6 +25,7 @@ function formatBytes(bytes: number): string {
 }
 
 export const Backup: React.FC = () => {
+  const { t } = useI18n();
   const [files, setFiles] = useState<RosFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [exportText, setExportText] = useState('');
@@ -119,10 +121,10 @@ export const Backup: React.FC = () => {
         <div>
           <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
             <HardDriveDownload className="w-5 h-5 text-blue-400" />
-            <span>系统配置备份与导出中心 (Backup & Export)</span>
+            <span>{t('backup.title')}</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            生成 RouterOS 纯文本命令配置脚本 (.rsc) 或全量快照镜像 (.backup)
+            {t('backup.subtitle')}
           </p>
         </div>
 
@@ -133,7 +135,7 @@ export const Backup: React.FC = () => {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 transition cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>刷新</span>
+            <span>{t('common.refresh')}</span>
           </button>
 
           <button
@@ -141,7 +143,7 @@ export const Backup: React.FC = () => {
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>新建系统快照备份 (.backup)</span>
+            <span>{t('backup.createBackup')} (.backup)</span>
           </button>
         </div>
       </div>
@@ -152,7 +154,7 @@ export const Backup: React.FC = () => {
           <div className="flex items-center gap-2">
             <FileCode className="w-4 h-4 text-emerald-400" />
             <h3 className="font-semibold text-xs text-slate-200 uppercase tracking-wider">
-              RouterOS 纯文本配置脚本 (/export)
+              {t('backup.exportConfig')} (/export)
             </h3>
           </div>
 
@@ -162,7 +164,7 @@ export const Backup: React.FC = () => {
               disabled={exportLoading}
               className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 border border-slate-700 transition cursor-pointer"
             >
-              {exportLoading ? '正在导出...' : '重新导出'}
+              {exportLoading ? '...' : t('common.refresh')}
             </button>
 
             <button
@@ -170,7 +172,7 @@ export const Backup: React.FC = () => {
               className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 border border-slate-700 flex items-center gap-1.5 transition cursor-pointer"
             >
               {copiedExport ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copiedExport ? '已复制' : '复制脚本'}</span>
+              <span>{copiedExport ? 'Copied' : 'Copy'}</span>
             </button>
 
             <button
@@ -178,14 +180,14 @@ export const Backup: React.FC = () => {
               className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-md shadow-blue-600/20 flex items-center gap-1.5 transition cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
-              <span>下载 .rsc 脚本</span>
+              <span>{t('backup.downloadRsc')}</span>
             </button>
           </div>
         </div>
 
         {/* Code View */}
         <div className="bg-slate-950 border border-slate-800/80 rounded-xl p-4 font-mono text-xs text-slate-300 max-h-72 overflow-y-auto leading-relaxed select-all">
-          <pre>{exportText || '# 正在导出配置脚本...'}</pre>
+          <pre>{exportText || '# Exporting script...'}</pre>
         </div>
       </div>
 
@@ -193,7 +195,7 @@ export const Backup: React.FC = () => {
       <div className="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
         <div className="p-4 border-b border-slate-800">
           <h3 className="font-semibold text-xs text-slate-200 uppercase tracking-wider">
-            存储空间备份与文件列表 (RouterOS Storage Files)
+            {t('backup.fileList')}
           </h3>
         </div>
 
@@ -201,11 +203,11 @@ export const Backup: React.FC = () => {
           <table className="w-full text-left text-xs min-w-[600px]">
             <thead className="bg-slate-950/60 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-mono">
               <tr>
-                <th className="py-3.5 px-4 font-medium">文件名 (File Name)</th>
-                <th className="py-3.5 px-4 font-medium">文件类型</th>
-                <th className="py-3.5 px-4 font-medium">文件大小</th>
-                <th className="py-3.5 px-4 font-medium">创建时间</th>
-                <th className="py-3.5 px-4 font-medium text-right">操作</th>
+                <th className="py-3.5 px-4 font-medium">{t('backup.fileName')}</th>
+                <th className="py-3.5 px-4 font-medium">{t('backup.fileType')}</th>
+                <th className="py-3.5 px-4 font-medium">{t('backup.fileSize')}</th>
+                <th className="py-3.5 px-4 font-medium">{t('backup.creationTime')}</th>
+                <th className="py-3.5 px-4 font-medium text-right">{t('common.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60 text-slate-300">
@@ -235,7 +237,7 @@ export const Backup: React.FC = () => {
                       onClick={() => handleDeleteFile(file['.id'], file.name)}
                       disabled={busyId === file['.id']}
                       className="p-1 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded transition cursor-pointer"
-                      title="删除备份文件"
+                      title={t('common.delete')}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -246,7 +248,7 @@ export const Backup: React.FC = () => {
               {files.length === 0 && !loading && (
                 <tr>
                   <td colSpan={5} className="py-12 text-center text-slate-500 text-xs">
-                    存储空间中暂无备份文件
+                    {t('common.noData')}
                   </td>
                 </tr>
               )}
@@ -262,7 +264,7 @@ export const Backup: React.FC = () => {
             <div className="flex justify-between items-center pb-3 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <FileArchive className="w-4 h-4 text-blue-400" />
-                <h3 className="font-semibold text-sm text-slate-100">创建全量系统快照备份</h3>
+                <h3 className="font-semibold text-sm text-slate-100">{t('backup.createBackup')}</h3>
               </div>
               <button
                 onClick={() => setShowCreateModal(false)}
@@ -275,11 +277,11 @@ export const Backup: React.FC = () => {
             <form onSubmit={handleCreateBackup} className="mt-4 space-y-4">
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  备份文件名前缀 (选填)
+                  {t('backup.fileName')}
                 </label>
                 <input
                   type="text"
-                  placeholder="例如: office-core-backup"
+                  placeholder="e.g. office-core-backup"
                   value={backupName}
                   onChange={(e) => setBackupName(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -288,11 +290,11 @@ export const Backup: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  加密保护密码 (选填，防止备份泄露)
+                  {t('backup.encryptionPassword')}
                 </label>
                 <input
                   type="password"
-                  placeholder="留空则不设加密密码"
+                  placeholder="Leave empty for none"
                   value={backupPassword}
                   onChange={(e) => setBackupPassword(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -305,14 +307,14 @@ export const Backup: React.FC = () => {
                   onClick={() => setShowCreateModal(false)}
                   className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition cursor-pointer"
                 >
-                  取消
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={creating}
                   className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
                 >
-                  {creating ? '备份打包中...' : '立即创建备份'}
+                  {creating ? t('common.creating') : t('common.save')}
                 </button>
               </div>
             </form>

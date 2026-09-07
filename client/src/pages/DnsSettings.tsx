@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { rosApi } from '../api/client.js';
 import { RosDnsConfig, RosDnsStatic } from '../types/index.js';
+import { useI18n } from '../i18n/context.js';
 import {
   Binary,
   Plus,
@@ -16,6 +17,7 @@ import {
 } from 'lucide-react';
 
 export const DnsSettings: React.FC = () => {
+  const { t } = useI18n();
   const [config, setConfig] = useState<RosDnsConfig | null>(null);
   const [staticList, setStaticList] = useState<RosDnsStatic[]>([]);
   const [loading, setLoading] = useState(true);
@@ -154,10 +156,10 @@ export const DnsSettings: React.FC = () => {
         <div>
           <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
             <Server className="w-5 h-5 text-blue-400" />
-            <span>DNS 服务与静态域名解析 (DNS Settings)</span>
+            <span>{t('dns.title')}</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            配置上游公共 DNS 服务器、本地缓存加速策略及内网自定义静态域名映射
+            {t('dns.subtitle')}
           </p>
         </div>
 
@@ -168,7 +170,7 @@ export const DnsSettings: React.FC = () => {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 transition cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>刷新</span>
+            <span>{t('common.refresh')}</span>
           </button>
         </div>
       </div>
@@ -179,7 +181,7 @@ export const DnsSettings: React.FC = () => {
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-amber-400" />
             <h3 className="font-semibold text-xs text-slate-200 uppercase tracking-wider">
-              全局 DNS 缓存与上游服务器
+              {t('dns.servers')}
             </h3>
           </div>
 
@@ -188,14 +190,14 @@ export const DnsSettings: React.FC = () => {
             onClick={handleFlushCache}
             className="text-xs px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition cursor-pointer"
           >
-            清空 DNS 缓存
+            {t('dns.flushCache')}
           </button>
         </div>
 
         {globalSuccess && (
           <div className="mb-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 shrink-0" />
-            <span>全局 DNS 配置已成功保存！</span>
+            <span>{t('dns.saved', '全局 DNS 配置已成功保存！')}</span>
           </div>
         )}
 
@@ -203,7 +205,7 @@ export const DnsSettings: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="text-xs font-medium text-slate-300 block mb-1">
-                上游公共 DNS 服务器 (逗号分隔)
+                {t('dns.upstreamServers', '上游公共 DNS 服务器 (逗号分隔)')}
               </label>
               <input
                 type="text"
@@ -216,21 +218,21 @@ export const DnsSettings: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setServers('223.5.5.5,223.6.6.6')}
-                  className="text-[10px] px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300"
+                  className="text-[10px] px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 cursor-pointer"
                 >
-                  阿里 DNS
+                  Aliyun DNS
                 </button>
                 <button
                   type="button"
                   onClick={() => setServers('119.29.29.29,182.254.116.116')}
-                  className="text-[10px] px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300"
+                  className="text-[10px] px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 cursor-pointer"
                 >
-                  腾讯 DNSPod
+                  Tencent DNSPod
                 </button>
                 <button
                   type="button"
                   onClick={() => setServers('8.8.8.8,1.1.1.1')}
-                  className="text-[10px] px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300"
+                  className="text-[10px] px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 cursor-pointer"
                 >
                   Google/Cloudflare
                 </button>
@@ -240,7 +242,7 @@ export const DnsSettings: React.FC = () => {
             <div className="space-y-3">
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  缓存大小限制 (Cache Size, KB)
+                  {t('dns.cacheSize', '缓存大小限制 (KB)')}
                 </label>
                 <input
                   type="number"
@@ -259,10 +261,10 @@ export const DnsSettings: React.FC = () => {
                 />
                 <div>
                   <span className="text-xs text-slate-200 font-medium block">
-                    允许远程请求 (Allow Remote Requests)
+                    {t('dns.allowRemote')}
                   </span>
                   <span className="text-[11px] text-slate-500 block">
-                    开启后路由器作为局域网设备的 DNS 缓存服务器，加速内网域名解析
+                    Allow LAN clients to query DNS through router
                   </span>
                 </div>
               </label>
@@ -271,8 +273,8 @@ export const DnsSettings: React.FC = () => {
 
           <div className="flex justify-between items-center pt-3 border-t border-slate-800">
             <div className="text-xs text-slate-400 font-mono">
-              <span>动态下发 DNS: {config?.['dynamic-servers'] || '无'}</span>
-              <span className="ml-4">已用缓存: {config?.['cache-used'] || 0} KB</span>
+              <span>Dynamic DNS: {config?.['dynamic-servers'] || 'none'}</span>
+              <span className="ml-4">{t('dns.cacheSize')}: {config?.['cache-used'] || 0} KB</span>
             </div>
 
             <button
@@ -280,7 +282,7 @@ export const DnsSettings: React.FC = () => {
               disabled={savingGlobal}
               className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
             >
-              {savingGlobal ? '保存中...' : '保存 DNS 全局配置'}
+              {savingGlobal ? t('common.saving') : t('common.save')}
             </button>
           </div>
         </form>
@@ -291,17 +293,17 @@ export const DnsSettings: React.FC = () => {
         <div className="p-4 border-b border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h3 className="font-semibold text-xs text-slate-200 uppercase tracking-wider">
-              局域网静态域名解析表 (Static DNS Records)
+              {t('dns.staticRecords')}
             </h3>
             <p className="text-[11px] text-slate-400 mt-0.5">
-              为内网 NAS、软路由或服务器指定自定义本地域名（如 nas.lan 映射至 192.168.88.200）
+              Custom static mappings (e.g. nas.lan -&gt; 192.168.88.200)
             </p>
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
             <input
               type="text"
-              placeholder="搜索域名或 IP..."
+              placeholder={t('common.search')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 w-44"
@@ -311,7 +313,7 @@ export const DnsSettings: React.FC = () => {
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white transition cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>添加静态记录</span>
+              <span>{t('dns.addStatic')}</span>
             </button>
           </div>
         </div>
@@ -320,11 +322,11 @@ export const DnsSettings: React.FC = () => {
           <table className="w-full text-left text-xs min-w-[600px]">
             <thead className="bg-slate-950/60 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-mono">
               <tr>
-                <th className="py-3.5 px-4 font-medium">域名 (Domain Name)</th>
-                <th className="py-3.5 px-4 font-medium">解析目标 IP</th>
-                <th className="py-3.5 px-4 font-medium">缓存有效期 (TTL)</th>
-                <th className="py-3.5 px-4 font-medium">备注说明</th>
-                <th className="py-3.5 px-4 font-medium text-right">操作</th>
+                <th className="py-3.5 px-4 font-medium">{t('ddns.domain')}</th>
+                <th className="py-3.5 px-4 font-medium">{t('common.address')}</th>
+                <th className="py-3.5 px-4 font-medium">TTL</th>
+                <th className="py-3.5 px-4 font-medium">{t('common.comment')}</th>
+                <th className="py-3.5 px-4 font-medium text-right">{t('common.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60 text-slate-300">
@@ -360,7 +362,7 @@ export const DnsSettings: React.FC = () => {
                               ? 'text-emerald-400 hover:bg-emerald-500/10'
                               : 'text-slate-400 hover:text-amber-400 hover:bg-slate-800'
                           }`}
-                          title={isDisabled ? '启用记录' : '禁用记录'}
+                          title={isDisabled ? t('common.enabled') : t('common.disabled')}
                         >
                           <Power className="w-3.5 h-3.5" />
                         </button>
@@ -369,7 +371,7 @@ export const DnsSettings: React.FC = () => {
                           onClick={() => handleDeleteStatic(item['.id'], item.name)}
                           disabled={isBusy}
                           className="p-1 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded transition cursor-pointer"
-                          title="删除此静态解析"
+                          title={t('common.delete')}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -382,7 +384,7 @@ export const DnsSettings: React.FC = () => {
               {filtered.length === 0 && !loading && (
                 <tr>
                   <td colSpan={5} className="py-12 text-center text-slate-500 text-xs">
-                    暂无自定义静态 DNS 记录
+                    {t('common.noData')}
                   </td>
                 </tr>
               )}
@@ -398,7 +400,7 @@ export const DnsSettings: React.FC = () => {
             <div className="flex justify-between items-center pb-3 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <Server className="w-4 h-4 text-blue-400" />
-                <h3 className="font-semibold text-sm text-slate-100">添加静态 DNS 解析</h3>
+                <h3 className="font-semibold text-sm text-slate-100">{t('dns.addStatic', '添加静态 DNS 解析')}</h3>
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
@@ -411,12 +413,12 @@ export const DnsSettings: React.FC = () => {
             <form onSubmit={handleAddStaticSubmit} className="mt-4 space-y-4">
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  自定义域名 (Domain Name)
+                  {t('ddns.domain')}
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="例如: nas.lan 或 router.local"
+                  placeholder="e.g. nas.lan"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -425,12 +427,12 @@ export const DnsSettings: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  目标 IP 地址 (IP Address)
+                  {t('common.address')}
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="例如: 192.168.88.200"
+                  placeholder="e.g. 192.168.88.200"
                   value={newAddress}
                   onChange={(e) => setNewAddress(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -439,7 +441,7 @@ export const DnsSettings: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  缓存 TTL (默认 1d)
+                  TTL
                 </label>
                 <input
                   type="text"
@@ -452,11 +454,11 @@ export const DnsSettings: React.FC = () => {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  备注说明 (选填)
+                  {t('common.comment')}
                 </label>
                 <input
                   type="text"
-                  placeholder="例如: 私有存储服务"
+                  placeholder="Comment"
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -469,14 +471,14 @@ export const DnsSettings: React.FC = () => {
                   onClick={() => setShowAddModal(false)}
                   className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition cursor-pointer"
                 >
-                  取消
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={submittingStatic}
                   className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-medium text-white shadow-lg shadow-blue-600/30 transition cursor-pointer"
                 >
-                  {submittingStatic ? '保存中...' : '添加记录'}
+                  {submittingStatic ? t('common.creating') : t('common.save')}
                 </button>
               </div>
             </form>

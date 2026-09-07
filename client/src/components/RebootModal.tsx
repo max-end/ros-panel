@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { rosApi } from '../api/client.js';
 import { useAuth } from '../store/authContext.js';
+import { useI18n } from '../i18n/context.js';
 import { RotateCcw, AlertTriangle, CheckCircle, RefreshCw, X } from 'lucide-react';
 
 interface RebootModalProps {
@@ -10,6 +11,7 @@ interface RebootModalProps {
 
 export const RebootModal: React.FC<RebootModalProps> = ({ isOpen, onClose }) => {
   const { deviceInfo, config, refreshStatus } = useAuth();
+  const { t } = useI18n();
   const [phase, setPhase] = useState<'confirm' | 'rebooting' | 'success' | 'timeout'>('confirm');
   const [countdown, setCountdown] = useState(45);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -93,7 +95,7 @@ export const RebootModal: React.FC<RebootModalProps> = ({ isOpen, onClose }) => 
                   <RotateCcw className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-sm text-slate-100">安全重启路由器</h3>
+                  <h3 className="font-semibold text-sm text-slate-100">{t('modal.rebootTitle')}</h3>
                   <span className="text-[11px] text-slate-400 font-mono">{deviceLabel}</span>
                 </div>
               </div>
@@ -115,22 +117,21 @@ export const RebootModal: React.FC<RebootModalProps> = ({ isOpen, onClose }) => 
               <div className="p-3.5 bg-red-500/10 border border-red-500/20 rounded-xl text-xs text-red-300 flex items-start gap-2.5">
                 <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
                 <p className="leading-relaxed">
-                  确定要重启 <strong className="text-white font-mono">{deviceLabel}</strong> 吗？
-                  重启过程中所有局域网终端与外部宽带连接将短暂中断约 <strong className="text-white">30~60 秒</strong>。
+                  {t('modal.rebootWarning')}
                 </p>
               </div>
 
               <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-3 text-xs text-slate-400 space-y-1.5 font-mono">
                 <div className="flex justify-between">
-                  <span>目标设备:</span>
+                  <span>Target:</span>
                   <span className="text-slate-200">{config?.host}:{config?.port}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>固件型号:</span>
+                  <span>Model:</span>
                   <span className="text-slate-200">{deviceInfo?.['board-name'] || 'RouterOS v7'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>开机时间:</span>
+                  <span>Uptime:</span>
                   <span className="text-slate-200">{deviceInfo?.uptime || '--'}</span>
                 </div>
               </div>
@@ -142,7 +143,7 @@ export const RebootModal: React.FC<RebootModalProps> = ({ isOpen, onClose }) => 
                 onClick={onClose}
                 className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs py-2.5 rounded-xl cursor-pointer transition font-medium"
               >
-                取消
+                {t('common.cancel')}
               </button>
               <button
                 type="button"
@@ -150,7 +151,7 @@ export const RebootModal: React.FC<RebootModalProps> = ({ isOpen, onClose }) => 
                 className="flex-1 bg-red-600 hover:bg-red-500 text-white text-xs py-2.5 rounded-xl transition cursor-pointer font-medium shadow-lg shadow-red-600/30 flex items-center justify-center gap-1.5"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
-                <span>立即重启</span>
+                <span>{t('header.reboot', '重启设备')}</span>
               </button>
             </div>
           </div>
@@ -165,15 +166,15 @@ export const RebootModal: React.FC<RebootModalProps> = ({ isOpen, onClose }) => 
             </div>
 
             <div>
-              <h3 className="font-bold text-base text-slate-100">正在重启并等待系统上线</h3>
+              <h3 className="font-bold text-base text-slate-100">{t('modal.rebootCountdown')}</h3>
               <p className="text-xs text-slate-400 mt-1">
-                已向设备下发重启指令，正在持续监测连通性...
+                Reboot signal sent. Monitoring connectivity...
               </p>
             </div>
 
             <div className="bg-slate-800/60 border border-slate-700/60 rounded-xl p-3.5 max-w-xs mx-auto">
               <div className="text-2xl font-bold font-mono text-blue-400">
-                {countdown} <span className="text-xs text-slate-400 font-normal">秒倒计时</span>
+                {countdown} <span className="text-xs text-slate-400 font-normal">s</span>
               </div>
               <div className="w-full bg-slate-700 rounded-full h-1.5 mt-2 overflow-hidden">
                 <div
@@ -184,7 +185,7 @@ export const RebootModal: React.FC<RebootModalProps> = ({ isOpen, onClose }) => 
             </div>
 
             <p className="text-[11px] text-slate-500">
-              设备启动完成后将自动恢复联机并刷新大屏，无需手动干预
+              The page will automatically refresh once the router is back online.
             </p>
           </div>
         )}
@@ -196,9 +197,9 @@ export const RebootModal: React.FC<RebootModalProps> = ({ isOpen, onClose }) => 
               <CheckCircle className="w-8 h-8" />
             </div>
             <div>
-              <h3 className="font-bold text-base text-slate-100">设备已重新上线！</h3>
+              <h3 className="font-bold text-base text-slate-100">Online!</h3>
               <p className="text-xs text-slate-400 mt-1">
-                REST API 连接已恢复正常，正在重新载入控制台...
+                Router restored. Reloading console...
               </p>
             </div>
           </div>
