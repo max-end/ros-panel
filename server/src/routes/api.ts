@@ -16,6 +16,7 @@ import * as dnsController from '../controllers/dnsController.js';
 import * as userController from '../controllers/userController.js';
 import * as backupController from '../controllers/backupController.js';
 import * as ddnsController from '../controllers/ddnsController.js';
+import * as wifiController from '../controllers/wifiController.js';
 
 export const apiRouter = Router();
 
@@ -94,6 +95,12 @@ apiRouter.post('/system/reboot', systemController.rebootSystem);
 apiRouter.post('/system/ping', systemController.pingHost);
 apiRouter.post('/system/traceroute', systemController.tracerouteHost);
 apiRouter.post('/system/exec', systemController.executeCommand);
+apiRouter.get('/system/package/update', systemController.getPackageUpdate);
+apiRouter.post('/system/package/update/check', systemController.checkPackageUpdate);
+apiRouter.post('/system/package/update/install', systemController.installPackageUpdate);
+apiRouter.post('/system/package/update/channel', systemController.setPackageChannel);
+apiRouter.get('/system/routerboard', systemController.getRouterboard);
+apiRouter.post('/system/routerboard/upgrade', systemController.upgradeRouterboard);
 
 // Users
 apiRouter.get('/users', userController.getUsers);
@@ -151,3 +158,10 @@ apiRouter.get('/ddns/custom', ddnsController.getCustomDdns);
 apiRouter.post('/ddns/custom', ddnsController.addCustomDdns);
 apiRouter.delete('/ddns/custom/:id', ddnsController.removeCustomDdns);
 apiRouter.post('/ddns/custom/:id/sync', ddnsController.syncCustomDdns);
+
+// Wi-Fi & CAPsMAN
+apiRouter.get('/wifi/interfaces', wifiController.getWifiInterfaces);
+apiRouter.get('/wifi/clients', wifiController.getWifiClients);
+apiRouter.get('/wifi/capsman', wifiController.getCapsmanConfig);
+apiRouter.patch('/wifi/interfaces/:id', wifiController.updateWifiInterface);
+apiRouter.post('/wifi/quick-setup', wifiController.quickSetupWifi);

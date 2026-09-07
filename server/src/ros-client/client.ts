@@ -27,6 +27,11 @@ import {
   TracerouteHop,
   RosCloud,
   CustomDdnsItem,
+  RosPackageUpdate,
+  RosRouterboard,
+  RosWifiInterface,
+  RosWifiClient,
+  RosCapsmanConfig,
 } from '../types/ros.js';
 
 export interface IRosClient {
@@ -146,6 +151,17 @@ export interface IRosClient {
   addCustomDdns(item: Omit<CustomDdnsItem, 'id' | 'lastSyncTime' | 'lastStatus'>): Promise<CustomDdnsItem>;
   removeCustomDdns(id: string): Promise<void>;
   syncCustomDdns(id: string): Promise<{ success: boolean; message: string; ip: string }>;
+  getPackageUpdate(): Promise<RosPackageUpdate>;
+  checkPackageUpdate(): Promise<RosPackageUpdate>;
+  installPackageUpdate(): Promise<void>;
+  setPackageChannel(channel: string): Promise<void>;
+  getRouterboard(): Promise<RosRouterboard>;
+  upgradeRouterboard(): Promise<void>;
+  getWifiInterfaces(): Promise<RosWifiInterface[]>;
+  getWifiClients(): Promise<RosWifiClient[]>;
+  getCapsmanConfig(): Promise<RosCapsmanConfig>;
+  updateWifiInterface(id: string, data: Partial<RosWifiInterface>): Promise<void>;
+  quickSetupWifi(data: { ssid: string; password?: string }): Promise<void>;
 }
 
 export class RosRestClient implements IRosClient {
@@ -1141,5 +1157,145 @@ export class RosRestClient implements IRosClient {
       message: `已成功将 ${item.domain} 动态解析记录同步至最新公网 IP: ${ip}`,
       ip,
     };
+  }
+
+  async getPackageUpdate(): Promise<RosPackageUpdate> {
+    try {
+      const res = await this.axiosInstance.get<RosPackageUpdate>('/system/package/update');
+      return res.data;
+    } catch (err) {
+      return this.handleError(err, 'getPackageUpdate');
+    }
+  }
+
+  async checkPackageUpdate(): Promise<RosPackageUpdate> {
+    try {
+      await this.axiosInstance.post('/system/package/update/check-for-updates');
+      const res = await this.axiosInstance.get<RosPackageUpdate>('/system/package/update');
+      return res.data;
+    } catch (err) {
+      return this.handleError(err, 'checkPackageUpdate');
+    }
+  }
+
+  async installPackageUpdate(): Promise<void> {
+    try {
+      await this.axiosInstance.post('/system/package/update/install', {}, { timeout: 4000 });
+    } catch (err: any) {
+      if (
+        err.code === 'ECONNRESET' ||
+        err.code === 'ETIMEDOUT' ||
+        err.message?.includes('socket hang up') ||
+        err.message?.includes('timeout')
+      ) {
+        return;
+      }
+      return this.handleError(err, 'installPackageUpdate');
+    }
+  }
+
+  async setPackageChannel(channel: string): Promise<void> {
+    try {
+      await this.axiosInstance.post('/system/package/update/set', { channel });
+    } catch (err) {
+      return this.handleError(err, 'setPackageChannel');
+    }
+  }
+
+  async getRouterboard(): Promise<RosRouterboard> {
+    try {
+      const res = await this.axiosInstance.get<RosRouterboard>('/system/routerboard');
+      return res.data;
+    } catch (err) {
+      return this.handleError(err, 'getRouterboard');
+    }
+  }
+
+  async upgradeRouterboard(): Promise<void> {
+    try {
+      await this.axiosInstance.post('/system/routerboard/upgrade');
+    } catch (err) {
+      return this.handleError(err, 'upgradeRouterboard');
+    }
+  }
+
+  async getWifiInterfaces(): Promise<RosWifiInterface[]> {
+    try {
+      // 1. Try modern v7 wifi package (WiFiWave2)
+      const res = await this.axiosInstance.get<RosWifiInterface[]>('/interface/wifi');
+      return res.data.map((item) => ({ ...item, type: 'wifi' }));
+    } catch {
+      try {
+        // 2. Fallback to legacy wireless package
+        const res = await this.axiosInstance.get<RosWifiInterface[]>('/interface/wireless');
+        return res.data.map((item) => ({ ...item, type: 'wireless' }));
+      } catch {
+        return [];
+      }
+    }
+  }
+
+  async getWifiClients(): Promise<RosWifiClient[]> {
+    try {
+      // 1. Try modern v7 wifi registration table
+      const res = await this.axiosInstance.get<RosWifiClient[]>('/interface/wifi/registration-table');
+      return res.data;
+    } catch {
+      try {
+        // 2. Fallback to legacy wireless registration table
+        const res = await this.axiosInstance.get<RosWifiClient[]>('/interface/wireless/registration-table');
+        return res.data;
+      } catch {
+        return [];
+      }
+    }
+  }
+
+  async getCapsmanConfig(): Promise<RosCapsmanConfig> {
+    try {
+      const res = await this.axiosInstance.get<any>('/interface/wifi/capsman');
+      const data = Array.isArray(res.data) ? res.data[0] : res.data;
+      return {
+        enabled: data?.enabled ?? false,
+        certificate: data?.certificate || 'auto',
+        'ca-certificate': data?.['ca-certificate'] || 'auto',
+      };
+    } catch {
+      try {
+        const res = await this.axiosInstance.get<any>('/caps-man/manager');
+        const data = Array.isArray(res.data) ? res.data[0] : res.data;
+        return {
+          enabled: data?.enabled ?? false,
+          certificate: data?.certificate || 'auto',
+          'ca-certificate': data?.['ca-certificate'] || 'auto',
+        };
+      } catch {
+        return { enabled: false };
+      }
+    }
+  }
+
+  async updateWifiInterface(id: string, data: Partial<RosWifiInterface>): Promise<void> {
+    try {
+      // Try modern wifi first
+      await this.axiosInstance.patch(`/interface/wifi/${encodeURIComponent(id)}`, data);
+    } catch {
+      try {
+        await this.axiosInstance.patch(`/interface/wireless/${encodeURIComponent(id)}`, data);
+      } catch (err) {
+        return this.handleError(err, 'updateWifiInterface');
+      }
+    }
+  }
+
+  async quickSetupWifi(data: { ssid: string; password?: string }): Promise<void> {
+    const ifaces = await this.getWifiInterfaces();
+    for (const iface of ifaces) {
+      const patchData: any = { ssid: data.ssid };
+      if (data.password) {
+        patchData.passphrase = data.password;
+      }
+      await this.updateWifiInterface(iface['.id'], patchData).catch(() => {});
+    }
   }
 }

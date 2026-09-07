@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../store/authContext.js';
-import { Router, Cpu, Clock, LogOut, Menu, RotateCcw, ChevronDown } from 'lucide-react';
+import { useI18n } from '../i18n/context.js';
+import { Router, Cpu, Clock, LogOut, Menu, RotateCcw, ChevronDown, Globe } from 'lucide-react';
 import { formatRosUptime, formatRosUptimeDetailed } from '../utils/format.js';
 import { RebootModal } from './RebootModal.js';
 import { DeviceSwitcherModal } from './DeviceSwitcherModal.js';
@@ -11,6 +12,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu }) => {
   const { deviceInfo, config, logout, savedDevices } = useAuth();
+  const { language, toggleLanguage, t } = useI18n();
   const [showRebootModal, setShowRebootModal] = useState(false);
   const [showDeviceSwitcher, setShowDeviceSwitcher] = useState(false);
 
@@ -66,31 +68,41 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu }) => {
               title={`连续运行：${formatRosUptimeDetailed(deviceInfo?.uptime)} (原始: ${deviceInfo?.uptime || '--'})`}
             >
               <Clock className="w-3.5 h-3.5 text-slate-400" />
-              <span className="text-slate-400">运行:</span>
+              <span className="text-slate-400">{t('navbar.uptime')}:</span>
               <span className="font-mono text-slate-200">{formatRosUptime(deviceInfo?.uptime)}</span>
             </div>
 
             <div className="flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700/60">
               <Cpu className="w-3.5 h-3.5 text-blue-400" />
-              <span className="text-slate-400">CPU:</span>
+              <span className="text-slate-400">{t('navbar.cpu')}:</span>
               <span className="font-mono text-slate-200">{deviceInfo?.['cpu-load'] ?? 0}%</span>
             </div>
 
             <div className="hidden lg:flex items-center gap-1.5 bg-emerald-500/10 text-emerald-400 px-2.5 py-1 rounded-lg border border-emerald-500/20">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>REST API 在线</span>
+              <span>{t('navbar.restOnline')}</span>
             </div>
           </div>
 
-          {/* Quick Actions: Reboot & Logout */}
-          <div className="flex items-center gap-2">
+          {/* Quick Actions: Language, Reboot & Logout */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Language Switcher */}
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center gap-1 text-xs text-slate-300 hover:text-blue-400 bg-slate-800/60 hover:bg-slate-700/80 border border-slate-700 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer font-medium"
+              title="切换界面语言 / Switch Language"
+            >
+              <Globe className="w-3.5 h-3.5 text-blue-400" />
+              <span>{language === 'zh' ? 'EN' : '中文'}</span>
+            </button>
+
             <button
               onClick={() => setShowRebootModal(true)}
               className="flex items-center gap-1 text-xs text-slate-400 hover:text-amber-400 bg-slate-800/50 hover:bg-amber-500/10 border border-slate-700 hover:border-amber-500/30 px-2.5 sm:px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
               title="安全重启当前路由器"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">重启</span>
+              <span className="hidden sm:inline">{t('navbar.reboot')}</span>
             </button>
 
             <button
@@ -99,7 +111,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu }) => {
               title="断开连接"
             >
               <LogOut className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">断开</span>
+              <span className="hidden sm:inline">{t('navbar.disconnect')}</span>
             </button>
           </div>
         </div>

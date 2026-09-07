@@ -352,3 +352,57 @@ export interface CustomDdnsItem {
   lastStatus?: 'success' | 'failed' | 'idle';
   lastIp?: string;
 }
+
+export interface RosPackageUpdate {
+  channel: string;
+  'installed-version': string;
+  'latest-version': string;
+  status: string;
+  'change-log'?: string;
+}
+
+export interface RosRouterboard {
+  routerboard?: boolean | string;
+  model?: string;
+  'serial-number'?: string;
+  'current-firmware'?: string;
+  'upgrade-firmware'?: string;
+  'firmware-type'?: string;
+}
+
+export interface RosWifiInterface {
+  '.id': string;
+  name: string;
+  ssid?: string;
+  band?: string;
+  channel?: string;
+  security?: string;
+  passphrase?: string;
+  running?: boolean | string;
+  disabled?: boolean | string;
+  comment?: string;
+  frequency?: string;
+  'tx-power'?: number | string;
+  type?: 'wifi' | 'wireless';
+}
+
+export interface RosWifiClient {
+  '.id': string;
+  interface: string;
+  'mac-address': string;
+  hostname?: string;
+  ssid?: string;
+  signal: number | string;
+  'tx-rate'?: string;
+  'rx-rate'?: string;
+  uptime?: string;
+  bytes?: string;
+}
+
+export interface RosCapsmanConfig {
+  enabled: boolean | string;
+  certificate?: string;
+  'ca-certificate'?: string;
+  radiosCount?: number;
+  provisioningCount?: number;
+}

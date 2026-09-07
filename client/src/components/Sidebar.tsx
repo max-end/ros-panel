@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../store/authContext.js';
+import { useI18n } from '../i18n/context.js';
 import {
   LayoutDashboard,
   Globe,
@@ -23,57 +24,67 @@ import {
   LogOut,
   User,
   X,
+  Wifi,
+  ArrowUpCircle,
 } from 'lucide-react';
 
 interface MenuItem {
   path: string;
-  label: string;
+  translationKey: string;
+  defaultLabel: string;
   icon: React.ComponentType<{ className?: string }>;
 }
 
 interface MenuGroup {
-  groupTitle?: string;
+  groupKey?: string;
+  defaultTitle?: string;
   items: MenuItem[];
 }
 
 const menuGroups: MenuGroup[] = [
   {
-    items: [{ path: '/', label: '监控大屏', icon: LayoutDashboard }],
+    items: [{ path: '/', translationKey: 'nav.dashboard', defaultLabel: '监控大屏', icon: LayoutDashboard }],
   },
   {
-    groupTitle: '外网与路由',
+    groupKey: 'nav.wanGroup',
+    defaultTitle: '外网与路由',
     items: [
-      { path: '/wan-settings', label: '外网拨号', icon: Globe },
-      { path: '/ddns', label: '动态域名', icon: Globe2 },
-      { path: '/routes', label: '路由管理', icon: RouteIcon },
-      { path: '/dns', label: 'DNS 服务', icon: Server },
+      { path: '/wan-settings', translationKey: 'nav.wan', defaultLabel: '外网拨号', icon: Globe },
+      { path: '/ddns', translationKey: 'nav.ddns', defaultLabel: '动态域名', icon: Globe2 },
+      { path: '/routes', translationKey: 'nav.routes', defaultLabel: '路由管理', icon: RouteIcon },
+      { path: '/dns', translationKey: 'nav.dns', defaultLabel: 'DNS 服务', icon: Server },
     ],
   },
   {
-    groupTitle: '网络与接口',
+    groupKey: 'nav.networkGroup',
+    defaultTitle: '网络与接口',
     items: [
-      { path: '/interfaces', label: '接口管理', icon: Network },
-      { path: '/ip-addresses', label: 'IP 地址', icon: Binary },
-      { path: '/dhcp-leases', label: 'DHCP 服务', icon: Users },
-      { path: '/arp', label: 'ARP 列表', icon: GitFork },
+      { path: '/interfaces', translationKey: 'nav.interfaces', defaultLabel: '接口管理', icon: Network },
+      { path: '/wireless', translationKey: 'nav.wireless', defaultLabel: '无线管理', icon: Wifi },
+      { path: '/ip-addresses', translationKey: 'nav.ipAddresses', defaultLabel: 'IP 地址', icon: Binary },
+      { path: '/dhcp-leases', translationKey: 'nav.dhcp', defaultLabel: 'DHCP 服务', icon: Users },
+      { path: '/arp', translationKey: 'nav.arp', defaultLabel: 'ARP 列表', icon: GitFork },
     ],
   },
   {
-    groupTitle: '安全与互联',
+    groupKey: 'nav.securityGroup',
+    defaultTitle: '安全与互联',
     items: [
-      { path: '/firewall', label: '防火墙', icon: Shield },
-      { path: '/wireguard', label: 'WireGuard', icon: RadioTower },
-      { path: '/queues', label: '带宽限速', icon: Sliders },
-      { path: '/wol', label: '网络唤醒', icon: Zap },
+      { path: '/firewall', translationKey: 'nav.firewall', defaultLabel: '防火墙', icon: Shield },
+      { path: '/wireguard', translationKey: 'nav.wireguard', defaultLabel: 'WireGuard', icon: RadioTower },
+      { path: '/queues', translationKey: 'nav.queues', defaultLabel: '带宽限速', icon: Sliders },
+      { path: '/wol', translationKey: 'nav.wol', defaultLabel: '网络唤醒', icon: Zap },
     ],
   },
   {
-    groupTitle: '系统与运维',
+    groupKey: 'nav.systemGroup',
+    defaultTitle: '系统与运维',
     items: [
-      { path: '/system', label: '系统工具', icon: Terminal },
-      { path: '/backup', label: '系统备份', icon: HardDriveDownload },
-      { path: '/users', label: '用户管理', icon: UserCheck },
-      { path: '/logs', label: '系统日志', icon: FileText },
+      { path: '/system', translationKey: 'nav.diagnostics', defaultLabel: '系统工具', icon: Terminal },
+      { path: '/upgrade', translationKey: 'nav.upgrade', defaultLabel: '固件升级', icon: ArrowUpCircle },
+      { path: '/backup', translationKey: 'nav.backup', defaultLabel: '系统备份', icon: HardDriveDownload },
+      { path: '/users', translationKey: 'nav.users', defaultLabel: '用户管理', icon: UserCheck },
+      { path: '/logs', translationKey: 'nav.logs', defaultLabel: '系统日志', icon: FileText },
     ],
   },
 ];
@@ -85,6 +96,7 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
   const { deviceInfo, config, logout } = useAuth();
+  const { t } = useI18n();
   const boardName = deviceInfo?.['board-name'] || 'RB5009';
 
   return (
@@ -141,9 +153,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
         <nav className="flex-1 px-2.5 py-3 space-y-3 overflow-y-auto custom-scrollbar">
           {menuGroups.map((group, gIdx) => (
             <div key={gIdx} className="space-y-0.5">
-              {group.groupTitle && (
+              {group.groupKey && (
                 <div className="px-2.5 pt-2 pb-1 text-[10px] font-semibold text-slate-500/90 tracking-wider">
-                  {group.groupTitle}
+                  {t(group.groupKey, group.defaultTitle)}
                 </div>
               )}
 
@@ -158,19 +170,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
                       if (onClose) onClose();
                     }}
                     className={({ isActive }) =>
-                      `flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium transition-all duration-150 cursor-pointer ${
+                      `flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all group ${
                         isActive
-                          ? 'bg-blue-600 text-white font-semibold shadow-md shadow-blue-600/25'
-                          : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/40'
+                          ? 'bg-blue-600/10 text-blue-400 border border-blue-500/20 font-semibold'
+                          : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
                       }`
                     }
                   >
-                    {({ isActive }) => (
-                      <>
-                        <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
-                        <span className="tracking-wide">{item.label}</span>
-                      </>
-                    )}
+                    <Icon className="w-4 h-4 shrink-0 transition-transform group-hover:scale-110 text-slate-400 group-hover:text-slate-200" />
+                    <span className="tracking-tight">{t(item.translationKey, item.defaultLabel)}</span>
                   </NavLink>
                 );
               })}
@@ -178,31 +186,26 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
           ))}
         </nav>
 
-        {/* User Status & Logout Footer */}
-        <div className="p-2.5 border-t border-slate-800/70 bg-slate-950/40">
-          <div className="bg-slate-900/70 border border-slate-800/80 rounded-xl p-2 flex items-center justify-between gap-2">
+        {/* User Card / Bottom Info */}
+        <div className="p-3 border-t border-slate-800/70 bg-slate-900/30">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="w-6 h-6 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0">
+              <div className="w-7 h-7 rounded-lg bg-slate-800 border border-slate-700/60 flex items-center justify-center text-slate-300 shrink-0">
                 <User className="w-3.5 h-3.5" />
               </div>
               <div className="min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-semibold text-slate-200 text-xs truncate">
-                    {config?.username || 'admin'}
-                  </span>
-                  <span className="text-[9px] px-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono leading-tight">
-                    full
-                  </span>
-                </div>
-                <span className="text-[10px] text-slate-500 block truncate font-mono leading-tight">
-                  {config?.host || '127.0.0.1'}
-                </span>
+                <p className="text-xs font-medium text-slate-200 truncate leading-tight font-mono">
+                  {config?.username || 'admin'}
+                </p>
+                <p className="text-[10px] text-slate-500 truncate leading-tight mt-0.5">
+                  {config?.host}:{config?.port}
+                </p>
               </div>
             </div>
 
             <button
-              onClick={() => logout()}
-              className="p-1 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition cursor-pointer shrink-0"
+              onClick={logout}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
               title="退出登录"
             >
               <LogOut className="w-3.5 h-3.5" />

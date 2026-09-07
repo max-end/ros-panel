@@ -82,3 +82,86 @@ export async function executeCommand(req: Request, res: Response): Promise<void>
     });
   }
 }
+
+export async function getPackageUpdate(req: Request, res: Response): Promise<void> {
+  try {
+    const data = await req.rosClient!.getPackageUpdate();
+    res.json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'FETCH_UPDATE_FAILED',
+      message: error instanceof Error ? error.message : 'Failed to fetch package update status',
+    });
+  }
+}
+
+export async function checkPackageUpdate(req: Request, res: Response): Promise<void> {
+  try {
+    const data = await req.rosClient!.checkPackageUpdate();
+    res.json({ success: true, data, message: 'Check for updates completed' });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'CHECK_UPDATE_FAILED',
+      message: error instanceof Error ? error.message : 'Failed to check for package updates',
+    });
+  }
+}
+
+export async function installPackageUpdate(req: Request, res: Response): Promise<void> {
+  try {
+    await req.rosClient!.installPackageUpdate();
+    res.json({ success: true, message: 'Upgrade package downloaded, system will reboot into new version' });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'INSTALL_UPDATE_FAILED',
+      message: error instanceof Error ? error.message : 'Failed to install update',
+    });
+  }
+}
+
+export async function setPackageChannel(req: Request, res: Response): Promise<void> {
+  try {
+    const { channel } = req.body;
+    if (!channel) {
+      res.status(400).json({ success: false, message: 'Channel is required' });
+      return;
+    }
+    await req.rosClient!.setPackageChannel(String(channel));
+    res.json({ success: true, message: `Channel switched to ${channel}` });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'SET_CHANNEL_FAILED',
+      message: error instanceof Error ? error.message : 'Failed to set update channel',
+    });
+  }
+}
+
+export async function getRouterboard(req: Request, res: Response): Promise<void> {
+  try {
+    const data = await req.rosClient!.getRouterboard();
+    res.json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'FETCH_ROUTERBOARD_FAILED',
+      message: error instanceof Error ? error.message : 'Failed to fetch routerboard info',
+    });
+  }
+}
+
+export async function upgradeRouterboard(req: Request, res: Response): Promise<void> {
+  try {
+    await req.rosClient!.upgradeRouterboard();
+    res.json({ success: true, message: 'RouterBOARD firmware upgraded successfully' });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'UPGRADE_ROUTERBOARD_FAILED',
+      message: error instanceof Error ? error.message : 'Failed to upgrade routerboard firmware',
+    });
+  }
+}

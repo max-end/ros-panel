@@ -27,6 +27,11 @@ import {
   TracerouteHop,
   RosCloud,
   CustomDdnsItem,
+  RosPackageUpdate,
+  RosRouterboard,
+  RosWifiInterface,
+  RosWifiClient,
+  RosCapsmanConfig,
 } from '../types/ros.js';
 
 export class MockRosClient implements IRosClient {
@@ -629,7 +634,7 @@ export class MockRosClient implements IRosClient {
 
     return {
       uptime,
-      version: '7.16.2 (stable)',
+      version: `${this.packageUpdate['installed-version']} (stable)`,
       'build-time': 'Nov/25/2024 12:44:18',
       'free-memory': 854020000,
       'total-memory': 1073741824, // 1GB
@@ -1364,5 +1369,178 @@ Columns: ADDRESS, NETWORK, INTERFACE
       message: `已向 ${item.provider.toUpperCase()} 成功推送并更新域名解析 ${item.domain} -> ${ip}`,
       ip,
     };
+  }
+
+  private packageUpdate: RosPackageUpdate = {
+    channel: 'stable',
+    'installed-version': '7.16.2',
+    'latest-version': '7.18.1',
+    status: 'New version is available',
+    'change-log': `What's new in 7.18.1 (2025-Feb-20 14:10):
+!) wifi - improved WPA3-SAE roaming performance and key exchange stability;
+!) bth - added Back-to-Home VPN dynamic relay server auto-selection;
+*) bridge - fixed rare L2 packet flood under heavy hardware offload;
+*) defconf - updated default firewall filter rules for IPv6 fast-track;
+*) dns - optimized concurrent FQDN caching and reduced CPU load;
+*) l3hw - added L3 hardware offload support on CRS3xx series;
+*) pppoe - improved dial-up reconnection retry backoff mechanism;
+*) route - fixed dynamic BGP route withdrawal latency;
+*) wireguard - updated WireGuard cryptographic engine to latest stable spec;
+*) winbox - security fixes and DPI scaling improvements.`,
+  };
+
+  private routerboardInfo: RosRouterboard = {
+    routerboard: true,
+    model: 'RB5009UG+S+IN',
+    'serial-number': 'HE608XYZ9910',
+    'current-firmware': '7.16.2',
+    'upgrade-firmware': '7.18.1',
+    'firmware-type': 'arm64',
+  };
+
+  async getPackageUpdate(): Promise<RosPackageUpdate> {
+    return this.packageUpdate;
+  }
+
+  async checkPackageUpdate(): Promise<RosPackageUpdate> {
+    this.packageUpdate.status = 'New version is available';
+    return this.packageUpdate;
+  }
+
+  async installPackageUpdate(): Promise<void> {
+    this.packageUpdate['installed-version'] = this.packageUpdate['latest-version'];
+    this.packageUpdate.status = 'Installed version is current';
+  }
+
+  async setPackageChannel(channel: string): Promise<void> {
+    this.packageUpdate.channel = channel;
+  }
+
+  async getRouterboard(): Promise<RosRouterboard> {
+    return this.routerboardInfo;
+  }
+
+  async upgradeRouterboard(): Promise<void> {
+    this.routerboardInfo['current-firmware'] = this.routerboardInfo['upgrade-firmware'];
+  }
+
+  private wifiInterfaces: RosWifiInterface[] = [
+    {
+      '.id': '*w1',
+      name: 'wifi1-5G',
+      ssid: 'Office-Corp-5G',
+      band: '5ghz-ax',
+      channel: '5180/ax/Ceee (Ch 36)',
+      frequency: '5180 MHz',
+      security: 'wpa2-psk,wpa3-psk',
+      passphrase: '••••••••',
+      running: 'true',
+      disabled: 'false',
+      comment: '企业主办公区 5GHz 高性能 Wi-Fi 6 AP',
+      'tx-power': 24,
+      type: 'wifi',
+    },
+    {
+      '.id': '*w2',
+      name: 'wifi2-2.4G',
+      ssid: 'Office-Corp-2.4G',
+      band: '2ghz-g/n/ax',
+      channel: '2412/20/ax (Ch 1)',
+      frequency: '2412 MHz',
+      security: 'wpa2-psk,wpa3-psk',
+      passphrase: '••••••••',
+      running: 'true',
+      disabled: 'false',
+      comment: '物联网 IoT 及远距离兼容 2.4GHz 射频',
+      'tx-power': 20,
+      type: 'wifi',
+    },
+  ];
+
+  private wifiClients: RosWifiClient[] = [
+    {
+      '.id': '*c1',
+      interface: 'wifi1-5G',
+      'mac-address': '3C:22:FB:A1:08:44',
+      hostname: 'MacBook-Pro-M3',
+      ssid: 'Office-Corp-5G',
+      signal: -48,
+      'tx-rate': '1201Mbps',
+      'rx-rate': '1201Mbps',
+      uptime: '1d 04:32:15',
+      bytes: '4.8 GB',
+    },
+    {
+      '.id': '*c2',
+      interface: 'wifi1-5G',
+      'mac-address': '7C:2E:BD:99:32:11',
+      hostname: 'iPhone-16-Pro',
+      ssid: 'Office-Corp-5G',
+      signal: -58,
+      'tx-rate': '866Mbps',
+      'rx-rate': '866Mbps',
+      uptime: '08:12:44',
+      bytes: '1.2 GB',
+    },
+    {
+      '.id': '*c3',
+      interface: 'wifi1-5G',
+      'mac-address': '54:E4:3A:C8:10:9F',
+      hostname: 'iPad-Air-5',
+      ssid: 'Office-Corp-5G',
+      signal: -65,
+      'tx-rate': '573Mbps',
+      'rx-rate': '573Mbps',
+      uptime: '03:45:10',
+      bytes: '680 MB',
+    },
+    {
+      '.id': '*c4',
+      interface: 'wifi2-2.4G',
+      'mac-address': 'D8:32:14:FE:22:90',
+      hostname: 'Aqara-Smart-Gateway',
+      ssid: 'Office-Corp-2.4G',
+      signal: -72,
+      'tx-rate': '72Mbps',
+      'rx-rate': '72Mbps',
+      uptime: '5d 11:20:00',
+      bytes: '45 MB',
+    },
+  ];
+
+  private capsmanConfig: RosCapsmanConfig = {
+    enabled: 'true',
+    certificate: 'auto',
+    'ca-certificate': 'auto',
+    radiosCount: 3,
+    provisioningCount: 2,
+  };
+
+  async getWifiInterfaces(): Promise<RosWifiInterface[]> {
+    return this.wifiInterfaces;
+  }
+
+  async getWifiClients(): Promise<RosWifiClient[]> {
+    return this.wifiClients;
+  }
+
+  async getCapsmanConfig(): Promise<RosCapsmanConfig> {
+    return this.capsmanConfig;
+  }
+
+  async updateWifiInterface(id: string, data: Partial<RosWifiInterface>): Promise<void> {
+    const item = this.wifiInterfaces.find((w) => w['.id'] === id);
+    if (item) {
+      Object.assign(item, data);
+    }
+  }
+
+  async quickSetupWifi(data: { ssid: string; password?: string }): Promise<void> {
+    for (const iface of this.wifiInterfaces) {
+      iface.ssid = data.ssid;
+      if (data.password) {
+        iface.passphrase = data.password;
+      }
+    }
   }
 }

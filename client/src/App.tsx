@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './store/authContext.js';
+import { I18nProvider } from './i18n/context.js';
 import { Layout } from './components/Layout.js';
 import { Login } from './pages/Login.js';
 import { Dashboard } from './pages/Dashboard.js';
@@ -9,6 +10,7 @@ import { Routes as RoutesPage } from './pages/Routes.js';
 import { DnsSettings } from './pages/DnsSettings.js';
 import { DdnsSettings } from './pages/DdnsSettings.js';
 import { Interfaces } from './pages/Interfaces.js';
+import { Wireless } from './pages/Wireless.js';
 import { IPAddress } from './pages/IPAddress.js';
 import { DHCPLeases } from './pages/DHCPLeases.js';
 import { ArpTable } from './pages/ArpTable.js';
@@ -20,6 +22,7 @@ import { Users as UsersPage } from './pages/Users.js';
 import { Backup } from './pages/Backup.js';
 import { Logs } from './pages/Logs.js';
 import { System } from './pages/System.js';
+import { Upgrade } from './pages/Upgrade.js';
 
 const AppRoutes: React.FC = () => {
   const { connected, initialLoading } = useAuth();
@@ -46,6 +49,7 @@ const AppRoutes: React.FC = () => {
         <Route path="routes" element={<RoutesPage />} />
         <Route path="dns" element={<DnsSettings />} />
         <Route path="interfaces" element={<Interfaces />} />
+        <Route path="wireless" element={<Wireless />} />
         <Route path="ip-addresses" element={<IPAddress />} />
         <Route path="dhcp-leases" element={<DHCPLeases />} />
         <Route path="arp" element={<ArpTable />} />
@@ -54,6 +58,7 @@ const AppRoutes: React.FC = () => {
         <Route path="queues" element={<Queues />} />
         <Route path="wol" element={<WakeOnLan />} />
         <Route path="system" element={<System />} />
+        <Route path="upgrade" element={<Upgrade />} />
         <Route path="backup" element={<Backup />} />
         <Route path="users" element={<UsersPage />} />
         <Route path="logs" element={<Logs />} />
@@ -65,10 +70,12 @@ const AppRoutes: React.FC = () => {
 
 export const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
-    </AuthProvider>
+    <I18nProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </AuthProvider>
+    </I18nProvider>
   );
 };

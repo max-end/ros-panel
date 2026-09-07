@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../store/authContext.js';
-import { Router, Server, KeyRound, User, Sparkles, AlertCircle, ArrowRight } from 'lucide-react';
+import { useI18n } from '../i18n/context.js';
+import { Router, Server, KeyRound, User, Sparkles, AlertCircle, ArrowRight, Globe } from 'lucide-react';
 
 export const Login: React.FC = () => {
   const { login, loading, error } = useAuth();
+  const { language, toggleLanguage, t } = useI18n();
   const passwordRef = useRef<HTMLInputElement>(null);
 
   const [host, setHost] = useState('192.168.88.1');
@@ -130,6 +132,18 @@ export const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center px-4 relative overflow-hidden">
+      {/* Top right language switcher */}
+      <div className="absolute top-4 right-4 z-20">
+        <button
+          onClick={toggleLanguage}
+          className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-blue-400 bg-slate-900/80 hover:bg-slate-800 border border-slate-800 px-3 py-1.5 rounded-xl transition cursor-pointer font-medium shadow-md"
+          title="切换界面语言 / Switch Language"
+        >
+          <Globe className="w-3.5 h-3.5 text-blue-400" />
+          <span>{language === 'zh' ? 'English' : '简体中文'}</span>
+        </button>
+      </div>
+
       {/* Ambient background decoration */}
       <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
       <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -140,9 +154,9 @@ export const Login: React.FC = () => {
           <div className="inline-flex p-3 bg-blue-600/20 border border-blue-500/30 rounded-2xl text-blue-400 mb-4 shadow-xl shadow-blue-500/10">
             <Router className="w-8 h-8" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">RosPanel 控制台</h1>
+          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">{t('login.title')}</h1>
           <p className="text-xs text-slate-400 mt-1">
-            基于 MikroTik RouterOS v7 REST API 的现代化网络管理平台
+            {t('login.subtitle')}
           </p>
         </div>
 

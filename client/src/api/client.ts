@@ -26,6 +26,11 @@ import {
   TracerouteHop,
   RosCloud,
   CustomDdnsItem,
+  RosPackageUpdate,
+  RosRouterboard,
+  RosWifiInterface,
+  RosWifiClient,
+  RosCapsmanConfig,
 } from '../types/index.js';
 
 const api = axios.create({
@@ -651,5 +656,62 @@ export const rosApi = {
       `/ddns/custom/${encodeURIComponent(id)}/sync`
     );
     return res.data.data;
+  },
+
+  // Package Updates & Firmware
+  getPackageUpdate: async () => {
+    const res = await api.get<{ success: boolean; data: RosPackageUpdate }>('/system/package/update');
+    return res.data.data;
+  },
+
+  checkPackageUpdate: async () => {
+    const res = await api.post<{ success: boolean; data: RosPackageUpdate; message: string }>('/system/package/update/check');
+    return res.data.data;
+  },
+
+  installPackageUpdate: async () => {
+    const res = await api.post<{ success: boolean; message: string }>('/system/package/update/install');
+    return res.data;
+  },
+
+  setPackageChannel: async (channel: string) => {
+    const res = await api.post<{ success: boolean; message: string }>('/system/package/update/channel', { channel });
+    return res.data;
+  },
+
+  getRouterboard: async () => {
+    const res = await api.get<{ success: boolean; data: RosRouterboard }>('/system/routerboard');
+    return res.data.data;
+  },
+
+  upgradeRouterboard: async () => {
+    const res = await api.post<{ success: boolean; message: string }>('/system/routerboard/upgrade');
+    return res.data;
+  },
+
+  // Wi-Fi & CAPsMAN
+  getWifiInterfaces: async () => {
+    const res = await api.get<{ success: boolean; data: RosWifiInterface[] }>('/wifi/interfaces');
+    return res.data.data;
+  },
+
+  getWifiClients: async () => {
+    const res = await api.get<{ success: boolean; data: RosWifiClient[] }>('/wifi/clients');
+    return res.data.data;
+  },
+
+  getCapsmanConfig: async () => {
+    const res = await api.get<{ success: boolean; data: RosCapsmanConfig }>('/wifi/capsman');
+    return res.data.data;
+  },
+
+  updateWifiInterface: async (id: string, data: Partial<RosWifiInterface>) => {
+    const res = await api.patch<{ success: boolean; message: string }>(`/wifi/interfaces/${encodeURIComponent(id)}`, data);
+    return res.data;
+  },
+
+  quickSetupWifi: async (data: { ssid: string; password?: string }) => {
+    const res = await api.post<{ success: boolean; message: string }>('/wifi/quick-setup', data);
+    return res.data;
   },
 };
