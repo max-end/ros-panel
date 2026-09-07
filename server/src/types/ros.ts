@@ -41,6 +41,7 @@ export interface RosInterface {
   'tx-error'?: number | string;
   'rx-drop'?: number | string;
   'tx-drop'?: number | string;
+  'last-link-up-time'?: string;
 }
 
 export interface InterfaceTraffic {
@@ -77,6 +78,8 @@ export interface RosPppoeClient {
   status?: string;
   uptime?: string;
   'active-address'?: string;
+  address?: string;
+  gateway?: string;
 }
 
 export interface RosDhcpClient {
@@ -124,6 +127,7 @@ export interface RosIpAddress {
   network: string;
   interface: string;
   actualInterface?: string;
+  'actual-interface'?: string;
   disabled?: boolean | string;
   dynamic?: boolean | string;
   comment?: string;

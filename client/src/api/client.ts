@@ -392,7 +392,7 @@ export const rosApi = {
   },
 
   // Wake on LAN (WOL)
-  wakeOnLan: async (mac: string, interfaceName: string) => {
+  wakeOnLan: async (mac: string, interfaceName?: string) => {
     const res = await api.post<{ success: boolean; message: string }>('/wol/wake', {
       mac,
       interface: interfaceName,

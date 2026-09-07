@@ -372,8 +372,13 @@ export const WanSettings: React.FC = () => {
                         当前获取的外网公网 IPv4 地址
                       </span>
                       <div className="text-2xl font-bold font-mono text-emerald-400 mt-2 select-all flex items-center gap-2">
-                        <span>{client['active-address'] || '未获取 / 等待拨通'}</span>
+                        <span>{client['active-address'] || client.address || '未获取 / 等待拨通'}</span>
                       </div>
+                      {client.gateway && (
+                        <div className="text-xs text-slate-400 font-mono mt-1">
+                          远端网关: <span className="text-slate-300 font-semibold">{client.gateway}</span>
+                        </div>
+                      )}
                     </div>
                     <div className="flex items-center gap-4 mt-3 pt-3 border-t border-slate-800/60 text-xs text-slate-400">
                       <div className="flex items-center gap-1 font-mono">

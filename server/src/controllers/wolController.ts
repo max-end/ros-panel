@@ -1,13 +1,54 @@
 import { Request, Response } from 'express';
 import { wolStorage } from '../services/wolStorage.js';
 import { getParam } from '../utils/params.js';
+import { IRosClient } from '../ros-client/client.js';
 
 // MAC address validator: matches XX:XX:XX:XX:XX:XX or XX-XX-XX-XX-XX-XX
 const MAC_REGEX = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
 
+/**
+ * Dynamically resolves the actual LAN/Bridge interface on the router.
+ * Prevents HTTP 400 Bad Request when hardcoded names like 'bridge-lan' don't exist.
+ */
+async function resolveInterface(client: IRosClient, requestedIface?: string): Promise<string> {
+  const ifaces = await client.getInterfaces().catch(() => []);
+  if (ifaces.length === 0) {
+    return requestedIface || 'bridge';
+  }
+
+  // 1. If explicitly requested interface exists and is valid on this hardware, use it
+  if (requestedIface && requestedIface !== 'bridge-lan') {
+    const matched = ifaces.find((i) => i.name === requestedIface);
+    if (matched) return matched.name;
+  }
+
+  // 2. Find any bridge interface (MikroTik standard default is 'bridge')
+  const bridge = ifaces.find(
+    (i) => i.type === 'bridge' || i.name === 'bridge' || i.name.toLowerCase().includes('bridge')
+  );
+  if (bridge) return bridge.name;
+
+  // 3. Find any interface with "lan" in its name
+  const lan = ifaces.find((i) => i.name.toLowerCase().includes('lan'));
+  if (lan) return lan.name;
+
+  // 4. Find first non-wan, non-vpn running ethernet port (e.g. ether2)
+  const eth = ifaces.find(
+    (i) =>
+      (i.running === 'true' || i.running === true) &&
+      !i.name.includes('pppoe') &&
+      !i.name.includes('wan') &&
+      !i.name.includes('wg') &&
+      !i.name.includes('vpn')
+  );
+  if (eth) return eth.name;
+
+  return ifaces[0].name;
+}
+
 export async function wake(req: Request, res: Response): Promise<void> {
   try {
-    const { mac, interface: iface = 'bridge-lan' } = req.body;
+    const { mac, interface: iface } = req.body;
     if (!mac) {
       res.status(400).json({ success: false, message: 'MAC address is required' });
       return;
@@ -19,10 +60,11 @@ export async function wake(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    await req.rosClient!.wakeOnLan(cleanMac, iface);
+    const targetIface = await resolveInterface(req.rosClient!, iface);
+    await req.rosClient!.wakeOnLan(cleanMac, targetIface);
     res.json({
       success: true,
-      message: `WOL magic packet sent successfully to ${cleanMac} via ${iface}`,
+      message: `WOL magic packet sent successfully to ${cleanMac} via ${targetIface}`,
     });
   } catch (error) {
     res.status(500).json({
@@ -94,12 +136,13 @@ export async function wakeDevice(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    await req.rosClient!.wakeOnLan(device.mac, device.interface);
+    const targetIface = await resolveInterface(req.rosClient!, device.interface);
+    await req.rosClient!.wakeOnLan(device.mac, targetIface);
     wolStorage.updateLastWoken(id);
 
     res.json({
       success: true,
-      message: `WOL magic packet broadcast to ${device.name} (${device.mac}) via ${device.interface}`,
+      message: `WOL magic packet broadcast to ${device.name} (${device.mac}) via ${targetIface}`,
       lastWokenAt: new Date().toLocaleString(),
     });
   } catch (error) {

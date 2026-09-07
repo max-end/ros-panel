@@ -14,6 +14,7 @@ export async function getDashboardOverview(req: Request, res: Response): Promise
       queues,
       pppoeClients,
       logs,
+      ipAddresses,
     ] = await Promise.all([
       client.getSystemResource(),
       client.getSystemHealth().catch(() => ({})),
@@ -25,6 +26,7 @@ export async function getDashboardOverview(req: Request, res: Response): Promise
       client.getSimpleQueues().catch(() => []),
       client.getPppoeClients().catch(() => []),
       client.getLogs().catch(() => []),
+      client.getIpAddresses().catch(() => []),
     ]);
 
     const runningInterfaces = interfaces.filter(
@@ -40,10 +42,29 @@ export async function getDashboardOverview(req: Request, res: Response): Promise
       (i) => i.name.toLowerCase().includes('wan') || (pppoe && i.name === pppoe.interface)
     ) || interfaces[0];
 
+    // Find actual public WAN IP from /ip/address
+    let realWanIp = '';
+    if (pppoe) {
+      const matched = ipAddresses.find(
+        (a) => a.interface === pppoe.name || a['actual-interface'] === pppoe.name
+      );
+      if (matched?.address) {
+        realWanIp = matched.address.split('/')[0];
+      }
+    }
+    if (!realWanIp && wanInterface) {
+      const matched = ipAddresses.find(
+        (a) => a.interface === wanInterface.name || a['actual-interface'] === wanInterface.name
+      );
+      if (matched?.address) {
+        realWanIp = matched.address.split('/')[0];
+      }
+    }
+
     const wanData = {
       connected: pppoe ? (pppoe.running === true || pppoe.running === 'true' || pppoe.status === 'connected') : true,
       status: pppoe ? (pppoe.status || (pppoe.running ? 'connected' : 'disconnected')) : (wanInterface?.running ? 'connected' : 'disconnected'),
-      ip: pppoe?.['active-address'] || '116.228.88.142',
+      ip: realWanIp || pppoe?.['active-address'] || '未分配外网 IP',
       interface: pppoe ? pppoe.name : (wanInterface?.name || 'ether1-wan'),
       physicalPort: pppoe?.interface || wanInterface?.name || 'ether1-wan',
       uptime: pppoe?.uptime || systemResource.uptime,

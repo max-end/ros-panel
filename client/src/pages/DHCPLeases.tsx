@@ -86,7 +86,7 @@ export const DHCPLeases: React.FC = () => {
   const handleWake = async (lease: RosDhcpLease) => {
     try {
       setBusyId(lease['.id']);
-      await rosApi.wakeOnLan(lease['mac-address'], 'bridge-lan');
+      await rosApi.wakeOnLan(lease['mac-address']);
       setWakeSuccessId(lease['.id']);
       setTimeout(() => setWakeSuccessId(null), 3000);
     } catch (err: any) {

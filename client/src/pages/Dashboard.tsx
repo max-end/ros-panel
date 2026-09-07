@@ -144,7 +144,7 @@ export const Dashboard: React.FC = () => {
   const handleWakeClient = async (mac: string, id: string) => {
     try {
       setWakingDeviceId(id);
-      await rosApi.wakeOnLan(mac, 'bridge-lan');
+      await rosApi.wakeOnLan(mac);
       alert(`已向 ${mac} 广播唤醒魔术包！`);
     } catch (err: any) {
       alert('唤醒失败: ' + (err.response?.data?.message || err.message));

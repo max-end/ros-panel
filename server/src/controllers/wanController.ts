@@ -3,8 +3,52 @@ import { getParam } from '../utils/params.js';
 
 export async function getPppoeClients(req: Request, res: Response): Promise<void> {
   try {
-    const list = await req.rosClient!.getPppoeClients();
-    res.json({ success: true, data: list });
+    const [list, ipAddresses, interfaces] = await Promise.all([
+      req.rosClient!.getPppoeClients(),
+      req.rosClient!.getIpAddresses().catch(() => []),
+      req.rosClient!.getInterfaces().catch(() => []),
+    ]);
+
+    const enriched = list.map((client) => {
+      // Match dynamic IP assigned to this PPPoE connection
+      const ipEntry = ipAddresses.find(
+        (addr) =>
+          addr.interface === client.name ||
+          addr['actual-interface'] === client.name ||
+          addr.interface === client.interface ||
+          addr['actual-interface'] === client.interface ||
+          (client['.id'] && addr.interface === client['.id'])
+      );
+
+      // Match interface for running status and link uptime
+      const ifaceEntry = interfaces.find(
+        (i) => i.name === client.name || i.name === client.interface || (client['.id'] && i['.id'] === client['.id'])
+      );
+
+      const isRunning =
+        client.running === 'true' ||
+        client.running === true ||
+        ifaceEntry?.running === 'true' ||
+        ifaceEntry?.running === true;
+
+      const rawAddress = ipEntry?.address || '';
+      const cleanIp = rawAddress ? rawAddress.split('/')[0] : '';
+      const gateway = ipEntry?.network || '';
+
+      return {
+        ...client,
+        running: isRunning ? 'true' : 'false',
+        'active-address': cleanIp,
+        address: cleanIp,
+        gateway,
+        network: gateway,
+        uptime: ifaceEntry?.['last-link-up-time'] || '',
+        'last-link-up-time': ifaceEntry?.['last-link-up-time'] || '',
+        status: isRunning ? 'connected' : client.disabled === 'true' ? 'disabled' : 'dialing',
+      };
+    });
+
+    res.json({ success: true, data: enriched });
   } catch (error) {
     res.status(500).json({
       success: false,

@@ -25,6 +25,7 @@ export interface RosInterface {
   comment?: string;
   'rx-byte'?: number | string;
   'tx-byte'?: number | string;
+  'last-link-up-time'?: string;
 }
 
 export interface RosPppoeClient {
@@ -45,6 +46,8 @@ export interface RosPppoeClient {
   status?: string;
   uptime?: string;
   'active-address'?: string;
+  address?: string;
+  gateway?: string;
 }
 
 export interface RosDhcpClient {
@@ -65,6 +68,7 @@ export interface RosIpAddress {
   address: string;
   network: string;
   interface: string;
+  'actual-interface'?: string;
   disabled?: boolean | string;
   dynamic?: boolean | string;
   comment?: string;
