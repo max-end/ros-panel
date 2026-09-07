@@ -428,8 +428,9 @@ export const WakeOnLan: React.FC = () => {
           })}
 
           {devices.length === 0 && !loading && (
-            <div className="col-span-full py-16 text-center bg-slate-900/40 border border-slate-800 rounded-2xl text-xs text-slate-500">
-              {t('common.noData')}
+            <div className="col-span-full py-16 text-center bg-slate-900/40 border border-slate-800 rounded-2xl text-xs text-slate-400 space-y-3">
+              <Laptop className="w-8 h-8 text-slate-600 mx-auto" />
+              <p>{t('wol.noSavedDevices', '暂无已保存的设备。可直接点击上方“添加设备”或从下方局域网在线租约一键导入。')}</p>
             </div>
           )}
         </div>

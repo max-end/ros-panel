@@ -65,7 +65,7 @@ export const Dashboard: React.FC = () => {
   const [liveCpu, setLiveCpu] = useState<number | null>(null);
 
   const [copiedIp, setCopiedIp] = useState(false);
-  const [showWanIp, setShowWanIp] = useState(false);
+  const [showWanIp, setShowWanIp] = useState(true);
   const [wakingDeviceId, setWakingDeviceId] = useState<string | null>(null);
 
   const maskIp = (ip?: string) => {

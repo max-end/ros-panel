@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
 @layer base {
+  html {
+    scrollbar-gutter: stable;
+  }
   body {
     @apply bg-slate-950 text-slate-100 antialiased selection:bg-blue-600 selection:text-white font-sans;
   }

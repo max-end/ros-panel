@@ -376,7 +376,7 @@ export const WanSettings: React.FC = () => {
                         {t('wan.publicIp', '当前获取的外网公网 IPv4 地址')}
                       </span>
                       {(() => {
-                        const isRevealed = showWanIpMap[client['.id']] || false;
+                        const isRevealed = showWanIpMap[client['.id']] !== false;
                         const rawIp = client['active-address'] || client.address;
                         const maskedIp = rawIp && rawIp.split('.').length === 4 ? `${rawIp.split('.')[0]}.${rawIp.split('.')[1]}.*.*` : rawIp;
                         return (

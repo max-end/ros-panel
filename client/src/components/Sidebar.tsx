@@ -170,10 +170,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
                       if (onClose) onClose();
                     }}
                     className={({ isActive }) =>
-                      `flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all group ${
+                      `flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-colors border group ${
                         isActive
-                          ? 'bg-blue-600/10 text-blue-400 border border-blue-500/20 font-semibold'
-                          : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                          ? 'bg-blue-600/10 text-blue-400 border-blue-500/20 font-semibold'
+                          : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 border-transparent'
                       }`
                     }
                   >
@@ -198,7 +198,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
                   {config?.username || 'admin'}
                 </p>
                 <p className="text-[10px] text-slate-500 truncate leading-tight mt-0.5 font-mono">
-                  {config?.host ? (config.host.split('.').length === 4 ? `${config.host.split('.')[0]}.${config.host.split('.')[1]}.*.*` : config.host) : 'router.lan'}:{config?.port}
+                  {config?.host || 'router.lan'}:{config?.port}
                 </p>
               </div>
             </div>

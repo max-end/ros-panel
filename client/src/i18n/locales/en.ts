@@ -302,6 +302,7 @@ export const en = {
   'wol.targetMac': 'Target Device MAC',
   'wol.selectBridge': 'Outbound LAN Interface',
   'wol.savedDevices': 'Saved Devices Book',
+  'wol.noSavedDevices': 'No saved devices yet. Click "Add Device" above or import from active DHCP leases below.',
 
   // Firewall
   'firewall.title': 'Firewall & Security Policies',

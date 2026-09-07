@@ -9,28 +9,7 @@ const __dirname = path.dirname(__filename);
 const DATA_DIR = path.resolve(__dirname, '../../data');
 const DATA_FILE = path.join(DATA_DIR, 'wol-devices.json');
 
-const INITIAL_DEVICES: WolDevice[] = [
-  {
-    id: 'wol-1',
-    name: '办公室设计台式机',
-    mac: 'A4:83:E7:3B:55:12',
-    interface: 'bridge',
-    ip: '192.168.88.105',
-    description: '配备 RTX 4090 的三维设计渲染工作站',
-    lastWokenAt: '2025-02-28 09:30:12',
-    createdAt: '2025-01-10 10:00:00',
-  },
-  {
-    id: 'wol-2',
-    name: '家庭存储 NAS 服务器',
-    mac: '00:11:32:9B:43:8E',
-    interface: 'bridge',
-    ip: '192.168.88.200',
-    description: 'Synology DS920+ 远程唤醒',
-    lastWokenAt: '2025-03-01 14:15:00',
-    createdAt: '2025-01-15 11:20:00',
-  },
-];
+const INITIAL_DEVICES: WolDevice[] = [];
 
 class WolStorageService {
   private devices: WolDevice[] = [];

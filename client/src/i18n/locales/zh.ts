@@ -302,6 +302,7 @@ export const zh = {
   'wol.targetMac': '目标设备 MAC 地址',
   'wol.selectBridge': '承载局域网接口',
   'wol.savedDevices': '已保存常用设备',
+  'wol.noSavedDevices': '暂无已保存的设备。可直接点击上方“添加设备”或从下方局域网在线租约一键导入。',
 
   // Firewall
   'firewall.title': '防火墙与安全策略',
