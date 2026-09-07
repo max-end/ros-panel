@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { rosApi } from '../api/client.js';
 import { useAuth } from '../store/authContext.js';
 import { TracerouteHop } from '../types/index.js';
+import { formatRosUptime, formatRosUptimeDetailed } from '../utils/format.js';
 import {
   Wrench,
   Terminal,
@@ -377,7 +378,12 @@ export const System: React.FC = () => {
               </div>
               <div className="flex justify-between py-1 border-b border-slate-800/60">
                 <span className="text-slate-400">连续开机时间</span>
-                <span className="font-mono text-slate-200">{deviceInfo?.uptime || '0s'}</span>
+                <span
+                  className="font-mono text-slate-200 cursor-help"
+                  title={`详细开机时间: ${formatRosUptimeDetailed(deviceInfo?.uptime)}`}
+                >
+                  {formatRosUptime(deviceInfo?.uptime)}
+                </span>
               </div>
             </div>
           </div>

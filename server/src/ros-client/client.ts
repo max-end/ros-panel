@@ -610,8 +610,17 @@ export class RosRestClient implements IRosClient {
 
   async rebootSystem(): Promise<void> {
     try {
-      await this.axiosInstance.post('/system/reboot');
-    } catch (err) {
+      await this.axiosInstance.post('/system/reboot', {}, { timeout: 4000 });
+    } catch (err: any) {
+      // RouterOS cuts the TCP socket connection immediately when executing reboot
+      if (
+        err.code === 'ECONNRESET' ||
+        err.code === 'ETIMEDOUT' ||
+        err.message?.includes('socket hang up') ||
+        err.message?.includes('timeout')
+      ) {
+        return;
+      }
       return this.handleError(err, 'rebootSystem');
     }
   }

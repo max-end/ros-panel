@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { rosApi } from '../api/client.js';
 import { RosPppoeClient, RosDhcpClient, RosInterface } from '../types/index.js';
+import { formatRosUptime, formatRosUptimeDetailed } from '../utils/format.js';
 import {
   Globe,
   Plus,
@@ -383,7 +384,12 @@ export const WanSettings: React.FC = () => {
                     <div className="flex items-center gap-4 mt-3 pt-3 border-t border-slate-800/60 text-xs text-slate-400">
                       <div className="flex items-center gap-1 font-mono">
                         <Clock className="w-3.5 h-3.5 text-slate-500" />
-                        <span>在线时长: {client.uptime || '0s'}</span>
+                        <span
+                          className="cursor-help"
+                          title={`详细在线时长: ${formatRosUptimeDetailed(client.uptime)}`}
+                        >
+                          在线时长: {formatRosUptime(client.uptime)}
+                        </span>
                       </div>
                       <div className="flex items-center gap-1 font-mono">
                         <span>MTU: {client['max-mtu'] || 1492}</span>

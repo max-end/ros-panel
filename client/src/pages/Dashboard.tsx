@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { rosApi } from '../api/client.js';
 import { DashboardOverviewData } from '../types/index.js';
+import { formatRosUptime, formatRosUptimeDetailed } from '../utils/format.js';
 import ReactECharts from 'echarts-for-react';
 import {
   Activity,
@@ -293,7 +294,15 @@ export const Dashboard: React.FC = () => {
             <p className="text-xs text-slate-400 mt-0.5 flex flex-wrap items-center gap-3">
               <span>架构: {res?.platform || 'MikroTik'}</span>
               <span>•</span>
-              <span>连续运行: <span className="font-mono text-slate-200">{res?.uptime || '0s'}</span></span>
+              <span>
+                连续运行:{' '}
+                <span
+                  className="font-mono text-slate-200 cursor-help"
+                  title={`详细开机时间: ${formatRosUptimeDetailed(res?.uptime)} (原始: ${res?.uptime || '0s'})`}
+                >
+                  {formatRosUptime(res?.uptime)}
+                </span>
+              </span>
               <span>•</span>
               <span>构建: {res?.['build-time'] || '--'}</span>
             </p>
@@ -479,7 +488,15 @@ export const Dashboard: React.FC = () => {
 
           <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
             <span>承载端口: <span className="font-mono text-blue-400">{wan?.physicalPort || 'ether1-wan'}</span></span>
-            <span>持续在线: <span className="font-mono text-slate-300">{wan?.uptime || '12d 4h'}</span></span>
+            <span>
+              持续在线:{' '}
+              <span
+                className="font-mono text-slate-300 cursor-help"
+                title={`详细连通时间: ${formatRosUptimeDetailed(wan?.uptime)}`}
+              >
+                {formatRosUptime(wan?.uptime)}
+              </span>
+            </span>
           </div>
         </div>
 
