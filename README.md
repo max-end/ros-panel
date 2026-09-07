@@ -18,37 +18,6 @@
 
 ---
 
-## 📸 Screenshots & Live Previews / 界面实机预览
-
-<table align="center">
-  <tr>
-    <td align="center"><b>📊 NOC Telemetry Dashboard / 监控大屏</b></td>
-    <td align="center"><b>🛡️ Drag-and-Drop Firewall / 防火墙拖拽排序</b></td>
-  </tr>
-  <tr>
-    <td><img src="client/public/previews/1-dashboard.png" width="480" alt="NOC Dashboard"></td>
-    <td><img src="client/public/previews/2-firewall.png" width="480" alt="Firewall Rules"></td>
-  </tr>
-  <tr>
-    <td align="center"><b>📡 Wi-Fi 6 & CAPsMAN Roaming / 无线管理与漫游</b></td>
-    <td align="center"><b>⬆️ RouterOS & BIOS Online Upgrade / 固件在线升级</b></td>
-  </tr>
-  <tr>
-    <td><img src="client/public/previews/preview-wireless.png" width="480" alt="Wi-Fi CAPsMAN"></td>
-    <td><img src="client/public/previews/preview-upgrade.png" width="480" alt="Firmware Upgrade"></td>
-  </tr>
-  <tr>
-    <td align="center"><b>📱 Mobile Native Drawer / 移动端原生滑出抽屉</b></td>
-    <td align="center"><b>📱 Mobile Responsive Dashboard / 移动端自适应大屏</b></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="client/public/previews/5-mobile-drawer.png" width="300" alt="Mobile Drawer"></td>
-    <td align="center"><img src="client/public/previews/4-mobile-dashboard.png" width="300" alt="Mobile Dashboard"></td>
-  </tr>
-</table>
-
----
-
 <a name="english"></a>
 ## 📖 Overview (English)
 

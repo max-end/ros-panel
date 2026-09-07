@@ -36,6 +36,7 @@ Thumbs.db
 # Temporary files
 /tmp/
 .cache/
+client/public/previews/
 
 # Local data files
 server/data/*.json

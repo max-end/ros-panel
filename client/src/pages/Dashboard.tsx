@@ -27,6 +27,8 @@ import {
   Check,
   Server,
   ArrowRight,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 
 function formatBytes(bytes: number): string {
@@ -63,7 +65,17 @@ export const Dashboard: React.FC = () => {
   const [liveCpu, setLiveCpu] = useState<number | null>(null);
 
   const [copiedIp, setCopiedIp] = useState(false);
+  const [showWanIp, setShowWanIp] = useState(false);
   const [wakingDeviceId, setWakingDeviceId] = useState<string | null>(null);
+
+  const maskIp = (ip?: string) => {
+    if (!ip) return '--';
+    const parts = ip.split('.');
+    if (parts.length === 4) {
+      return `${parts[0]}.${parts[1]}.*.*`;
+    }
+    return '***.***.***.***';
+  };
 
   const sseRef = useRef<EventSource | null>(null);
 
@@ -459,15 +471,24 @@ export const Dashboard: React.FC = () => {
 
               <div className="flex items-center gap-3 mt-1.5">
                 <span className="text-2xl font-bold font-mono text-emerald-400 tracking-wide select-all">
-                  {wan?.ip || '116.228.88.142'}
+                  {showWanIp ? (wan?.ip || '--') : maskIp(wan?.ip)}
                 </span>
-                <button
-                  onClick={() => handleCopyIp(wan?.ip || '116.228.88.142')}
-                  className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition cursor-pointer"
-                  title={t('common.copy', 'Copy')}
-                >
-                  {copiedIp ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                </button>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setShowWanIp(!showWanIp)}
+                    className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition cursor-pointer"
+                    title={showWanIp ? t('common.hide', '隐藏 IP') : t('common.show', '显示完整 IP')}
+                  >
+                    {showWanIp ? <EyeOff className="w-3.5 h-3.5 text-blue-400" /> : <Eye className="w-3.5 h-3.5" />}
+                  </button>
+                  <button
+                    onClick={() => handleCopyIp(wan?.ip || '')}
+                    className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition cursor-pointer"
+                    title={t('common.copy', 'Copy')}
+                  >
+                    {copiedIp ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
               </div>
             </div>
 

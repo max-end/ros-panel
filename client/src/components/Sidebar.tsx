@@ -197,8 +197,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
                 <p className="text-xs font-medium text-slate-200 truncate leading-tight font-mono">
                   {config?.username || 'admin'}
                 </p>
-                <p className="text-[10px] text-slate-500 truncate leading-tight mt-0.5">
-                  {config?.host}:{config?.port}
+                <p className="text-[10px] text-slate-500 truncate leading-tight mt-0.5 font-mono">
+                  {config?.host ? (config.host.split('.').length === 4 ? `${config.host.split('.')[0]}.${config.host.split('.')[1]}.*.*` : config.host) : 'router.lan'}:{config?.port}
                 </p>
               </div>
             </div>

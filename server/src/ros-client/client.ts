@@ -1141,13 +1141,22 @@ export class RosRestClient implements IRosClient {
       throw new Error('DDNS 配置项未找到');
     }
     // Probe current public IP or cloud IP
-    let ip = '116.228.88.142';
+    let ip = '';
     try {
       const cloud = await this.getCloud();
       if (cloud['public-address']) {
         ip = cloud['public-address'];
       }
     } catch {}
+    if (!ip) {
+      try {
+        const addresses = await this.getIpAddresses();
+        const wanAddr = addresses.find((a: any) => !a.address?.startsWith('192.168.') && !a.address?.startsWith('10.') && !a.address?.startsWith('172.16.'));
+        if (wanAddr && wanAddr.address) {
+          ip = wanAddr.address.split('/')[0];
+        }
+      } catch {}
+    }
 
     item.lastSyncTime = new Date().toLocaleString();
     item.lastStatus = 'success';

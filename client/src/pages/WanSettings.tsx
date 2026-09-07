@@ -36,6 +36,7 @@ export const WanSettings: React.FC = () => {
   const [redialingId, setRedialingId] = useState<string | null>(null);
   const [actionSuccessMsg, setActionSuccessMsg] = useState<{ id: string; msg: string } | null>(null);
   const [showPasswordMap, setShowPasswordMap] = useState<Record<string, boolean>>({});
+  const [showWanIpMap, setShowWanIpMap] = useState<Record<string, boolean>>({});
 
   // Add PPPoE Modal state
   const [showAddModal, setShowAddModal] = useState(false);
@@ -374,9 +375,26 @@ export const WanSettings: React.FC = () => {
                       <span className="text-[11px] text-slate-400 uppercase tracking-wider font-mono">
                         {t('wan.publicIp', '当前获取的外网公网 IPv4 地址')}
                       </span>
-                      <div className="text-2xl font-bold font-mono text-emerald-400 mt-2 select-all flex items-center gap-2">
-                        <span>{client['active-address'] || client.address || t('wan.statusDialing', '未获取 / 等待拨通')}</span>
-                      </div>
+                      {(() => {
+                        const isRevealed = showWanIpMap[client['.id']] || false;
+                        const rawIp = client['active-address'] || client.address;
+                        const maskedIp = rawIp && rawIp.split('.').length === 4 ? `${rawIp.split('.')[0]}.${rawIp.split('.')[1]}.*.*` : rawIp;
+                        return (
+                          <div className="text-2xl font-bold font-mono text-emerald-400 mt-2 select-all flex items-center gap-2">
+                            <span>{isRevealed ? (rawIp || t('wan.statusDialing', '未获取 / 等待拨通')) : (maskedIp || t('wan.statusDialing', '未获取 / 等待拨通'))}</span>
+                            {rawIp && (
+                              <button
+                                type="button"
+                                onClick={() => setShowWanIpMap(prev => ({ ...prev, [client['.id']]: !isRevealed }))}
+                                className="p-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition cursor-pointer"
+                                title={isRevealed ? t('common.hide', '隐藏') : t('common.show', '显示完整 IP')}
+                              >
+                                {isRevealed ? <EyeOff className="w-3.5 h-3.5 text-blue-400" /> : <Eye className="w-3.5 h-3.5" />}
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })()}
                       {client.gateway && (
                         <div className="text-xs text-slate-400 font-mono mt-1">
                           {t('wan.gateway', '远端网关')}: <span className="text-slate-300 font-semibold">{client.gateway}</span>
