@@ -328,6 +328,26 @@ export const Login: React.FC = () => {
             </p>
           </div>
         </div>
+
+        {/* Features highlight pill list */}
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-[11px] text-slate-400">
+          <span className="px-2.5 py-1 rounded-full bg-slate-900/60 border border-slate-800 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+            RouterOS v7 REST API
+          </span>
+          <span className="px-2.5 py-1 rounded-full bg-slate-900/60 border border-slate-800 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            Zero Disk Storage
+          </span>
+          <span className="px-2.5 py-1 rounded-full bg-slate-900/60 border border-slate-800 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+            Tailwind CSS v4
+          </span>
+          <span className="px-2.5 py-1 rounded-full bg-slate-900/60 border border-slate-800 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+            Full i18n
+          </span>
+        </div>
       </div>
     </div>
   );
