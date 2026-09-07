@@ -4,6 +4,8 @@ import { SystemResource, DeviceConfig } from '../types/index.js';
 
 interface AuthContextType {
   connected: boolean;
+  initialLoading: boolean;
+  loginLoading: boolean;
   loading: boolean;
   deviceInfo: SystemResource | null;
   config: DeviceConfig | null;
@@ -25,14 +27,15 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [connected, setConnected] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [loginLoading, setLoginLoading] = useState(false);
   const [deviceInfo, setDeviceInfo] = useState<SystemResource | null>(null);
   const [config, setConfig] = useState<DeviceConfig | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const refreshStatus = async () => {
     try {
-      setLoading(true);
+      setInitialLoading(true);
       const res = await rosApi.getStatus();
       if (res.connected && res.deviceInfo) {
         setConnected(true);
@@ -47,7 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setConnected(false);
       setDeviceInfo(null);
     } finally {
-      setLoading(false);
+      setInitialLoading(false);
     }
   };
 
@@ -65,7 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isDemo?: boolean;
   }): Promise<boolean> => {
     try {
-      setLoading(true);
+      setLoginLoading(true);
       setError(null);
       const res = await rosApi.login(params);
       if (res.success) {
@@ -81,7 +84,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setError(msg);
       return false;
     } finally {
-      setLoading(false);
+      setLoginLoading(false);
     }
   };
 
@@ -100,7 +103,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     <AuthContext.Provider
       value={{
         connected,
-        loading,
+        initialLoading,
+        loginLoading,
+        loading: loginLoading,
         deviceInfo,
         config,
         error,

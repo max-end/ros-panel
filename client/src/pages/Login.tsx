@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../store/authContext.js';
 import { Router, Server, KeyRound, User, Sparkles, AlertCircle, ArrowRight } from 'lucide-react';
 
 export const Login: React.FC = () => {
   const { login, loading, error } = useAuth();
+  const passwordRef = useRef<HTMLInputElement>(null);
 
   const [host, setHost] = useState('192.168.88.1');
   const [port, setPort] = useState('443');
@@ -13,9 +14,24 @@ export const Login: React.FC = () => {
   const [rejectUnauthorized, setRejectUnauthorized] = useState(false);
   const [rememberCredentials, setRememberCredentials] = useState(true);
 
-  // Load saved credentials from localStorage on mount
+  // Load saved credentials or active draft on mount
   useEffect(() => {
     try {
+      // Priority 1: Check sessionStorage draft (in case of browser refresh during editing)
+      const draft = sessionStorage.getItem('ros_login_draft');
+      if (draft) {
+        const data = JSON.parse(draft);
+        if (data.host) setHost(data.host);
+        if (data.port) setPort(String(data.port));
+        if (data.useTls !== undefined) setUseTls(data.useTls);
+        if (data.username) setUsername(data.username);
+        if (data.password !== undefined) setPassword(data.password);
+        if (data.rejectUnauthorized !== undefined) setRejectUnauthorized(data.rejectUnauthorized);
+        if (data.rememberCredentials !== undefined) setRememberCredentials(data.rememberCredentials);
+        return;
+      }
+
+      // Priority 2: Check localStorage saved credentials
       const saved = localStorage.getItem('ros_saved_credentials');
       if (saved) {
         const data = JSON.parse(saved);
@@ -28,9 +44,36 @@ export const Login: React.FC = () => {
         setRememberCredentials(true);
       }
     } catch (e) {
-      console.error('Failed to parse saved credentials', e);
+      console.error('Failed to parse saved credentials or draft', e);
     }
   }, []);
+
+  // Synchronize user inputs to sessionStorage draft to prevent accidental loss
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(
+        'ros_login_draft',
+        JSON.stringify({
+          host,
+          port,
+          useTls,
+          username,
+          password,
+          rejectUnauthorized,
+          rememberCredentials,
+        })
+      );
+    } catch {
+      // ignore
+    }
+  }, [host, port, useTls, username, password, rejectUnauthorized, rememberCredentials]);
+
+  // Focus password input when an error is returned
+  useEffect(() => {
+    if (error && passwordRef.current) {
+      passwordRef.current.focus();
+    }
+  }, [error]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,6 +88,9 @@ export const Login: React.FC = () => {
     });
 
     if (ok) {
+      // Clear temporary draft upon successful login
+      sessionStorage.removeItem('ros_login_draft');
+
       if (rememberCredentials) {
         try {
           localStorage.setItem(
@@ -68,7 +114,7 @@ export const Login: React.FC = () => {
   };
 
   const handleDemoLogin = async () => {
-    await login({
+    const ok = await login({
       host: 'demo.mikrotik.local',
       port: 443,
       useTls: true,
@@ -77,6 +123,9 @@ export const Login: React.FC = () => {
       rejectUnauthorized: false,
       isDemo: true,
     });
+    if (ok) {
+      sessionStorage.removeItem('ros_login_draft');
+    }
   };
 
   return (
@@ -91,20 +140,23 @@ export const Login: React.FC = () => {
           <div className="inline-flex p-3 bg-blue-600/20 border border-blue-500/30 rounded-2xl text-blue-400 mb-4 shadow-xl shadow-blue-500/10">
             <Router className="w-8 h-8" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">RouterOS Web 管理平台</h1>
+          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">RosPanel 控制台</h1>
           <p className="text-xs text-slate-400 mt-1">
-            基于 MikroTik RouterOS v7 REST API 的现代化网络控制台
+            基于 MikroTik RouterOS v7 REST API 的现代化网络管理平台
           </p>
         </div>
 
         {/* Card */}
         <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 backdrop-blur-xl shadow-2xl">
           {error && (
-            <div className="mb-5 p-3 rounded-xl bg-red-500/10 border border-red-500/20 flex items-start gap-2.5 text-xs text-red-400">
+            <div className="mb-5 p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 flex items-start gap-2.5 text-xs text-red-400 animate-in fade-in duration-200">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-              <div>
-                <p className="font-medium">连接失败</p>
-                <p className="opacity-90">{error}</p>
+              <div className="flex-1">
+                <p className="font-semibold text-red-300">连接失败，表单信息已为您保留</p>
+                <p className="opacity-90 mt-0.5 break-all leading-relaxed">{error}</p>
+                <p className="text-[11px] text-slate-400 mt-1">
+                  💡 请核对 IP 地址、端口、用户名或密码无误后直接点击重试。
+                </p>
               </div>
             </div>
           )}
@@ -118,13 +170,14 @@ export const Login: React.FC = () => {
               </label>
               <div className="flex gap-2">
                 <select
+                  disabled={loading}
                   value={useTls ? 'https' : 'http'}
                   onChange={(e) => {
                     const isHttps = e.target.value === 'https';
                     setUseTls(isHttps);
                     setPort(isHttps ? '443' : '80');
                   }}
-                  className="bg-slate-800/90 border border-slate-700 text-slate-200 text-xs rounded-xl px-2.5 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer"
+                  className="bg-slate-800/90 border border-slate-700 text-slate-200 text-xs rounded-xl px-2.5 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer disabled:opacity-60"
                 >
                   <option value="https">HTTPS</option>
                   <option value="http">HTTP</option>
@@ -135,20 +188,22 @@ export const Login: React.FC = () => {
                   <input
                     type="text"
                     required
+                    disabled={loading}
                     value={host}
                     onChange={(e) => setHost(e.target.value)}
                     placeholder="192.168.88.1"
-                    className="w-full bg-slate-800/90 border border-slate-700 text-slate-100 text-xs rounded-xl pl-9 pr-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono"
+                    className="w-full bg-slate-800/90 border border-slate-700 text-slate-100 text-xs rounded-xl pl-9 pr-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono disabled:opacity-60"
                   />
                 </div>
 
                 <input
                   type="number"
                   required
+                  disabled={loading}
                   value={port}
                   onChange={(e) => setPort(e.target.value)}
                   placeholder="端口"
-                  className="w-20 bg-slate-800/90 border border-slate-700 text-slate-100 text-xs rounded-xl px-2.5 py-2 text-center focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono"
+                  className="w-20 bg-slate-800/90 border border-slate-700 text-slate-100 text-xs rounded-xl px-2.5 py-2 text-center focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono disabled:opacity-60"
                 />
               </div>
             </div>
@@ -161,10 +216,11 @@ export const Login: React.FC = () => {
                 <input
                   type="text"
                   required
+                  disabled={loading}
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="admin"
-                  className="w-full bg-slate-800/90 border border-slate-700 text-slate-100 text-xs rounded-xl pl-9 pr-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono"
+                  className="w-full bg-slate-800/90 border border-slate-700 text-slate-100 text-xs rounded-xl pl-9 pr-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono disabled:opacity-60"
                 />
               </div>
             </div>
@@ -175,11 +231,13 @@ export const Login: React.FC = () => {
               <div className="relative">
                 <KeyRound className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
                 <input
+                  ref={passwordRef}
                   type="password"
+                  disabled={loading}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="默认为空或路由器设置密码"
-                  className="w-full bg-slate-800/90 border border-slate-700 text-slate-100 text-xs rounded-xl pl-9 pr-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono"
+                  className="w-full bg-slate-800/90 border border-slate-700 text-slate-100 text-xs rounded-xl pl-9 pr-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono disabled:opacity-60"
                 />
               </div>
             </div>
@@ -191,13 +249,14 @@ export const Login: React.FC = () => {
                   <input
                     type="checkbox"
                     id="remember-credentials"
+                    disabled={loading}
                     checked={rememberCredentials}
                     onChange={(e) => setRememberCredentials(e.target.checked)}
-                    className="rounded border-slate-700 bg-slate-800 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                    className="rounded border-slate-700 bg-slate-800 text-blue-600 focus:ring-blue-500 cursor-pointer disabled:opacity-60"
                   />
                   <label
                     htmlFor="remember-credentials"
-                    className="text-xs text-slate-300 cursor-pointer font-medium"
+                    className="text-xs text-slate-300 cursor-pointer font-medium select-none"
                   >
                     记住账号与密码
                   </label>
@@ -211,11 +270,12 @@ export const Login: React.FC = () => {
                 <input
                   type="checkbox"
                   id="ssl-verify"
+                  disabled={loading}
                   checked={!rejectUnauthorized}
                   onChange={(e) => setRejectUnauthorized(!e.target.checked)}
-                  className="rounded border-slate-700 bg-slate-800 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                  className="rounded border-slate-700 bg-slate-800 text-blue-600 focus:ring-blue-500 cursor-pointer disabled:opacity-60"
                 />
-                <label htmlFor="ssl-verify" className="text-xs text-slate-400 cursor-pointer">
+                <label htmlFor="ssl-verify" className="text-xs text-slate-400 cursor-pointer select-none">
                   允许自签名 SSL 证书（推荐开启）
                 </label>
               </div>
@@ -234,7 +294,7 @@ export const Login: React.FC = () => {
                 </>
               ) : (
                 <>
-                  <span>连接设备</span>
+                  <span>连接并登入控制台</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </>
               )}
@@ -247,7 +307,7 @@ export const Login: React.FC = () => {
               type="button"
               onClick={handleDemoLogin}
               disabled={loading}
-              className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-slate-800/70 hover:bg-slate-700/80 border border-slate-700 text-xs text-slate-300 transition-colors cursor-pointer"
+              className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-slate-800/70 hover:bg-slate-700/80 border border-slate-700 text-xs text-slate-300 transition-colors cursor-pointer disabled:opacity-50"
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-400" />
               <span>快速进入演示模式 (Demo Mode)</span>
