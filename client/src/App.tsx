@@ -23,6 +23,8 @@ import { Backup } from './pages/Backup.js';
 import { Logs } from './pages/Logs.js';
 import { System } from './pages/System.js';
 import { Upgrade } from './pages/Upgrade.js';
+import { Services } from './pages/Services.js';
+import { Torch } from './pages/Torch.js';
 
 const AppRoutes: React.FC = () => {
   const { connected, initialLoading } = useAuth();
@@ -54,10 +56,12 @@ const AppRoutes: React.FC = () => {
         <Route path="dhcp-leases" element={<DHCPLeases />} />
         <Route path="arp" element={<ArpTable />} />
         <Route path="firewall" element={<Firewall />} />
+        <Route path="services" element={<Services />} />
         <Route path="wireguard" element={<Wireguard />} />
         <Route path="queues" element={<Queues />} />
         <Route path="wol" element={<WakeOnLan />} />
         <Route path="system" element={<System />} />
+        <Route path="torch" element={<Torch />} />
         <Route path="upgrade" element={<Upgrade />} />
         <Route path="backup" element={<Backup />} />
         <Route path="users" element={<UsersPage />} />

@@ -32,6 +32,8 @@ import {
   RosWifiInterface,
   RosWifiClient,
   RosCapsmanConfig,
+  RosIpService,
+  RosTorchFlow,
 } from '../types/ros.js';
 
 export class MockRosClient implements IRosClient {
@@ -1542,5 +1544,120 @@ Columns: ADDRESS, NETWORK, INTERFACE
         iface.passphrase = data.password;
       }
     }
+  }
+
+  private ipServices: RosIpService[] = [
+    { '.id': '*s1', name: 'api', port: 8728, disabled: 'false', address: '192.168.88.0/24' },
+    { '.id': '*s2', name: 'api-ssl', port: 8729, disabled: 'false', address: '' },
+    { '.id': '*s3', name: 'ftp', port: 21, disabled: 'true', address: '' },
+    { '.id': '*s4', name: 'ssh', port: 22, disabled: 'false', address: '192.168.88.0/24' },
+    { '.id': '*s5', name: 'telnet', port: 23, disabled: 'true', address: '' },
+    { '.id': '*s6', name: 'winbox', port: 8291, disabled: 'false', address: '' },
+    { '.id': '*s7', name: 'www', port: 80, disabled: 'false', address: '192.168.88.0/24' },
+    { '.id': '*s8', name: 'www-ssl', port: 443, disabled: 'false', address: '' },
+  ];
+
+  async getIpServices(): Promise<RosIpService[]> {
+    return JSON.parse(JSON.stringify(this.ipServices));
+  }
+
+  async updateIpService(id: string, data: { port?: number; disabled?: boolean | string; address?: string }): Promise<void> {
+    const s = this.ipServices.find((item) => item['.id'] === id);
+    if (!s) throw new Error('Service not found');
+    if (data.port !== undefined) s.port = Number(data.port);
+    if (data.disabled !== undefined) s.disabled = data.disabled === true || data.disabled === 'true' ? 'true' : 'false';
+    if (data.address !== undefined) s.address = data.address;
+  }
+
+  async toggleIpService(id: string, disabled: boolean): Promise<void> {
+    return this.updateIpService(id, { disabled });
+  }
+
+  async runTorch(options: { interface: string; duration?: number; srcAddress?: string; dstAddress?: string; protocol?: string; port?: string }): Promise<RosTorchFlow[]> {
+    const jitter = () => Math.random() * 0.4 + 0.8;
+    const flows: RosTorchFlow[] = [
+      {
+        id: 'flow-1',
+        srcAddress: '192.168.88.105',
+        srcPort: 54128,
+        dstAddress: '142.250.190.46',
+        dstPort: 443,
+        protocol: 'tcp',
+        txRate: Math.round(1850000 * jitter()),
+        rxRate: Math.round(48200000 * jitter()),
+        txPackets: Math.round(140 * jitter()),
+        rxPackets: Math.round(3900 * jitter()),
+      },
+      {
+        id: 'flow-2',
+        srcAddress: '192.168.88.200',
+        srcPort: 9000,
+        dstAddress: '185.199.108.153',
+        dstPort: 443,
+        protocol: 'tcp',
+        txRate: Math.round(28400000 * jitter()),
+        rxRate: Math.round(1240000 * jitter()),
+        txPackets: Math.round(2200 * jitter()),
+        rxPackets: Math.round(95 * jitter()),
+      },
+      {
+        id: 'flow-3',
+        srcAddress: '192.168.88.120',
+        srcPort: 61240,
+        dstAddress: '223.5.5.5',
+        dstPort: 53,
+        protocol: 'udp',
+        txRate: Math.round(24000 * jitter()),
+        rxRate: Math.round(32000 * jitter()),
+        txPackets: Math.round(12 * jitter()),
+        rxPackets: Math.round(12 * jitter()),
+      },
+      {
+        id: 'flow-4',
+        srcAddress: '192.168.88.210',
+        srcPort: 8123,
+        dstAddress: '104.26.12.33',
+        dstPort: 443,
+        protocol: 'tcp',
+        txRate: Math.round(450000 * jitter()),
+        rxRate: Math.round(1820000 * jitter()),
+        txPackets: Math.round(45 * jitter()),
+        rxPackets: Math.round(150 * jitter()),
+      },
+      {
+        id: 'flow-5',
+        srcAddress: '192.168.88.105',
+        srcPort: 58912,
+        dstAddress: '13.107.42.16',
+        dstPort: 443,
+        protocol: 'tcp',
+        txRate: Math.round(320000 * jitter()),
+        rxRate: Math.round(890000 * jitter()),
+        txPackets: Math.round(28 * jitter()),
+        rxPackets: Math.round(75 * jitter()),
+      },
+      {
+        id: 'flow-6',
+        srcAddress: '192.168.88.1',
+        dstAddress: '1.1.1.1',
+        protocol: 'icmp',
+        txRate: 1024,
+        rxRate: 1024,
+        txPackets: 2,
+        rxPackets: 2,
+      },
+    ];
+
+    let filtered = flows;
+    if (options.protocol && options.protocol !== 'any') {
+      filtered = filtered.filter((f) => f.protocol.toLowerCase() === options.protocol?.toLowerCase());
+    }
+    if (options.srcAddress) {
+      filtered = filtered.filter((f) => f.srcAddress.includes(options.srcAddress!));
+    }
+    if (options.dstAddress) {
+      filtered = filtered.filter((f) => f.dstAddress.includes(options.dstAddress!));
+    }
+    return filtered;
   }
 }

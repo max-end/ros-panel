@@ -32,6 +32,8 @@ import {
   RosWifiInterface,
   RosWifiClient,
   RosCapsmanConfig,
+  RosIpService,
+  RosTorchFlow,
 } from '../types/ros.js';
 
 export interface IRosClient {
@@ -162,6 +164,10 @@ export interface IRosClient {
   getCapsmanConfig(): Promise<RosCapsmanConfig>;
   updateWifiInterface(id: string, data: Partial<RosWifiInterface>): Promise<void>;
   quickSetupWifi(data: { ssid: string; password?: string }): Promise<void>;
+  getIpServices(): Promise<RosIpService[]>;
+  updateIpService(id: string, data: { port?: number; disabled?: boolean | string; address?: string }): Promise<void>;
+  toggleIpService(id: string, disabled: boolean): Promise<void>;
+  runTorch(options: { interface: string; duration?: number; srcAddress?: string; dstAddress?: string; protocol?: string; port?: string }): Promise<RosTorchFlow[]>;
 }
 
 export class RosRestClient implements IRosClient {
@@ -1326,6 +1332,63 @@ export class RosRestClient implements IRosClient {
         patchData.passphrase = data.password;
       }
       await this.updateWifiInterface(iface['.id'], patchData).catch(() => {});
+    }
+  }
+
+  async getIpServices(): Promise<RosIpService[]> {
+    try {
+      const res = await this.axiosInstance.get<RosIpService[]>('/ip/service');
+      return res.data;
+    } catch (err) {
+      return this.handleError(err, 'getIpServices');
+    }
+  }
+
+  async updateIpService(id: string, data: { port?: number; disabled?: boolean | string; address?: string }): Promise<void> {
+    try {
+      const payload: any = {};
+      if (data.port !== undefined) payload.port = String(data.port);
+      if (data.disabled !== undefined) payload.disabled = data.disabled === true || data.disabled === 'true' ? 'true' : 'false';
+      if (data.address !== undefined) payload.address = data.address;
+      await this.axiosInstance.patch(`/ip/service/${encodeURIComponent(id)}`, payload);
+    } catch (err) {
+      return this.handleError(err, 'updateIpService');
+    }
+  }
+
+  async toggleIpService(id: string, disabled: boolean): Promise<void> {
+    return this.updateIpService(id, { disabled });
+  }
+
+  async runTorch(options: { interface: string; duration?: number; srcAddress?: string; dstAddress?: string; protocol?: string; port?: string }): Promise<RosTorchFlow[]> {
+    try {
+      const payload: any = {
+        interface: options.interface,
+        duration: options.duration || 2,
+      };
+      if (options.srcAddress) payload['src-address'] = options.srcAddress;
+      if (options.dstAddress) payload['dst-address'] = options.dstAddress;
+      if (options.protocol && options.protocol !== 'any') payload.protocol = options.protocol;
+      if (options.port && options.port !== 'any') payload.port = options.port;
+
+      const res = await this.axiosInstance.post<any[]>('/tool/torch', payload);
+      if (Array.isArray(res.data)) {
+        return res.data.map((item, idx) => ({
+          id: item['.id'] || `torch-${idx}`,
+          srcAddress: item['src-address'] || '',
+          srcPort: item['src-port'] ? Number(item['src-port']) : undefined,
+          dstAddress: item['dst-address'] || '',
+          dstPort: item['dst-port'] ? Number(item['dst-port']) : undefined,
+          protocol: item.protocol || 'ip',
+          txRate: Number(item.tx || item['tx-rate'] || 0),
+          rxRate: Number(item.rx || item['rx-rate'] || 0),
+          txPackets: Number(item['tx-packets'] || 0),
+          rxPackets: Number(item['rx-packets'] || 0),
+        }));
+      }
+      return [];
+    } catch (err) {
+      return this.handleError(err, 'runTorch');
     }
   }
 }

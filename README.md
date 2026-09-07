@@ -40,6 +40,12 @@ Built with **React 18**, **TypeScript**, **Tailwind CSS v4**, and **Express 5**,
 - 🛡️ **Firewall & NAT with Drag-and-Drop Reordering**:
   - Full CRUD management for both NAT port forwarding and Packet Filter rules.
   - **Intuitive HTML5 Drag-and-Drop**: Easily adjust rule priority with drag handles or one-touch `↑` / `↓` buttons, strictly respecting RouterOS first-match semantics.
+- 🕵️ **Torch Live Traffic Sniffer (`/torch`)**:
+  - WinBox signature real-time socket inspection tool directly on the web.
+  - Inspect bidirectional traffic flows per interface (`ether1-wan`, `bridge-lan`, etc.), view source/destination IPs, ports, protocols, and live Rx/Tx throughput bars to pinpoint bandwidth hogs or anomalous outbound traffic.
+- 🛡️ **IP Services & Management Port Security (`/services`)**:
+  - Full lifecycle management for WinBox (8291), Web (80/443), SSH (22), API (8728), Telnet, and FTP.
+  - Automated security hardening audits (warns against plain-text Telnet/FTP and unprotected default ports), custom non-standard port configuration, and trusted subnet IP whitelisting (`address`).
 - 📡 **Wi-Fi 6 & CAPsMAN Central Roaming Controller**:
   - Centralized management for dual-band 802.11ax radios, WPA2/WPA3-SAE encryption, and channel widths.
   - Real-time client perception with RSSI signal indicators and negotiated Tx/Rx data rates.
@@ -156,6 +162,12 @@ Open your browser and navigate to `http://localhost:3001`. Enter your router's I
   - 端口映射 (Port Forwarding) 与过滤规则 (Filter Rules) 全生命周期增删改查。
   - **首创 HTML5 拖拽重排 (Drag & Drop)**：直观抓取规则行或点击 `↑` / `↓` 微调匹配次序，严格遵从 RouterOS 首条命中原则。
   - 序列标号与生效状态实时联动，自动兼容 RouterOS REST 与 CLI 回退机制。
+- 🕵️ **Torch 实时流量嗅探器 (`/torch`)**：
+  - 完美复刻 WinBox 核心抓包排障利器。
+  - 针对指定接口（外网 `ether1-wan`、网桥 `bridge-lan` 等）秒级嗅探流经数据包，实时可视化展现**源端、目的端、协议、端口与上/下行吞吐占比条**，一眼揪出局域网谁在开 BT 下载或向外异常发包。
+- 🛡️ **IP Services 服务端口与安全防护 (`/services`)**：
+  - WinBox (8291)、Web (80/443)、SSH (22)、API (8728)、Telnet 与 FTP 守护进程集中控制。
+  - **公网暴露安全基线审计**：智能预警明文传输与未设白名单的高危服务，支持一键启停、自定义非标端口及配置来源 IP/子网白名单。
 - 📡 **Wi-Fi 6 & CAPsMAN 集中漫游控制器**：
   - 双频 Wi-Fi 6 (802.11ax) 射频配置、WPA3-SAE 安全加密及频宽选择。
   - 关联无线终端动态感知：实时展现终端信号强度 (RSSI) 与协商速率。

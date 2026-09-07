@@ -17,6 +17,8 @@ import * as userController from '../controllers/userController.js';
 import * as backupController from '../controllers/backupController.js';
 import * as ddnsController from '../controllers/ddnsController.js';
 import * as wifiController from '../controllers/wifiController.js';
+import * as serviceController from '../controllers/serviceController.js';
+import * as torchController from '../controllers/torchController.js';
 
 export const apiRouter = Router();
 
@@ -165,3 +167,11 @@ apiRouter.get('/wifi/clients', wifiController.getWifiClients);
 apiRouter.get('/wifi/capsman', wifiController.getCapsmanConfig);
 apiRouter.patch('/wifi/interfaces/:id', wifiController.updateWifiInterface);
 apiRouter.post('/wifi/quick-setup', wifiController.quickSetupWifi);
+
+// IP Services
+apiRouter.get('/services', serviceController.getIpServices);
+apiRouter.patch('/services/:id', serviceController.updateIpService);
+apiRouter.post('/services/:id/toggle', serviceController.toggleIpService);
+
+// Torch Traffic Sniffer
+apiRouter.post('/torch/snapshot', torchController.snapshotTorch);

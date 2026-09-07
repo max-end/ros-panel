@@ -31,6 +31,8 @@ import {
   RosWifiInterface,
   RosWifiClient,
   RosCapsmanConfig,
+  RosIpService,
+  RosTorchFlow,
 } from '../types/index.js';
 
 const api = axios.create({
@@ -713,5 +715,34 @@ export const rosApi = {
   quickSetupWifi: async (data: { ssid: string; password?: string }) => {
     const res = await api.post<{ success: boolean; message: string }>('/wifi/quick-setup', data);
     return res.data;
+  },
+
+  // IP Services
+  getIpServices: async () => {
+    const res = await api.get<{ success: boolean; data: RosIpService[] }>('/services');
+    return res.data.data;
+  },
+
+  updateIpService: async (id: string, data: { port?: number; disabled?: boolean; address?: string }) => {
+    const res = await api.patch<{ success: boolean; message: string }>(`/services/${encodeURIComponent(id)}`, data);
+    return res.data;
+  },
+
+  toggleIpService: async (id: string, disabled: boolean) => {
+    const res = await api.post<{ success: boolean; message: string }>(`/services/${encodeURIComponent(id)}/toggle`, { disabled });
+    return res.data;
+  },
+
+  // Torch Traffic Sniffer
+  snapshotTorch: async (params: {
+    interface: string;
+    duration?: number;
+    srcAddress?: string;
+    dstAddress?: string;
+    protocol?: string;
+    port?: string;
+  }) => {
+    const res = await api.post<{ success: boolean; data: RosTorchFlow[] }>('/torch/snapshot', params);
+    return res.data.data;
   },
 };

@@ -26,6 +26,8 @@ import {
   X,
   Wifi,
   ArrowUpCircle,
+  ShieldAlert,
+  Activity,
 } from 'lucide-react';
 
 interface MenuItem {
@@ -71,6 +73,7 @@ const menuGroups: MenuGroup[] = [
     defaultTitle: '安全与互联',
     items: [
       { path: '/firewall', translationKey: 'nav.firewall', defaultLabel: '防火墙', icon: Shield },
+      { path: '/services', translationKey: 'nav.services', defaultLabel: '服务端口', icon: ShieldAlert },
       { path: '/wireguard', translationKey: 'nav.wireguard', defaultLabel: 'WireGuard', icon: RadioTower },
       { path: '/queues', translationKey: 'nav.queues', defaultLabel: '带宽限速', icon: Sliders },
       { path: '/wol', translationKey: 'nav.wol', defaultLabel: '网络唤醒', icon: Zap },
@@ -81,6 +84,7 @@ const menuGroups: MenuGroup[] = [
     defaultTitle: '系统与运维',
     items: [
       { path: '/system', translationKey: 'nav.diagnostics', defaultLabel: '系统工具', icon: Terminal },
+      { path: '/torch', translationKey: 'nav.torch', defaultLabel: '流量嗅探', icon: Activity },
       { path: '/upgrade', translationKey: 'nav.upgrade', defaultLabel: '固件升级', icon: ArrowUpCircle },
       { path: '/backup', translationKey: 'nav.backup', defaultLabel: '系统备份', icon: HardDriveDownload },
       { path: '/users', translationKey: 'nav.users', defaultLabel: '用户管理', icon: UserCheck },

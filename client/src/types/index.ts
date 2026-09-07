@@ -406,3 +406,27 @@ export interface RosCapsmanConfig {
   radiosCount?: number;
   provisioningCount?: number;
 }
+
+export interface RosIpService {
+  '.id': string;
+  name: string;
+  port: number;
+  disabled: boolean | string;
+  address?: string;
+  certificate?: string;
+  'tls-version'?: string;
+  invalid?: boolean | string;
+}
+
+export interface RosTorchFlow {
+  id: string;
+  srcAddress: string;
+  srcPort?: number | string;
+  dstAddress: string;
+  dstPort?: number | string;
+  protocol: string;
+  txRate: number; // bps
+  rxRate: number; // bps
+  txPackets?: number;
+  rxPackets?: number;
+}
