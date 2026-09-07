@@ -221,17 +221,38 @@ export class RosRestClient implements IRosClient {
   async getSystemHealth(): Promise<SystemHealth> {
     try {
       const res = await this.axiosInstance.get<any>('/system/health');
+      const health: SystemHealth = {};
+
+      const parseVal = (v: any): number | undefined => {
+        if (typeof v === 'number') return isNaN(v) ? undefined : v;
+        if (!v) return undefined;
+        const num = parseFloat(String(v));
+        return isNaN(num) ? undefined : num;
+      };
+
+      const assignField = (key: string, val: number | undefined) => {
+        if (val === undefined) return;
+        const k = key.toLowerCase();
+        if (k === 'cpu-temperature' || k === 'cpu-temp') health['cpu-temperature'] = val;
+        else if (k.startsWith('board-temperature') || k === 'board-temp') health['board-temperature1'] = val;
+        else if (k === 'voltage') health.voltage = val;
+        else if (k === 'temperature') health.temperature = val;
+      };
+
       if (Array.isArray(res.data)) {
-        const health: SystemHealth = {};
         for (const item of res.data) {
-          if (item.name === 'cpu-temperature') health['cpu-temperature'] = Number(item.value);
-          else if (item.name === 'board-temperature1' || item.name === 'board-temperature') health['board-temperature1'] = Number(item.value);
-          else if (item.name === 'voltage') health.voltage = Number(item.value);
-          else if (item.name === 'temperature') health.temperature = Number(item.value);
+          if (item && item.name) {
+            assignField(String(item.name), parseVal(item.value));
+          }
+        }
+        return health;
+      } else if (res.data && typeof res.data === 'object') {
+        for (const [k, v] of Object.entries(res.data)) {
+          assignField(k, parseVal(v));
         }
         return health;
       }
-      return res.data || {};
+      return {};
     } catch {
       return {};
     }

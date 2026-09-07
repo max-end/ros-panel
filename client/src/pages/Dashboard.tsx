@@ -29,6 +29,7 @@ import {
   ArrowRight,
   Eye,
   EyeOff,
+  HelpCircle,
 } from 'lucide-react';
 
 function formatBytes(bytes: number): string {
@@ -183,9 +184,9 @@ export const Dashboard: React.FC = () => {
   const usedHdd = totalHdd - freeHdd;
   const hddPercent = totalHdd > 0 ? Math.round((usedHdd / totalHdd) * 100) : 0;
 
-  const cpuTemp = health?.['cpu-temperature'] ?? health?.temperature ?? 46;
-  const boardTemp = health?.['board-temperature1'] ?? 39;
-  const voltage = health?.voltage ?? 24.1;
+  const cpuTemp = health?.['cpu-temperature'] ?? health?.temperature;
+  const boardTemp = health?.['board-temperature1'];
+  const voltage = health?.voltage;
 
   // Chart config
   const chartOption = {
@@ -417,26 +418,68 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Temperature & Voltage */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-xs font-medium text-slate-400">{t('dashboard.healthVoltage', '硬件温度与供电状态')}</p>
-              <div className="flex items-baseline gap-2 mt-2">
-                <span className="text-3xl font-bold font-mono text-slate-100">{cpuTemp}°C</span>
-                <span className="text-[11px] text-slate-400 font-mono">
-                  Board {boardTemp}°C
+        {(() => {
+          const tempVal = typeof cpuTemp === 'number' ? cpuTemp : undefined;
+          let tempColor = 'text-emerald-400';
+          let tempBg = 'bg-emerald-500/10 border-emerald-500/20';
+          let statusText = t('dashboard.tempNormal', '工况优良');
+          let dotColor = 'bg-emerald-400';
+
+          if (tempVal !== undefined) {
+            if (tempVal > 80) {
+              tempColor = 'text-rose-400';
+              tempBg = 'bg-rose-500/10 border-rose-500/20';
+              statusText = t('dashboard.tempHigh', '温度过高');
+              dotColor = 'bg-rose-400';
+            } else if (tempVal >= 65) {
+              tempColor = 'text-amber-400';
+              tempBg = 'bg-amber-500/10 border-amber-500/20';
+              statusText = t('dashboard.tempWarm', '轻微偏热');
+              dotColor = 'bg-amber-400';
+            }
+          }
+
+          return (
+            <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden">
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-xs font-medium text-slate-400">{t('dashboard.healthVoltage', '硬件温度与供电状态')}</p>
+                    <span
+                      className="text-slate-500 hover:text-slate-300 cursor-help"
+                      title={t('dashboard.tempTooltip', 'MikroTik 设备大多采用厚金属外壳被动散热，CPU 日常标准温度通常在 50°C~65°C 之间，芯片安全关断阈值通常达 100°C。')}
+                    >
+                      <HelpCircle className="w-3.5 h-3.5" />
+                    </span>
+                  </div>
+
+                  <div className="flex items-baseline gap-2 mt-2">
+                    <span className="text-3xl font-bold font-mono text-slate-100">
+                      {tempVal !== undefined ? `${tempVal}°C` : '--'}
+                    </span>
+                    {typeof boardTemp === 'number' && (
+                      <span className="text-[11px] text-slate-400 font-mono">
+                        {t('dashboard.tempBoard', '主板')} {boardTemp}°C
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className={`p-2.5 rounded-xl ${tempBg} border ${tempColor}`}>
+                  <Thermometer className="w-5 h-5" />
+                </div>
+              </div>
+
+              <div className="mt-3 flex items-center justify-between text-xs text-slate-400 border-t border-slate-800/80 pt-2 font-mono">
+                <span>{t('dashboard.voltage', '输入电压')}: {voltage !== undefined ? `${voltage} V` : '--'}</span>
+                <span className={`inline-flex items-center gap-1.5 ${tempColor} font-medium text-[11px]`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`}></span>
+                  {tempVal !== undefined ? statusText : t('dashboard.noSensor', '无传感器')}
                 </span>
               </div>
             </div>
-            <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
-              <Thermometer className="w-5 h-5" />
-            </div>
-          </div>
-          <div className="mt-3 flex items-center justify-between text-xs text-slate-400 border-t border-slate-800/80 pt-2 font-mono">
-            <span>Voltage: {voltage} V</span>
-            <span className="text-emerald-400 font-medium">● OK</span>
-          </div>
-        </div>
+          );
+        })()}
       </div>
 
       {/* Mid Row: WAN Status & Front Panel Port Visualizer */}
